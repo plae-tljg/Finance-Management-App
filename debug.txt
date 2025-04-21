@@ -1,0 +1,991 @@
+04-21 18:47:59.229 11109 11156 W ReactNativeJNI: Component property map contains multiple entries for 'borderColor'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.
+04-21 18:47:59.229 11109 11156 W ReactNativeJNI: Component property map contains multiple entries for 'borderStyle'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.
+04-21 18:47:59.449 11109 11157 I ReactNativeJS: Bridgeless mode is enabled
+04-21 18:47:59.516 11109 11157 I ReactNativeJS: Running "main"
+04-21 18:47:59.584 11109 11157 I ReactNativeJS: 等待字体加载...
+04-21 18:47:59.593 11109 11157 I ReactNativeJS: 渲染根布局...
+04-21 18:47:59.596 11109 11157 I ReactNativeJS: 字体加载完成，隐藏启动画面
+04-21 18:47:59.940 11109 11157 E ReactNativeJS: '加载分类失败:', [Error: 数据库未初始化]
+04-21 18:47:59.941 11109 11157 I ReactNativeJS: 开始获取预算记录...
+04-21 18:47:59.942 11109 11158 E unknown:ReactNative: console.error: 加载分类失败: Error: 数据库未初始化, stack:
+04-21 18:47:59.942 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:47:59.942 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:47:59.942 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:47:59.942 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:47:59.942 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:47:59.942 11109 11158 E unknown:ReactNative: ?anon_0_@1:1467983
+04-21 18:47:59.942 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:47:59.942 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:47:59.944 11109 11157 E ReactNativeJS: '获取预算记录失败:', [Error: 数据库未初始化]
+04-21 18:47:59.945 11109 11157 E ReactNativeJS: '加载交易记录失败:', [Error: 数据库未初始化]
+04-21 18:47:59.945 11109 11157 E ReactNativeJS: '加载财务数据错误:', [Error: 数据库未初始化]
+04-21 18:47:59.946 11109 11158 E unknown:ReactNative: console.error: 获取预算记录失败: Error: 数据库未初始化, stack:
+04-21 18:47:59.946 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:47:59.946 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:47:59.946 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:47:59.946 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:47:59.946 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:47:59.946 11109 11158 E unknown:ReactNative: ?anon_0_@1:1221921
+04-21 18:47:59.946 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:47:59.946 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:47:59.946 11109 11157 I ReactNativeJS: 开始初始化数据库...
+04-21 18:47:59.946 11109 11157 I ReactNativeJS: '环境变量配置:', { DATA_CLEAR: false, shouldClearData: false }
+04-21 18:47:59.946 11109 11157 I ReactNativeJS: 开始创建数据库表...
+04-21 18:47:59.947 11109 11158 E unknown:ReactNative: console.error: 加载交易记录失败: Error: 数据库未初始化, stack:
+04-21 18:47:59.947 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:47:59.947 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:47:59.947 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:47:59.947 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:47:59.947 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:47:59.947 11109 11158 E unknown:ReactNative: ?anon_0_@1:1467389
+04-21 18:47:59.947 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:47:59.947 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:47:59.948 11109 11158 E unknown:ReactNative: console.error: 加载财务数据错误: Error: 数据库未初始化, stack:
+04-21 18:47:59.948 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:47:59.948 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:47:59.948 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:47:59.948 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:47:59.948 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:47:59.948 11109 11158 E unknown:ReactNative: ?anon_0_@1:1468436
+04-21 18:47:59.948 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:47:59.948 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:47:59.963 11109 11157 I ReactNativeJS: 创建表: categories
+04-21 18:47:59.977 11109 11157 I ReactNativeJS: 开始获取预算记录...
+04-21 18:47:59.990 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:47:59.990 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:47:59.992 11109 11157 E ReactNativeJS: '加载交易记录失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:47:59.992 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:47:59.993 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:47:59.993 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: budgets] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:47:59.994 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:47:59.994 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:47:59.994 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:47:59.994 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:47:59.994 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:47:59.994 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:47:59.994 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:47:59.994 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:47:59.994 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:47:59.994 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:47:59.994 11109 11157 E ReactNativeJS: '获取预算记录失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:47:59.994 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: budgets] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:47:59.996 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:47:59.996 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:47:59.996 11109 11158 E unknown:ReactNative: console.error: 加载交易记录失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:47:59.996 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:47:59.996 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:47:59.996 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:47:59.996 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:47:59.996 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:47:59.996 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:47:59.996 11109 11158 E unknown:ReactNative: ?anon_0_@1:1467389
+04-21 18:47:59.996 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:47:59.996 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: budgets, stack:
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: console.error: 获取预算记录失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: budgets, stack:
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: ?anon_0_@1:1221921
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:47:59.997 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:47:59.998 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:47:59.998 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:47:59.998 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:47:59.998 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:47:59.998 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:47:59.998 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:47:59.998 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:47:59.998 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:47:59.998 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:47:59.998 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:47:59.998 11109 11157 E ReactNativeJS: '加载财务数据错误:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:47:59.998 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.000 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.000 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.001 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.001 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.002 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.002 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.003 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.003 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.004 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.004 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.004 11109 11158 E unknown:ReactNative: console.error: 加载财务数据错误: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.004 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.004 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.004 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.004 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.004 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.004 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.004 11109 11158 E unknown:ReactNative: ?anon_0_@1:1468436
+04-21 18:48:00.004 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.004 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.004 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.004 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.006 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.006 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.006 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.006 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.006 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.006 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.006 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.006 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.006 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.006 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.007 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.007 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.007 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.007 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.007 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.007 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.007 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.007 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.007 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.007 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.009 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.009 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.009 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.009 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.009 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.009 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.009 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.009 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.009 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.009 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.010 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.010 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.010 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.010 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.010 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.010 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.010 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.010 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.010 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.010 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.012 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.012 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.012 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.012 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.012 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.012 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.012 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.012 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.012 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.012 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.013 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.013 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.013 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.013 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.013 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.013 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.013 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.013 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.013 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.013 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.029 11109 11157 I ReactNativeJS: 创建表: budgets
+04-21 18:48:00.056 11109 11157 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:00.063 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.063 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.066 11109 11157 E ReactNativeJS: '加载交易记录失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.066 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.067 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.067 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.068 11109 11157 E ReactNativeJS: '加载财务数据错误:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.068 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.068 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.068 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.069 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.069 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.069 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.069 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.069 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.069 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.069 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.069 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.069 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.069 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.069 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.069 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.069 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.069 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.070 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.070 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.070 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.070 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.071 11109 11158 E unknown:ReactNative: console.error: 加载交易记录失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.071 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.071 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.071 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.071 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.071 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.071 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.071 11109 11158 E unknown:ReactNative: ?anon_0_@1:1467389
+04-21 18:48:00.071 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.071 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.071 11109 11157 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.071 11109 11157 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:00.072 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.072 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.072 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.072 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.072 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.072 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.072 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.072 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.072 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.072 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.073 11109 11157 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:00.074 11109 11158 E unknown:ReactNative: console.error: 加载财务数据错误: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.074 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.074 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.074 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.074 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.074 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.074 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.074 11109 11158 E unknown:ReactNative: ?anon_0_@1:1468436
+04-21 18:48:00.074 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.074 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.075 11109 11157 I ReactNativeJS: 创建表: transactions
+04-21 18:48:00.076 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.076 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.076 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.076 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.076 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.076 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.076 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.076 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.076 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.076 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.077 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.077 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.077 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.077 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.077 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.077 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.077 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.077 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.077 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.077 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.079 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.079 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.079 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.079 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.079 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.079 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.079 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.079 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.079 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.079 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.081 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.081 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.081 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.081 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.081 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.081 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.081 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.081 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.081 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.081 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.081 11109 11157 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:00.082 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.082 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.082 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.082 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.082 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.082 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.082 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.082 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.082 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.082 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.084 11109 11158 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:00.084 11109 11158 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:00.084 11109 11158 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:00.084 11109 11158 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:00.084 11109 11158 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:00.084 11109 11158 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:00.084 11109 11158 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:00.084 11109 11158 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:00.084 11109 11158 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:00.084 11109 11158 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:00.100 11109 11157 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:00.101 11109 11157 I ReactNativeJS: 创建表: bank_balances
+04-21 18:48:00.108 11109 11157 I ReactNativeJS: 数据库表创建完成
+04-21 18:48:00.108 11109 11157 I ReactNativeJS: 初始化 repositories...
+04-21 18:48:00.108 11109 11157 I ReactNativeJS: 开始初始化默认数据...
+04-21 18:48:00.111 11109 11157 I ReactNativeJS: 初始化默认类别数据...
+04-21 18:48:00.116 11109 11157 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:00.139 11109 11157 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:00.140 11109 11157 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:00.157 11109 11157 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:00.158 11109 11157 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:00.169 11109 11157 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:00.170 11109 11157 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:00.173 11109 11157 I ReactNativeJS: 默认数据初始化完成
+04-21 18:48:00.173 11109 11157 I ReactNativeJS: 数据库初始化完成
+04-21 18:48:00.173 11109 11157 I ReactNativeJS: 数据库初始化完成
+04-21 18:48:00.184 11109 11157 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:00.189 11109 11157 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:00.200 11109 11157 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:00.222 11109 11109 E unknown:ReactNative: Tried to remove non-existent frame callback
+04-21 18:48:00.236 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.236 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.236 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.236 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.236 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.236 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.236 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.236 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.237 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.238 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.238 11109 11157 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.239 11109 11168 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_js... dropping Runnable.
+04-21 18:48:00.240 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.240 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.241 11109 11156 E unknown:ReactNative: Tried to remove non-existent frame callback
+04-21 18:48:00.241 11109 11156 W ReactNativeJNI: Scheduler::~Scheduler() was called (address: 0xb4000077538ec450).
+04-21 18:48:00.242 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.242 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.242 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.242 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.243 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.243 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.243 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.243 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.243 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.243 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.243 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.244 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.244 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.244 11109 11156 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:00.244 11109 11156 W ReactNativeJNI: UIManagerBinding::~UIManagerBinding() was called (address: 0xb4000077538e8548).
+04-21 18:48:00.244 11109 11156 W ReactNativeJNI: UIManager::~UIManager() was called (address: 0xb4000076938db190).
+04-21 18:48:13.099 11287 11320 W ReactNativeJNI: Component property map contains multiple entries for 'borderColor'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.
+04-21 18:48:13.099 11287 11320 W ReactNativeJNI: Component property map contains multiple entries for 'borderStyle'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.
+04-21 18:48:13.193 11287 11321 I ReactNativeJS: Bridgeless mode is enabled
+04-21 18:48:13.226 11287 11321 I ReactNativeJS: Running "main"
+04-21 18:48:13.275 11287 11321 I ReactNativeJS: 等待字体加载...
+04-21 18:48:13.282 11287 11321 I ReactNativeJS: 渲染根布局...
+04-21 18:48:13.283 11287 11321 I ReactNativeJS: 字体加载完成，隐藏启动画面
+04-21 18:48:13.437 11287 11321 I ReactNativeJS: 开始初始化数据库...
+04-21 18:48:13.437 11287 11321 I ReactNativeJS: '环境变量配置:', { DATA_CLEAR: false, shouldClearData: false }
+04-21 18:48:13.437 11287 11321 I ReactNativeJS: 开始创建数据库表...
+04-21 18:48:13.461 11287 11321 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:13.471 11287 11321 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:13.494 11287 11321 I ReactNativeJS: 数据库表创建完成
+04-21 18:48:13.494 11287 11321 I ReactNativeJS: 初始化 repositories...
+04-21 18:48:13.494 11287 11321 I ReactNativeJS: 开始初始化默认数据...
+04-21 18:48:13.499 11287 11321 I ReactNativeJS: 默认数据初始化完成
+04-21 18:48:13.499 11287 11321 I ReactNativeJS: 数据库初始化完成
+04-21 18:48:13.500 11287 11321 I ReactNativeJS: 数据库初始化完成
+04-21 18:48:13.507 11287 11321 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:13.533 11287 11321 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:13.553 11287 11287 E unknown:ReactNative: Tried to remove non-existent frame callback
+04-21 18:48:13.566 11287 11321 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.566 11287 11321 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.567 11287 11321 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.567 11287 11321 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.567 11287 11321 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.572 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.572 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.572 11287 11320 E unknown:ReactNative: Tried to remove non-existent frame callback
+04-21 18:48:13.572 11287 11320 W ReactNativeJNI: Scheduler::~Scheduler() was called (address: 0xb4000077538ea830).
+04-21 18:48:13.576 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.576 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.576 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.576 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.577 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.577 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.577 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.577 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.578 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.578 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.578 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.578 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.578 11287 11320 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:13.578 11287 11320 W ReactNativeJNI: UIManagerBinding::~UIManagerBinding() was called (address: 0xb4000077538edbe8).
+04-21 18:48:13.578 11287 11320 W ReactNativeJNI: UIManager::~UIManager() was called (address: 0xb4000076938d6690).
+04-21 18:48:33.213 11647 11693 W ReactNativeJNI: Component property map contains multiple entries for 'borderColor'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.
+04-21 18:48:33.213 11647 11693 W ReactNativeJNI: Component property map contains multiple entries for 'borderStyle'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.
+04-21 18:48:33.311 11647 11696 I ReactNativeJS: Bridgeless mode is enabled
+04-21 18:48:33.344 11647 11696 I ReactNativeJS: Running "main"
+04-21 18:48:33.391 11647 11696 I ReactNativeJS: 等待字体加载...
+04-21 18:48:33.398 11647 11696 I ReactNativeJS: 渲染根布局...
+04-21 18:48:33.400 11647 11696 I ReactNativeJS: 字体加载完成，隐藏启动画面
+04-21 18:48:33.565 11647 11696 I ReactNativeJS: 开始初始化数据库...
+04-21 18:48:33.565 11647 11696 I ReactNativeJS: '环境变量配置:', { DATA_CLEAR: false, shouldClearData: false }
+04-21 18:48:33.565 11647 11696 I ReactNativeJS: 开始创建数据库表...
+04-21 18:48:33.588 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.588 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: categories] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.589 11647 11696 E ReactNativeJS: '加载分类失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.589 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: categories] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.590 11647 11696 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:33.592 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.592 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: categories, stack:
+04-21 18:48:33.592 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.592 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.592 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.592 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.592 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.592 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.592 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.592 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.594 11647 11697 E unknown:ReactNative: console.error: 加载分类失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.594 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: categories, stack:
+04-21 18:48:33.594 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.594 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.594 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.594 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.594 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.594 11647 11697 E unknown:ReactNative: ?anon_0_@1:1467983
+04-21 18:48:33.594 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.594 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.595 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.595 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.596 11647 11696 E ReactNativeJS: '加载交易记录失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.596 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.597 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.597 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: budgets] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.597 11647 11696 E ReactNativeJS: '获取预算记录失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.597 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: budgets] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.598 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.598 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.598 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.598 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.598 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.598 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.598 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.598 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.598 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.598 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.598 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.598 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.598 11647 11696 E ReactNativeJS: '加载财务数据错误:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.598 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.599 11647 11697 E unknown:ReactNative: console.error: 加载交易记录失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.599 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.599 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.599 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.599 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.599 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.599 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.599 11647 11697 E unknown:ReactNative: ?anon_0_@1:1467389
+04-21 18:48:33.599 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.599 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: budgets, stack:
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.600 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.600 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: console.error: 获取预算记录失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: budgets, stack:
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: ?anon_0_@1:1221921
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.600 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.601 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.601 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.601 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.601 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.601 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.601 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.601 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.601 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.601 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.601 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: console.error: 加载财务数据错误: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: ?anon_0_@1:1468436
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.602 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.602 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.602 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.604 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.604 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.604 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.604 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.604 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.604 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.604 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.604 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.604 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.604 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.604 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.604 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.606 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.606 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.607 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.607 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.607 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.607 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.607 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.607 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.607 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.607 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.607 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.607 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.608 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.608 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.609 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.609 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.609 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.609 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.609 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.609 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.609 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.609 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.609 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.609 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.610 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.610 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.612 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.612 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.612 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.612 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.612 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.612 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.612 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.612 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.612 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.612 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.613 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.613 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.613 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.613 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.613 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.613 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.613 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.613 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.613 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.613 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.618 11647 11696 I ReactNativeJS: 创建表: categories
+04-21 18:48:33.630 11647 11696 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:33.633 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.633 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.633 11647 11696 E ReactNativeJS: '加载交易记录失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.633 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.634 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.634 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: budgets] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.635 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.635 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.635 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.635 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.635 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.635 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.635 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.635 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.635 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.635 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.635 11647 11696 E ReactNativeJS: '获取预算记录失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.635 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: budgets] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.636 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.636 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.636 11647 11697 E unknown:ReactNative: console.error: 加载交易记录失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.636 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.636 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.636 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.636 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.636 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.636 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.636 11647 11697 E unknown:ReactNative: ?anon_0_@1:1467389
+04-21 18:48:33.636 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.636 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.637 11647 11696 E ReactNativeJS: '加载财务数据错误:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.637 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.637 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.637 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.638 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.638 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.638 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.638 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: budgets, stack:
+04-21 18:48:33.638 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.638 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.638 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.638 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.638 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.638 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.638 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.638 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.638 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.638 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.639 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.639 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.640 11647 11697 E unknown:ReactNative: console.error: 获取预算记录失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.640 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: budgets, stack:
+04-21 18:48:33.640 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.640 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.640 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.640 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.640 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.640 11647 11697 E unknown:ReactNative: ?anon_0_@1:1221921
+04-21 18:48:33.640 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.640 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.640 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.640 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.641 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.641 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.641 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.641 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.641 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.641 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.641 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.641 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.641 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.641 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.642 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.642 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.644 11647 11697 E unknown:ReactNative: console.error: 加载财务数据错误: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.644 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.644 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.644 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.644 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.644 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.644 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.644 11647 11697 E unknown:ReactNative: ?anon_0_@1:1468436
+04-21 18:48:33.644 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.644 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.646 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.646 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.646 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.646 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.646 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.646 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.646 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.646 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.646 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.646 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.648 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.648 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.648 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.648 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.648 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.648 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.648 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.648 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.648 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.648 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.649 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.649 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.649 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.649 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.649 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.649 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.649 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.649 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.649 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.649 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.652 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.653 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.653 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.653 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.653 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.653 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.653 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.653 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.653 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.653 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.653 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.660 11647 11696 I ReactNativeJS: 创建表: budgets
+04-21 18:48:33.665 11647 11696 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:33.668 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.668 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.668 11647 11696 E ReactNativeJS: '加载交易记录失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.668 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.669 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.669 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.669 11647 11696 E ReactNativeJS: '加载财务数据错误:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.669 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.670 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.670 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.670 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.670 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.670 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.670 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.670 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.670 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.670 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.670 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.670 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.670 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.670 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.670 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.671 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.671 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.671 11647 11697 E unknown:ReactNative: console.error: 加载交易记录失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.671 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.671 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.671 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.671 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.671 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.671 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.671 11647 11697 E unknown:ReactNative: ?anon_0_@1:1467389
+04-21 18:48:33.671 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.671 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.672 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.672 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.673 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.673 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.673 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.673 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.673 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.673 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.673 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.673 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.673 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.673 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.673 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.673 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.674 11647 11696 E ReactNativeJS: '执行查询失败:', { [Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.674 11647 11696 E ReactNativeJS: → Caused by: Error code : no such table: transactions] code: 'ERR_INTERNAL_SQLITE_ERROR' }
+04-21 18:48:33.674 11647 11697 E unknown:ReactNative: console.error: 加载财务数据错误: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.674 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.674 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.674 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.674 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.674 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.674 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.674 11647 11697 E unknown:ReactNative: ?anon_0_@1:1468436
+04-21 18:48:33.674 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.674 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.676 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.676 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.676 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.676 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.676 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.676 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.676 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.676 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.676 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.676 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.676 11647 11696 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:33.678 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.678 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.678 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.678 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.678 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.678 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.678 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.678 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.678 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.678 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.678 11647 11696 I ReactNativeJS: 创建表: transactions
+04-21 18:48:33.680 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.680 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.680 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.680 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.680 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.680 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.680 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.680 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.680 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.680 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.681 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.681 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.681 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.681 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.681 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.681 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.681 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.681 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.681 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.681 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.683 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.683 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.683 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.683 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.683 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.683 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.683 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.683 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.683 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.683 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.684 11647 11697 E unknown:ReactNative: console.error: 执行查询失败: Error: Call to function 'NativeDatabase.prepareAsync' has been rejected.
+04-21 18:48:33.684 11647 11697 E unknown:ReactNative: → Caused by: Error code : no such table: transactions, stack:
+04-21 18:48:33.684 11647 11697 E unknown:ReactNative: _construct@1:77606
+04-21 18:48:33.684 11647 11697 E unknown:ReactNative: Wrapper@1:77260
+04-21 18:48:33.684 11647 11697 E unknown:ReactNative: _callSuper@1:75261
+04-21 18:48:33.684 11647 11697 E unknown:ReactNative: SyntheticError@1:76747
+04-21 18:48:33.684 11647 11697 E unknown:ReactNative: reactConsoleErrorHandler@1:76408
+04-21 18:48:33.684 11647 11697 E unknown:ReactNative: ?anon_0_@1:1207128
+04-21 18:48:33.684 11647 11697 E unknown:ReactNative: asyncGeneratorStep@1:456792
+04-21 18:48:33.684 11647 11697 E unknown:ReactNative: _throw@1:457096
+04-21 18:48:33.685 11647 11696 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:33.697 11647 11696 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:33.699 11647 11696 I ReactNativeJS: 创建表: bank_balances
+04-21 18:48:33.703 11647 11696 I ReactNativeJS: 数据库表创建完成
+04-21 18:48:33.703 11647 11696 I ReactNativeJS: 初始化 repositories...
+04-21 18:48:33.703 11647 11696 I ReactNativeJS: 开始初始化默认数据...
+04-21 18:48:33.704 11647 11696 I ReactNativeJS: 初始化默认类别数据...
+04-21 18:48:33.709 11647 11696 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:33.717 11647 11696 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:33.719 11647 11696 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:33.730 11647 11696 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:33.731 11647 11696 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:33.742 11647 11696 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:33.743 11647 11696 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:33.745 11647 11696 I ReactNativeJS: 默认数据初始化完成
+04-21 18:48:33.745 11647 11696 I ReactNativeJS: 数据库初始化完成
+04-21 18:48:33.745 11647 11696 I ReactNativeJS: 数据库初始化完成
+04-21 18:48:33.749 11647 11696 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:33.754 11647 11696 I ReactNativeJS: 开始获取预算记录...
+04-21 18:48:33.762 11647 11696 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:48:33.778 11647 11647 E unknown:ReactNative: Tried to remove non-existent frame callback
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.793 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.794 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.794 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.794 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.794 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.794 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.794 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.794 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.794 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.794 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.794 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.794 11647 11696 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.796 11647 11702 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_js... dropping Runnable.
+04-21 18:48:33.798 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.798 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.798 11647 11693 E unknown:ReactNative: Tried to remove non-existent frame callback
+04-21 18:48:33.798 11647 11693 W ReactNativeJNI: Scheduler::~Scheduler() was called (address: 0xb4000077538ef030).
+04-21 18:48:33.799 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.799 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.799 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.799 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.800 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.800 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.800 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.800 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.800 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.800 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.800 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.800 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.800 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.800 11647 11693 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:48:33.801 11647 11693 W ReactNativeJNI: UIManagerBinding::~UIManagerBinding() was called (address: 0xb4000077538dbd08).
+04-21 18:48:33.801 11647 11693 W ReactNativeJNI: UIManager::~UIManager() was called (address: 0xb4000076938d6690).
+04-21 18:52:39.646 13432 13599 W ReactNativeJNI: Component property map contains multiple entries for 'borderColor'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.
+04-21 18:52:39.646 13432 13599 W ReactNativeJNI: Component property map contains multiple entries for 'borderStyle'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.
+04-21 18:52:39.868 13432 13652 W ReactNativeJNI: Component property map contains multiple entries for 'borderColor'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.
+04-21 18:52:39.868 13432 13652 W ReactNativeJNI: Component property map contains multiple entries for 'borderStyle'. Ensure all calls to convertRawProp use a consistent prefix, name and suffix.
+04-21 18:52:39.934 13432 13432 W unknown:ReactNative: Packager connection already open, nooping.
+04-21 18:52:40.949 13432 13643 I ReactNativeJS: Bridgeless mode is enabled
+04-21 18:52:41.160 13432 13653 I ReactNativeJS: Running "main"
+04-21 18:52:41.532 13432 13643 I ReactNativeJS: Running "main" with {"rootTag":11,"initialProps":{},"fabric":true}
+04-21 18:52:44.813 13432 13643 I ReactNativeJS: 等待字体和数据库加载...
+04-21 18:52:44.995 13432 13643 I ReactNativeJS: 开始初始化数据库...
+04-21 18:52:45.005 13432 13643 I ReactNativeJS: '环境变量配置:', { DATA_CLEAR: false, shouldClearData: false }
+04-21 18:52:45.006 13432 13643 I ReactNativeJS: 开始创建数据库表...
+04-21 18:52:45.010 13432 13643 I ReactNativeJS: 等待字体和数据库加载...
+04-21 18:52:45.020 13432 13643 I ReactNativeJS: 创建表: categories
+04-21 18:52:45.032 13432 13643 I ReactNativeJS: 创建表: budgets
+04-21 18:52:45.042 13432 13643 I ReactNativeJS: 创建表: transactions
+04-21 18:52:45.052 13432 13643 I ReactNativeJS: 创建表: bank_balances
+04-21 18:52:45.060 13432 13643 I ReactNativeJS: 数据库表创建完成
+04-21 18:52:45.060 13432 13643 I ReactNativeJS: 初始化 repositories...
+04-21 18:52:45.061 13432 13643 I ReactNativeJS: 开始初始化默认数据...
+04-21 18:52:45.065 13432 13643 I ReactNativeJS: 初始化默认类别数据...
+04-21 18:52:45.090 13432 13643 I ReactNativeJS: 默认数据初始化完成
+04-21 18:52:45.091 13432 13643 I ReactNativeJS: 数据库初始化完成
+04-21 18:52:45.093 13432 13643 I ReactNativeJS: 数据库初始化完成
+04-21 18:52:45.094 13432 13643 I ReactNativeJS: 渲染根布局...
+04-21 18:52:45.101 13432 13643 I ReactNativeJS: 字体加载完成，隐藏启动画面
+04-21 18:52:45.590 13432 13643 I ReactNativeJS: 开始获取预算记录...
+04-21 18:52:45.600 13432 13643 I ReactNativeJS: 开始获取预算记录...
+04-21 18:52:45.627 13432 13643 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:52:45.665 13432 13643 I ReactNativeJS: '获取到的预算记录:', []
+04-21 18:52:45.781 13432 13432 E unknown:ReactNative: Tried to remove non-existent frame callback
+04-21 18:52:45.824 13432 13432 E unknown:ReactNative: Tried to remove non-existent frame callback
+04-21 18:52:45.873 13432 13644 W unknown:ReactNative: StatusBarModule: Ignored status bar change, current activity is null.
+04-21 18:52:45.873 13432 13644 W unknown:ReactNative: StatusBarModule: Ignored status bar change, current activity is null.
+04-21 18:52:45.873 13432 13644 W unknown:ReactNative: StatusBarModule: Ignored status bar change, current activity is null.
+04-21 18:52:46.053 13432 13599 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:52:46.054 13432 13599 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:52:46.054 13432 13599 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:52:46.055 13432 13599 E unknown:ReactNative: Tried to remove non-existent frame callback
+04-21 18:52:46.055 13432 13599 W ReactNativeJNI: Scheduler::~Scheduler() was called (address: 0xb4000077538efed0).
+04-21 18:52:46.057 13432 13599 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:52:46.059 13432 13599 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:52:46.059 13432 13599 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:52:46.060 13432 13599 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:52:46.060 13432 13599 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:52:46.060 13432 13599 W unknown:ReactNative: Tried to enqueue runnable on already finished thread: 'v_native... dropping Runnable.
+04-21 18:52:46.060 13432 13599 W unknown:ReactNative: Tried to enqueue runnable on already finished thre
