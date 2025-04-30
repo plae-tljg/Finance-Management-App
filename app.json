@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "finance-manager",
-    "slug": "finance-manager",
+    "name": "Finance Manager",
+    "slug": "finance-manager-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
