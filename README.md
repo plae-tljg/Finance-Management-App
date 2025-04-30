@@ -1,62 +1,97 @@
-# 财务管理助手
+This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
-一个简单易用的个人财务管理应用，帮助您追踪日常收支、管理预算和分类支出。
+# Getting Started
 
-## 主要功能
+> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
 
-### 1. 交易管理
-- 记录日常收入和支出
-- 支持按日期、金额、分类筛选交易记录
-- 查看交易历史记录和统计
+## Step 1: Start Metro
 
-### 2. 预算管理
-- 设置月度预算
-- 按分类设置预算限额
-- 实时监控预算使用情况
-- 预算超支提醒
+First, you will need to run **Metro**, the JavaScript build tool for React Native.
 
-### 3. 分类管理
-- 自定义收入和支出分类
-- 灵活调整分类结构
-- 支持分类图标和颜色设置
+To start the Metro dev server, run the following command from the root of your React Native project:
 
-### 4. 数据可视化
-- 周度支出趋势图表
-- 分类支出占比分析
-- 预算执行情况图表
+```sh
+# Using npm
+npm start
 
-### 5. 数据安全
-- 本地数据存储
-- 数据备份和恢复
-- 隐私保护
+# OR using Yarn
+yarn start
+```
 
-## 使用指南
+## Step 2: Build and run your app
 
-### 添加交易
-1. 点击底部导航栏的"+"按钮
-2. 选择交易类型（收入/支出）
-3. 输入金额和选择分类
-4. 添加备注（可选）
-5. 点击保存
+With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
 
-### 设置预算
-1. 进入"设置"页面
-2. 选择"预算管理"
-3. 点击"添加预算"
-4. 设置预算金额和分类
-5. 点击保存
+### Android
 
-### 管理分类
-1. 进入"设置"页面
-2. 选择"分类管理"
-3. 点击"添加分类"
-4. 设置分类名称、类型和图标
-5. 点击保存
+```sh
+# Using npm
+npm run android
 
-## 隐私说明
-- 所有数据仅存储在您的设备本地
-- 不会收集任何个人信息
-- 不会上传任何数据到服务器
+# OR using Yarn
+yarn android
+```
 
-## 支持
-Mentally Support
+### iOS
+
+For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+
+The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+
+```sh
+bundle install
+```
+
+Then, and every time you update your native dependencies, run:
+
+```sh
+bundle exec pod install
+```
+
+For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+
+```sh
+# Using npm
+npm run ios
+
+# OR using Yarn
+yarn ios
+```
+
+If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+
+This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+
+## Step 3: Modify your app
+
+Now that you have successfully run the app, let's make changes!
+
+Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+
+When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+
+- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
+- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+
+## Congratulations! :tada:
+
+You've successfully run and modified your React Native App. :partying_face:
+
+### Now what?
+
+- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
+- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+
+# Troubleshooting
+
+If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+
+# Learn More
+
+To learn more about React Native, take a look at the following resources:
+
+- [React Native Website](https://reactnative.dev) - learn more about React Native.
+- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
+- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
+- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
+- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
