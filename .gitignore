@@ -131,6 +131,7 @@ yarn-error.log*
 
 # Database
 *.db
+!FinanceManager.db
 *.sqlite
 *.sqlite3
 
