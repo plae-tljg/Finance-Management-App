@@ -2,19 +2,24 @@
 
 一个简单易用的个人财务管理应用，帮助您追踪日常收支、管理预算和分类支出。
 
-> **重要提示**：项目根目录下的 `FinanceManager.db` 文件是推荐的数据库文件。该文件经过手动优化，修复了早期自动生成的数据库文件中存在的不适当的唯一约束问题。建议使用此文件以确保应用正常运行。
-
 ## 界面展示
 
 ### 主页界面
-<img src="assets/gui_img/homepage.jpg" width="300" alt="主页界面">
+<table>
+<tr>
+<td><img src="assets/gui_img/homepage_new.jpg" width="280" alt="主页界面"></td>
+<td><img src="assets/gui_img/detail_page_new.jpg" width="280" alt="第二页1界面"></td>
+</tr>
+</table>
 
-### 数据库管理
-<img src="assets/gui_img/sql1.jpg" width="300" alt="数据库管理">
-<img src="assets/gui_img/sql2.jpg" width="300" alt="数据库查询">
-
-### 调试界面
-<img src="assets/gui_img/debug.jpg" width="300" alt="调试界面">
+### 调试界面和数据库管理
+<table>
+<tr>
+<td><img src="assets/gui_img/debug.jpg" width="250" alt="调试界面"></td>
+<td><img src="assets/gui_img/sql1.jpg" width="250" alt="数据库管理"></td>
+<td><img src="assets/gui_img/sql2.jpg" width="250" alt="数据库查询"></td>
+</tr>
+</table>
 
 ## 主要功能
 
