@@ -11,9 +11,14 @@ import { formatCurrency } from '@/utils/format';
 interface TransactionItemProps {
   transaction: Transaction;
   onDelete: () => void;
+  showActions?: boolean; // 添加控制是否显示操作按钮的属性
 }
 
-export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, onDelete }) => {
+export const TransactionItem: React.FC<TransactionItemProps> = ({ 
+  transaction, 
+  onDelete, 
+  showActions = true 
+}) => {
   const { databaseService } = useDatabaseSetup();
   const transactionService = useTransactionService(databaseService);
   const categoryService = useCategoryService(databaseService);
@@ -93,20 +98,22 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({ transaction, o
           </Text>
         </View>
       </View>
-      <View style={styles.actionButtons}>
-        <TouchableOpacity 
-          style={[styles.actionButton, styles.editButton]}
-          onPress={handlePress}
-        >
-          <Text style={styles.actionButtonText}>编辑</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.actionButton, styles.deleteButton]}
-          onPress={handleDelete}
-        >
-          <Text style={styles.actionButtonText}>删除</Text>
-        </TouchableOpacity>
-      </View>
+      {showActions && (
+        <View style={styles.actionButtons}>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.editButton]}
+            onPress={handlePress}
+          >
+            <Text style={styles.actionButtonText}>编辑</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.actionButton, styles.deleteButton]}
+            onPress={handleDelete}
+          >
+            <Text style={styles.actionButtonText}>删除</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </TouchableOpacity>
   );
 };

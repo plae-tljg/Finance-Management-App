@@ -12,6 +12,7 @@ interface TransactionListProps {
   onRefresh: () => void;
   onDelete: (id: number) => void;
   title?: string; // 添加可选的标题属性
+  fullScreen?: boolean; // 添加全屏模式属性
 }
 
 export function TransactionList({ 
@@ -20,7 +21,8 @@ export function TransactionList({
   isRefreshing, 
   onRefresh,
   onDelete,
-  title
+  title,
+  fullScreen = false
 }: TransactionListProps) {
   
   const handleDelete = React.useCallback(async (id: number) => {
@@ -38,7 +40,7 @@ export function TransactionList({
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, fullScreen && { height: '100%' }]}>
       {title && (
         <View style={styles.header}>
           <Text style={styles.title}>{title}</Text>
@@ -73,7 +75,7 @@ export function TransactionList({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: 300, // 默认高度，在组件中动态设置
   },
   header: {
     padding: 16,

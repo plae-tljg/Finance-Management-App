@@ -82,13 +82,13 @@ export const TransactionQueries = {
   
   FIND_BY_ID: 'SELECT * FROM transactions WHERE id = ?',
   
-  FIND_ALL: 'SELECT * FROM transactions',
+  FIND_ALL: 'SELECT * FROM transactions ORDER BY date DESC',
   
-  FIND_BY_CATEGORY_ID: 'SELECT * FROM transactions WHERE categoryId = ?',
+  FIND_BY_CATEGORY_ID: 'SELECT * FROM transactions WHERE categoryId = ? ORDER BY date DESC',
   
-  FIND_BY_BUDGET_ID: 'SELECT * FROM transactions WHERE budgetId = ?',
+  FIND_BY_BUDGET_ID: 'SELECT * FROM transactions WHERE budgetId = ? ORDER BY date DESC',
   
-  FIND_BY_DATE_RANGE: 'SELECT * FROM transactions WHERE date BETWEEN ? AND ?',
+  FIND_BY_DATE_RANGE: 'SELECT * FROM transactions WHERE date BETWEEN ? AND ? ORDER BY date DESC',
   
   COUNT_ALL: 'SELECT COUNT(*) as count FROM transactions',
 

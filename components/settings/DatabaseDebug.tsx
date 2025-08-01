@@ -179,7 +179,7 @@ export function DatabaseDebug() {
           <Card style={styles.card}>
             <Text variant="subtitle" style={styles.subtitle}>{selectedTable} 表数据</Text>
             <View style={styles.tableContainer}>
-              {tableData[selectedTable]?.slice(0, 3).map((row, index) => (
+              {tableData[selectedTable]?.map((row, index) => (
                 <View key={index} style={styles.row}>
                   {Object.entries(row).map(([key, value]) => (
                     <View key={key} style={styles.cell}>
@@ -189,9 +189,6 @@ export function DatabaseDebug() {
                   ))}
                 </View>
               ))}
-              {tableData[selectedTable]?.length > 3 && (
-                <Text style={styles.moreText}>... 还有 {tableData[selectedTable].length - 3} 条记录</Text>
-              )}
             </View>
           </Card>
         </View>
@@ -202,7 +199,6 @@ export function DatabaseDebug() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 8,
   },
   section: {

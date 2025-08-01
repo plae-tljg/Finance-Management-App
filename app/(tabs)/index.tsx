@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/components/base/Text';
 import { FinanceOverview } from '@/components/finance/summary/FinanceOverview';
@@ -60,8 +60,10 @@ export default function DashboardScreen() {
       <View style={styles.header}>
         <Text variant="title">财务概览</Text>
       </View>
-      <FinanceOverview isReady={isReady} />
-      {isReady && <RecentTransactions isReady={isReady} />}
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <FinanceOverview isReady={isReady} />
+        {isReady && <RecentTransactions isReady={isReady} />}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -75,6 +77,9 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
+  },
+  scrollView: {
+    flex: 1,
   },
   errorContainer: {
     flex: 1,

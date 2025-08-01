@@ -7,6 +7,7 @@ import { TransactionList } from '@/components/finance/transactions/TransactionLi
 import type { Transaction } from '@/services/database/schemas/Transaction';
 import { useFocusEffect } from '@react-navigation/native';
 import { Stack, useLocalSearchParams } from 'expo-router';
+import { SafeAreaView, StyleSheet } from 'react-native';
 
 export default function TransactionsScreen() {
   const params = useLocalSearchParams();
@@ -85,7 +86,7 @@ export default function TransactionsScreen() {
   }
 
   return (
-    <>
+    <SafeAreaView style={styles.container}>
       <Stack.Screen
         options={{
           title: params.year && params.month 
@@ -104,7 +105,15 @@ export default function TransactionsScreen() {
           ? `${currentYear}年${currentMonth}月交易记录`
           : '所有交易记录'
         }
+        fullScreen={true}
       />
-    </>
+    </SafeAreaView>
   );
-} 
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+}); 

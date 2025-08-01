@@ -79,10 +79,13 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         console.log('数据库未初始化，跳过加载交易记录');
         return;
       }
-      const transactions = await transactionService.getTransactions();
+      setIsLoadingTransactions(true);
+      const transactions = await transactionService.getTransactionsWithCategory();
       setTransactions(transactions);
     } catch (error) {
       console.error('加载交易记录失败:', error);
+    } finally {
+      setIsLoadingTransactions(false);
     }
   };
 
