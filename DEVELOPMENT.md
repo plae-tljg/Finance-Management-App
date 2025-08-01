@@ -34,6 +34,17 @@ finance-manager/
 
 ## 代码组织原则
 
+### common commands
+
+```bash
+npx expo prebuild
+npm run android
+
+cd android
+./gradlew clean
+./gradlew assembleRelease
+
+```
 ### 1. 组件设计
 - 遵循单一职责原则
 - 使用组合而非继承

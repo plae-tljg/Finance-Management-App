@@ -106,6 +106,14 @@ export class BudgetRepository implements BaseRepository<Budget> {
     return result.rows._array;
   }
 
+  async findByCategoryAndMonth(categoryId: number, month: string): Promise<Budget[]> {
+    const result = await this.db.executeQuery<Budget>(
+      BudgetQueries.FIND_BY_CATEGORY_AND_MONTH,
+      [categoryId, month]
+    );
+    return result.rows._array;
+  }
+
   async findByDateRange(startDate: string, endDate: string): Promise<Budget[]> {
     const result = await this.db.executeQuery<Budget>(
       BudgetQueries.FIND_BY_DATE_RANGE,

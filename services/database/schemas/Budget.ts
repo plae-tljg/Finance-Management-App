@@ -83,6 +83,8 @@ export const BudgetQueries = {
 
   FIND_BY_CATEGORY_ID: 'SELECT * FROM budgets WHERE categoryId = ? ORDER BY month DESC',
 
+  FIND_BY_CATEGORY_AND_MONTH: 'SELECT * FROM budgets WHERE categoryId = ? AND month = ? ORDER BY id ASC',
+
   FIND_BY_DATE_RANGE: `
     SELECT * FROM budgets 
     WHERE startDate <= ? AND endDate >= ?

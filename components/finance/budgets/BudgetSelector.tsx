@@ -10,9 +10,10 @@ interface BudgetSelectorProps {
   categoryId: number;
   onSelect: (budget: { id: number; name: string } | null) => void;
   selectedId?: number;
+  date?: Date; // 添加可选的日期参数
 }
 
-export function BudgetSelector({ categoryId, onSelect, selectedId }: BudgetSelectorProps) {
+export function BudgetSelector({ categoryId, onSelect, selectedId, date }: BudgetSelectorProps) {
   const { isReady, error, databaseService, retry } = useDatabaseSetup();
   const [budgets, setBudgets] = React.useState<any[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
@@ -25,14 +26,25 @@ export function BudgetSelector({ categoryId, onSelect, selectedId }: BudgetSelec
   React.useEffect(() => {
     if (!isReady || !budgetService || !categoryId) return;
     loadBudgets();
-  }, [isReady, budgetService, categoryId]);
+  }, [isReady, budgetService, categoryId, date]); // 添加 date 到依赖数组
 
   async function loadBudgets() {
     if (!budgetService) return;
     
     try {
       setIsLoading(true);
-      const data = await budgetService.getBudgetsByCategory(categoryId);
+      let data;
+      
+      if (date) {
+        // 如果提供了日期，按类别和月份获取预算
+        const year = date.getFullYear();
+        const month = date.getMonth() + 1; // getMonth() 返回 0-11
+        data = await budgetService.getBudgetsByCategoryAndMonth(categoryId, year, month);
+      } else {
+        // 如果没有提供日期，按类别获取所有预算（保持向后兼容）
+        data = await budgetService.getBudgetsByCategory(categoryId);
+      }
+      
       setBudgets(data);
     } catch (err) {
       console.error('加载预算失败:', err);

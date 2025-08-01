@@ -59,6 +59,8 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
     }
     if (selectedDate) {
       setDate(selectedDate);
+      // 当日期改变时，清除已选择的预算，因为预算可能与新日期不匹配
+      setSelectedBudget(null);
     }
   };
 
@@ -201,6 +203,7 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
             categoryId={selectedCategory}
             onSelect={(budget) => setSelectedBudget(budget?.id || null)}
             selectedId={selectedBudget || undefined}
+            date={date}
           />
         </View>
       )}

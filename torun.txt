@@ -1,0 +1,5 @@
+npx expo prebuild
+npm run android
+cd android
+./gradlew clean
+./gradlew assembleRelease

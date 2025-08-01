@@ -35,6 +35,11 @@ export function useBudgetService(databaseService: DatabaseService) {
     return await repository.findByCategoryId(categoryId);
   };
 
+  const getBudgetsByCategoryAndMonth = async (categoryId: number, year: number, month: number) => {
+    const monthStr = `${year}-${month.toString().padStart(2, '0')}`;
+    return await repository.findByCategoryAndMonth(categoryId, monthStr);
+  };
+
   const getBudgetsByDateRange = async (startDate: string, endDate: string) => {
     return await repository.findByDateRange(startDate, endDate);
   };
@@ -80,6 +85,7 @@ export function useBudgetService(databaseService: DatabaseService) {
     updateBudget,
     deleteBudget,
     getBudgetsByCategory,
+    getBudgetsByCategoryAndMonth,
     getBudgetsByDateRange,
     getBudgetsByPeriod,
     getActiveBudgets,
