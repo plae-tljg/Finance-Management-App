@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/base/Text';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import { useBankBalanceService } from '@/services/business/BankBalanceService';
 import { useTransactionService } from '@/services/business/TransactionService';
@@ -21,6 +21,7 @@ interface CategorySummary {
 
 export default function MonthlySummaryScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const { databaseService, isReady } = useDatabaseSetup();
   const [bankBalance, setBankBalance] = useState<BankBalance | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -29,9 +30,9 @@ export default function MonthlySummaryScreen() {
   const [categorySummaries, setCategorySummaries] = useState<CategorySummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1;
+  // 从URL参数获取年月，如果没有则使用当前日期
+  const currentYear = params.year ? parseInt(params.year as string) : new Date().getFullYear();
+  const currentMonth = params.month ? parseInt(params.month as string) : new Date().getMonth() + 1;
 
   const bankBalanceService = React.useMemo(
     () => databaseService ? useBankBalanceService(databaseService) : null,
@@ -130,92 +131,96 @@ export default function MonthlySummaryScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text variant="title">{currentYear}年{currentMonth}月财务概览</Text>
-      </View>
-
-      <ScrollView style={styles.content}>
-        <View style={styles.summaryCard}>
-          <Text style={styles.sectionTitle}>月度总览</Text>
-          <View style={styles.summaryItem}>
-            <Text style={styles.label}>期初余额</Text>
-            <Text style={styles.value}>¥{bankBalance?.openingBalance.toFixed(2) || '0.00'}</Text>
-          </View>
-
-          <View style={styles.summaryItem}>
-            <Text style={styles.label}>总收入</Text>
-            <Text style={[styles.value, styles.income]}>¥{totalIncome.toFixed(2)}</Text>
-          </View>
-
-          <View style={styles.summaryItem}>
-            <Text style={styles.label}>总支出</Text>
-            <Text style={[styles.value, styles.expense]}>¥{totalExpense.toFixed(2)}</Text>
-          </View>
-
-          <View style={styles.summaryItem}>
-            <Text style={styles.label}>预期期末余额</Text>
-            <Text style={styles.value}>¥{expectedClosingBalance.toFixed(2)}</Text>
-          </View>
-
-          <View style={styles.summaryItem}>
-            <Text style={styles.label}>实际期末余额</Text>
-            <Text style={styles.value}>¥{bankBalance?.closingBalance.toFixed(2) || '0.00'}</Text>
-          </View>
-
-          <View style={styles.summaryItem}>
-            <Text style={styles.label}>差额</Text>
-            <Text style={[
-              styles.value,
-              Math.abs(expectedClosingBalance - (bankBalance?.closingBalance || 0)) > 0.01 ? styles.warning : null
-            ]}>
-              ¥{(expectedClosingBalance - (bankBalance?.closingBalance || 0)).toFixed(2)}
-            </Text>
-          </View>
-        </View>
-
-        <View style={styles.summaryCard}>
-          <Text style={styles.sectionTitle}>类别支出与预算</Text>
-          {categorySummaries.map((summary, index) => (
-            <View key={summary.category.id} style={[
-              styles.categoryItem,
-              index === categorySummaries.length - 1 && styles.lastCategoryItem
-            ]}>
-              <View style={styles.categoryHeader}>
-                <Text style={styles.categoryName}>{summary.category.name}</Text>
-                <Text style={[
-                  styles.remaining,
-                  summary.remaining < 0 ? styles.overBudget : null
-                ]}>
-                  {summary.remaining >= 0 ? '剩余' : '超支'} ¥{Math.abs(summary.remaining).toFixed(2)}
-                </Text>
-              </View>
-              
-              <View style={styles.progressBar}>
-                <View 
-                  style={[
-                    styles.progressFill,
-                    { 
-                      width: `${Math.min(100, (summary.spent / summary.budget) * 100)}%`,
-                      backgroundColor: summary.spent > summary.budget ? '#F44336' : '#4CAF50'
-                    }
-                  ]} 
-                />
-              </View>
-
-              <View style={styles.categoryDetails}>
-                <Text style={styles.detailText}>已支出: ¥{summary.spent.toFixed(2)}</Text>
-                <Text style={styles.detailText}>预算: ¥{summary.budget.toFixed(2)}</Text>
-              </View>
+    <>
+      <Stack.Screen
+        options={{
+          title: `${currentYear}年${currentMonth}月财务概览`,
+          headerBackTitle: '返回',
+        }}
+      />
+      <View style={styles.container}>
+        <ScrollView style={styles.content}>
+          <View style={styles.summaryCard}>
+            <Text style={styles.sectionTitle}>月度总览</Text>
+            <View style={styles.summaryItem}>
+              <Text style={styles.label}>期初余额</Text>
+              <Text style={styles.value}>¥{bankBalance?.openingBalance.toFixed(2) || '0.00'}</Text>
             </View>
-          ))}
-        </View>
-      </ScrollView>
 
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backButtonText}>返回</Text>
-      </TouchableOpacity>
-    </View>
+            <View style={styles.summaryItem}>
+              <Text style={styles.label}>总收入</Text>
+              <Text style={[styles.value, styles.income]}>¥{totalIncome.toFixed(2)}</Text>
+            </View>
+
+            <View style={styles.summaryItem}>
+              <Text style={styles.label}>总支出</Text>
+              <Text style={[styles.value, styles.expense]}>¥{totalExpense.toFixed(2)}</Text>
+            </View>
+
+            <View style={styles.summaryItem}>
+              <Text style={styles.label}>预期期末余额</Text>
+              <Text style={styles.value}>¥{expectedClosingBalance.toFixed(2)}</Text>
+            </View>
+
+            <View style={styles.summaryItem}>
+              <Text style={styles.label}>实际期末余额</Text>
+              <Text style={styles.value}>¥{bankBalance?.closingBalance.toFixed(2) || '0.00'}</Text>
+            </View>
+
+            <View style={styles.summaryItem}>
+              <Text style={styles.label}>差额</Text>
+              <Text style={[
+                styles.value,
+                Math.abs(expectedClosingBalance - (bankBalance?.closingBalance || 0)) > 0.01 ? styles.warning : null
+              ]}>
+                ¥{(expectedClosingBalance - (bankBalance?.closingBalance || 0)).toFixed(2)}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.summaryCard}>
+            <Text style={styles.sectionTitle}>类别支出与预算</Text>
+            {categorySummaries.map((summary, index) => (
+              <View key={summary.category.id} style={[
+                styles.categoryItem,
+                index === categorySummaries.length - 1 && styles.lastCategoryItem
+              ]}>
+                <View style={styles.categoryHeader}>
+                  <Text style={styles.categoryName}>{summary.category.name}</Text>
+                  <Text style={[
+                    styles.remaining,
+                    summary.remaining < 0 ? styles.overBudget : null
+                  ]}>
+                    {summary.remaining >= 0 ? '剩余' : '超支'} ¥{Math.abs(summary.remaining).toFixed(2)}
+                  </Text>
+                </View>
+                
+                <View style={styles.progressBar}>
+                  <View 
+                    style={[
+                      styles.progressFill,
+                      { 
+                        width: `${Math.min(100, (summary.spent / summary.budget) * 100)}%`,
+                        backgroundColor: summary.spent > summary.budget ? '#F44336' : '#4CAF50'
+                      }
+                    ]} 
+                  />
+                </View>
+
+                <View style={styles.categoryDetails}>
+                  <Text style={styles.detailText}>已支出: ¥{summary.spent.toFixed(2)}</Text>
+                  <Text style={styles.detailText}>预算: ¥{summary.budget.toFixed(2)}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>返回</Text>
+        </TouchableOpacity>
+      </View>
+    </>
   );
 }
 

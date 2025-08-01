@@ -61,7 +61,7 @@ export default function RootLayout() {
               <Stack.Screen name="budget/index" options={{ headerShown: false }} />
               <Stack.Screen name="categories" options={{ headerShown: false }} />
             </Stack>
-            <StatusBar style="auto" />
+            <StatusBar style="dark" translucent={true} backgroundColor="transparent" />
           </ThemeProvider>
         </FinanceProvider>
       </SQLiteProvider>

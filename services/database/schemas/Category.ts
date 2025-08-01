@@ -43,6 +43,22 @@ export const DEFAULT_CATEGORIES: Omit<Category, 'id' | 'createdAt' | 'updatedAt'
     sortOrder: 1,
     isDefault: true,
     isActive: true
+  },
+  {
+    name: '家用',
+    icon: '🧓',
+    type: 'expense',
+    sortOrder: 5,
+    isDefault: true,
+    isActive: true
+  },
+  {
+    name: '账单',
+    icon: '🧾',
+    type: 'expense',
+    sortOrder: 6,
+    isDefault: true,
+    isActive: true
   }
 ];
 

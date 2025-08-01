@@ -234,23 +234,23 @@ export function DatabaseExport() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
-    margin: 16,
+    padding: 12,
+    margin: 8,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: 8,
   },
   button: {
     flex: 1,
-    padding: 12,
-    borderRadius: 8,
+    padding: 10,
+    borderRadius: 6,
     alignItems: 'center',
   },
   exportButton: {
@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
 }); 

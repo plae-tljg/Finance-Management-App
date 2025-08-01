@@ -61,7 +61,7 @@ export function CategorySelector({ onSelect, selectedId }: CategorySelectorProps
       <View style={{
         flexDirection: 'row',
         flexWrap: 'wrap',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
       }}>
         {categories.map((category) => (
           <TouchableOpacity
@@ -80,6 +80,12 @@ export function CategorySelector({ onSelect, selectedId }: CategorySelectorProps
             </Text>
           </TouchableOpacity>
         ))}
+        {/* 添加空的占位符来确保最后一行对齐 */}
+        {categories.length % 3 !== 0 && 
+          Array.from({ length: 3 - (categories.length % 3) }).map((_, index) => (
+            <View key={`placeholder-${index}`} style={styles.placeholderItem} />
+          ))
+        }
       </View>
     </ScrollView>
   );
@@ -90,23 +96,28 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    padding: 8,
+    padding: 4,
   },
   categoryItem: {
-    padding: 12,
+    padding: 6,
     backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-    width: '49%',
-    marginBottom: 8,
+    borderRadius: 6,
+    width: '32%',
+    marginBottom: 6,
   },
   selectedCategory: {
     backgroundColor: '#007AFF',
   },
   categoryName: {
-    fontSize: 16,
+    fontSize: 12,
     color: '#000000',
+    textAlign: 'center',
   },
   selectedCategoryName: {
     color: '#FFFFFF',
+  },
+  placeholderItem: {
+    width: '32%',
+    marginBottom: 6,
   },
 }); 

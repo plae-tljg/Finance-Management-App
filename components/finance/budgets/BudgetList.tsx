@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { BudgetItem } from './BudgetItem';
 import type { BudgetWithCategory } from '@/services/database/repositories/BudgetRepository';
 
@@ -10,6 +11,7 @@ interface BudgetListProps {
   onRefresh: () => void;
   onDelete: (id: number) => void;
   onEdit: (id: number) => void;
+  title?: string; // 添加可选的标题属性
 }
 
 export function BudgetList({ 
@@ -18,7 +20,8 @@ export function BudgetList({
   isRefreshing, 
   onRefresh,
   onDelete,
-  onEdit
+  onEdit,
+  title
 }: BudgetListProps) {
   const handleDelete = React.useCallback(async (id: number) => {
     await onDelete(id);
@@ -28,15 +31,19 @@ export function BudgetList({
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Text>加载中...</Text>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>预算列表</Text>
+    <SafeAreaView style={styles.container}>
+      {title && (
+        <View style={styles.header}>
+          <Text style={styles.title}>{title}</Text>
+        </View>
+      )}
       <FlatList
         data={budgets}
         renderItem={({ item }) => (
@@ -62,7 +69,7 @@ export function BudgetList({
           </View>
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -70,16 +77,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+  },
+  header: {
     padding: 16,
+    backgroundColor: '#f8f9fa',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e9ecef',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
-    color: '#000000',
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
   },
   list: {
     flexGrow: 1,
+    padding: 16,
   },
   emptyContainer: {
     flex: 1,

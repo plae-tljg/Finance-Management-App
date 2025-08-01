@@ -1,5 +1,4 @@
 import { databaseService } from './DatabaseService';
-import { DATABASE_CONFIG, MIGRATIONS } from './config';
 import { CategoryRepository } from './repositories/CategoryRepository';
 import { BudgetRepository } from './repositories/BudgetRepository';
 import { TransactionRepository } from './repositories/TransactionRepository';

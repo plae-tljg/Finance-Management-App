@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/components/base/Text';
 import { FinanceOverview } from '@/components/finance/summary/FinanceOverview';
 import { RecentTransactions } from '@/components/finance/transactions/RecentTransactions';

@@ -1,5 +1,6 @@
 import { BudgetRepository } from '../database/repositories/BudgetRepository';
 import type { Budget } from '../database/schemas/Budget';
+import type { BudgetWithCategory } from '../database/repositories/BudgetRepository';
 import { DatabaseService } from '../database/DatabaseService';
 
 export function useBudgetService(databaseService: DatabaseService) {
@@ -63,6 +64,11 @@ export function useBudgetService(databaseService: DatabaseService) {
     return await repository.findByMonth(monthStr);
   };
 
+  const getBudgetsByMonthWithCategory = async (year: number, month: number): Promise<BudgetWithCategory[]> => {
+    const monthStr = `${year}-${month.toString().padStart(2, '0')}`;
+    return await repository.findByMonthWithCategory(monthStr);
+  };
+
   const getBudgetWithCategory = async (id: number): Promise<Budget | null> => {
     return await repository.findByIdWithCategory(id);
   };
@@ -79,6 +85,7 @@ export function useBudgetService(databaseService: DatabaseService) {
     getActiveBudgets,
     getBudgetsWithCategory,
     getBudgetsByMonth,
+    getBudgetsByMonthWithCategory,
     getBudgetWithCategory
   };
 } 

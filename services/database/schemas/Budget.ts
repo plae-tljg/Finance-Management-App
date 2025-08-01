@@ -53,8 +53,7 @@ export const BudgetQueries = {
       month TEXT NOT NULL,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (categoryId) REFERENCES categories(id),
-      UNIQUE(categoryId, month)
+      FOREIGN KEY (categoryId) REFERENCES categories(id)
     )
   `,
 
@@ -95,6 +94,14 @@ export const BudgetQueries = {
     SELECT * FROM budgets 
     WHERE month = ?
     ORDER BY categoryId ASC
+  `,
+
+  FIND_BY_MONTH_WITH_CATEGORY: `
+    SELECT b.*, c.name as categoryName, c.type as categoryType
+    FROM budgets b
+    LEFT JOIN categories c ON b.categoryId = c.id
+    WHERE b.month = ?
+    ORDER BY b.categoryId ASC
   `,
 
   FIND_ACTIVE: `

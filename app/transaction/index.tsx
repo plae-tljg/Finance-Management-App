@@ -6,13 +6,18 @@ import { ErrorView } from '@/components/base/ErrorView';
 import { TransactionList } from '@/components/finance/transactions/TransactionList';
 import type { Transaction } from '@/services/database/schemas/Transaction';
 import { useFocusEffect } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useLocalSearchParams } from 'expo-router';
 
 export default function TransactionsScreen() {
+  const params = useLocalSearchParams();
   const { isReady, error, databaseService, retry } = useDatabaseSetup();
   const [transactions, setTransactions] = React.useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+  // 从URL参数获取年月，如果没有则使用当前日期
+  const currentYear = params.year ? parseInt(params.year as string) : new Date().getFullYear();
+  const currentMonth = params.month ? parseInt(params.month as string) : new Date().getMonth() + 1;
 
   const transactionService = React.useMemo(
     () => databaseService ? useTransactionService(databaseService) : null,
@@ -23,7 +28,7 @@ export default function TransactionsScreen() {
   useFocusEffect(
     React.useCallback(() => {
       loadTransactions();
-    }, [])
+    }, [currentYear, currentMonth])
   );
 
   const loadTransactions = React.useCallback(async () => {
@@ -31,14 +36,17 @@ export default function TransactionsScreen() {
     
     try {
       setIsLoading(true);
-      const data = await transactionService.getTransactions();
+      // 如果URL参数中有年月，则按月份过滤，否则获取所有交易
+      const data = params.year && params.month 
+        ? await transactionService.getTransactionsByMonth(currentYear, currentMonth)
+        : await transactionService.getTransactions();
       setTransactions(data);
     } catch (err) {
       console.error('加载交易失败:', err);
     } finally {
       setIsLoading(false);
     }
-  }, [transactionService]);
+  }, [transactionService, currentYear, currentMonth, params.year, params.month]);
 
   const onRefresh = React.useCallback(async () => {
     if (!transactionService) return;
@@ -80,7 +88,10 @@ export default function TransactionsScreen() {
     <>
       <Stack.Screen
         options={{
-          title: '交易记录',
+          title: params.year && params.month 
+            ? `${currentYear}年${currentMonth}月交易记录`
+            : '交易记录',
+          headerBackTitle: '返回',
         }}
       />
       <TransactionList
@@ -89,6 +100,10 @@ export default function TransactionsScreen() {
         isRefreshing={isRefreshing}
         onRefresh={onRefresh}
         onDelete={handleDelete}
+        title={params.year && params.month 
+          ? `${currentYear}年${currentMonth}月交易记录`
+          : '所有交易记录'
+        }
       />
     </>
   );

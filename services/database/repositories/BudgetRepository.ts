@@ -130,6 +130,14 @@ export class BudgetRepository implements BaseRepository<Budget> {
     return result.rows._array;
   }
 
+  async findByMonthWithCategory(month: string): Promise<BudgetWithCategory[]> {
+    const result = await this.db.executeQuery<BudgetWithCategory>(
+      BudgetQueries.FIND_BY_MONTH_WITH_CATEGORY,
+      [month]
+    );
+    return result.rows._array;
+  }
+
   async getActiveBudgets(date: string): Promise<Budget[]> {
     const result = await this.db.executeQuery<Budget>(
       BudgetQueries.FIND_ACTIVE,

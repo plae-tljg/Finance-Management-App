@@ -87,28 +87,32 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
   return (
     <View style={styles.content}>
       <View style={styles.card}>
-        <Text style={styles.label}>预算名称</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="输入预算名称"
-          placeholderTextColor="#666"
-          value={name}
-          onChangeText={setName}
-        />
+        <View style={styles.row}>
+          <Text style={styles.label}>预算名称</Text>
+          <TextInput
+            style={[styles.input, styles.nameInput]}
+            placeholder="输入预算名称"
+            placeholderTextColor="#666"
+            value={name}
+            onChangeText={setName}
+          />
+        </View>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.label}>金额</Text>
         <View style={styles.row}>
-          <Text style={styles.currency}>¥</Text>
-          <TextInput
-            style={[styles.input, styles.amountInput]}
-            keyboardType="numeric"
-            placeholder="0.00"
-            placeholderTextColor="#666"
-            value={amount}
-            onChangeText={setAmount}
-          />
+          <Text style={styles.label}>金额</Text>
+          <View style={styles.amountContainer}>
+            <Text style={styles.currency}>¥</Text>
+            <TextInput
+              style={[styles.input, styles.amountInput]}
+              keyboardType="numeric"
+              placeholder="0.00"
+              placeholderTextColor="#666"
+              value={amount}
+              onChangeText={setAmount}
+            />
+          </View>
         </View>
       </View>
 
@@ -161,59 +165,75 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-    padding: 16,
+    padding: 12,
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 16,
+    borderRadius: 6,
+    padding: 12,
+    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 2,
+    elevation: 2,
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
-    marginBottom: 8,
     color: '#000',
   },
   input: {
-    height: 40,
+    height: 36,
     borderWidth: 1,
     borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    fontSize: 16,
+    borderRadius: 6,
+    paddingHorizontal: 10,
+    fontSize: 14,
     color: '#000',
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   currency: {
-    fontSize: 18,
-    marginRight: 8,
+    fontSize: 16,
+    marginRight: 6,
     color: '#000',
   },
   amountInput: {
     flex: 1,
+    borderWidth: 0,
+    paddingHorizontal: 0,
+  },
+  nameInput: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  amountContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginLeft: 12,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 6,
+    paddingHorizontal: 10,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    gap: 6,
   },
   periodButton: {
-    padding: 8,
-    borderRadius: 8,
+    padding: 6,
+    borderRadius: 6,
     backgroundColor: '#f5f5f5',
-    minWidth: 60,
+    minWidth: 50,
     alignItems: 'center',
   },
   activePeriodButton: {
@@ -221,23 +241,24 @@ const styles = StyleSheet.create({
   },
   periodButtonText: {
     color: '#000',
+    fontSize: 12,
   },
   activePeriodButtonText: {
     color: '#fff',
   },
   button: {
     backgroundColor: '#007AFF',
-    borderRadius: 8,
-    padding: 16,
+    borderRadius: 6,
+    padding: 12,
     alignItems: 'center',
-    marginTop: 16,
+    marginTop: 12,
   },
   disabledButton: {
     backgroundColor: '#999',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
   },
   loadingContainer: {

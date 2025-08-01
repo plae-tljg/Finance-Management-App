@@ -97,31 +97,31 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    padding: 8, // xs spacing
+    padding: 4,
   },
   budgetItem: {
-    padding: 12, // sm spacing
-    backgroundColor: '#FFFFFF', // background color
-    borderRadius: 8,
+    padding: 8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 6,
     width: '49%',
-    marginBottom: 8, // xs spacing
+    marginBottom: 6,
   },
   selectedBudget: {
-    backgroundColor: '#007AFF', // primary color
+    backgroundColor: '#007AFF',
   },
   budgetName: {
-    fontSize: 16,
-    color: '#000000', // text color
-    marginBottom: 8, // xs spacing
+    fontSize: 14,
+    color: '#000000',
+    marginBottom: 4,
   },
   selectedBudgetName: {
-    color: '#FFFFFF', // card color
+    color: '#FFFFFF',
   },
   budgetAmount: {
-    fontSize: 14,
-    color: '#666666', // textSecondary color
+    fontSize: 12,
+    color: '#666666',
   },
   selectedBudgetAmount: {
-    color: '#FFFFFF', // card color
+    color: '#FFFFFF',
   },
 }); 

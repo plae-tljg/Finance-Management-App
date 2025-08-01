@@ -134,7 +134,7 @@ export function DatabaseDebug() {
   }
 
   return (
-    <ScrollView style={styles.scrollView}>
+    <View style={styles.container}>
       <View style={styles.section}>
         <Text variant="title" style={styles.title}>数据库调试</Text>
         
@@ -160,15 +160,17 @@ export function DatabaseDebug() {
 
           <Text variant="subtitle" style={styles.subtitle}>数据库表</Text>
           
-          {tables.map(table => (
-            <TouchableOpacity
-              key={table.name}
-              style={styles.tableButton}
-              onPress={() => handleTablePress(table.name)}
-            >
-              <Text style={styles.tableName}>{table.name}</Text>
-            </TouchableOpacity>
-          ))}
+          <View style={styles.tableList}>
+            {tables.map(table => (
+              <TouchableOpacity
+                key={table.name}
+                style={styles.tableButton}
+                onPress={() => handleTablePress(table.name)}
+              >
+                <Text style={styles.tableName}>{table.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </Card>
       </View>
 
@@ -177,7 +179,7 @@ export function DatabaseDebug() {
           <Card style={styles.card}>
             <Text variant="subtitle" style={styles.subtitle}>{selectedTable} 表数据</Text>
             <View style={styles.tableContainer}>
-              {tableData[selectedTable]?.map((row, index) => (
+              {tableData[selectedTable]?.slice(0, 3).map((row, index) => (
                 <View key={index} style={styles.row}>
                   {Object.entries(row).map(([key, value]) => (
                     <View key={key} style={styles.cell}>
@@ -187,36 +189,41 @@ export function DatabaseDebug() {
                   ))}
                 </View>
               ))}
+              {tableData[selectedTable]?.length > 3 && (
+                <Text style={styles.moreText}>... 还有 {tableData[selectedTable].length - 3} 条记录</Text>
+              )}
             </View>
           </Card>
         </View>
       )}
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  scrollView: {
+  container: {
     flex: 1,
-    padding: 16,
+    padding: 8,
   },
   section: {
-    marginBottom: 24,
-  },
-  card: {
-    padding: 16,
-  },
-  title: {
     marginBottom: 16,
   },
-  subtitle: {
-    marginTop: 16,
+  card: {
+    padding: 12,
+  },
+  title: {
     marginBottom: 12,
+    fontSize: 16,
+  },
+  subtitle: {
+    marginTop: 12,
+    marginBottom: 8,
+    fontSize: 14,
   },
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   halfButton: {
     flex: 1,
@@ -224,14 +231,14 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     backgroundColor: '#FF3B30',
-    padding: 12,
-    borderRadius: 8,
+    padding: 10,
+    borderRadius: 6,
     alignItems: 'center',
   },
   refreshButton: {
     backgroundColor: '#007AFF',
-    padding: 12,
-    borderRadius: 8,
+    padding: 10,
+    borderRadius: 6,
     alignItems: 'center',
   },
   disabledButton: {
@@ -239,44 +246,55 @@ const styles = StyleSheet.create({
   },
   resetButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   refreshButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   tableButton: {
-    padding: 12,
+    padding: 10,
     backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    marginBottom: 8,
+    borderRadius: 6,
+    marginBottom: 6,
   },
   tableName: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
+  },
+  tableList: {
+    marginTop: 8,
   },
   tableContainer: {
     marginTop: 8,
   },
   row: {
-    padding: 12,
+    padding: 10,
     backgroundColor: '#f8f8f8',
-    borderRadius: 8,
-    marginBottom: 8,
+    borderRadius: 6,
+    marginBottom: 6,
   },
   cell: {
     flexDirection: 'row',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   cellKey: {
     fontWeight: '500',
     marginRight: 8,
-    minWidth: 100,
+    minWidth: 80,
+    fontSize: 12,
   },
   cellValue: {
     flex: 1,
+    fontSize: 12,
+  },
+  moreText: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 6,
+    textAlign: 'center',
   },
   loadingContainer: {
     flex: 1,

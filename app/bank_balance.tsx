@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, TextInput, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { Text } from '@/components/base/Text';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
 import { useBankBalanceService } from '@/services/business/BankBalanceService';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import type { BankBalance } from '@/services/database/schemas/BankBalance';
 
 export default function BankBalanceScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const { isReady, databaseService } = useDatabaseSetup();
   const [currentBalance, setCurrentBalance] = useState<BankBalance | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [openingBalance, setOpeningBalance] = useState('0');
   const [closingBalance, setClosingBalance] = useState('0');
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth() + 1;
+  
+  // 从URL参数获取年月，如果没有则使用当前日期
+  const currentYear = params.year ? parseInt(params.year as string) : new Date().getFullYear();
+  const currentMonth = params.month ? parseInt(params.month as string) : new Date().getMonth() + 1;
 
   const bankBalanceService = React.useMemo(
     () => isReady && databaseService ? useBankBalanceService(databaseService) : null,
@@ -92,48 +94,52 @@ export default function BankBalanceScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text variant="title">{currentYear}年{currentMonth}月银行余额</Text>
-      </View>
+    <>
+      <Stack.Screen
+        options={{
+          title: `${currentYear}年${currentMonth}月银行余额`,
+          headerBackTitle: '返回',
+        }}
+      />
+      <View style={styles.container}>
+        <View style={styles.content}>
+          {currentBalance && (
+            <View style={styles.balanceCard}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>期初余额</Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="numeric"
+                  value={openingBalance}
+                  onChangeText={setOpeningBalance}
+                />
+              </View>
 
-      <View style={styles.content}>
-        {currentBalance && (
-          <View style={styles.balanceCard}>
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>期初余额</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={openingBalance}
-                onChangeText={setOpeningBalance}
-              />
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>期末余额</Text>
+                <TextInput
+                  style={styles.input}
+                  keyboardType="numeric"
+                  value={closingBalance}
+                  onChangeText={setClosingBalance}
+                />
+              </View>
+
+              <TouchableOpacity 
+                style={styles.updateButton}
+                onPress={handleUpdate}
+              >
+                <Text style={styles.updateButtonText}>更新</Text>
+              </TouchableOpacity>
             </View>
+          )}
+        </View>
 
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>期末余额</Text>
-              <TextInput
-                style={styles.input}
-                keyboardType="numeric"
-                value={closingBalance}
-                onChangeText={setClosingBalance}
-              />
-            </View>
-
-            <TouchableOpacity 
-              style={styles.updateButton}
-              onPress={handleUpdate}
-            >
-              <Text style={styles.updateButtonText}>更新</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+          <Text style={styles.backButtonText}>返回</Text>
+        </TouchableOpacity>
       </View>
-
-      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-        <Text style={styles.backButtonText}>返回</Text>
-      </TouchableOpacity>
-    </View>
+    </>
   );
 }
 

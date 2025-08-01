@@ -17,6 +17,10 @@ export default function AddScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>添加记录</Text>
+      </View>
+      
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardAvoidingView}
@@ -73,6 +77,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f8f8f8',
   },
+  header: {
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingHorizontal: 16,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
   keyboardAvoidingView: {
     flex: 1,
   },
@@ -80,26 +96,26 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    paddingBottom: 20,
+    paddingBottom: 8,
   },
   typeSelector: {
     flexDirection: 'row',
-    margin: 16,
+    margin: 8,
     backgroundColor: '#fff',
-    borderRadius: 8,
+    borderRadius: 6,
     overflow: 'hidden',
   },
   typeButton: {
     flex: 1,
-    padding: 12,
+    padding: 8,
     alignItems: 'center',
-    borderRadius: 6,
+    borderRadius: 4,
   },
   activeTypeButton: {
     backgroundColor: '#007AFF',
   },
   typeButtonText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#666',
   },
   activeTypeButtonText: {

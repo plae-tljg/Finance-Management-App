@@ -9,7 +9,7 @@ export function DebugTools() {
 
   return (
     <View style={styles.container}>
-      <Text variant="title" style={styles.title}>调试工具</Text>
+      <Text variant="title" style={[styles.title, { paddingLeft: 12 }]}>调试工具</Text>
       
       <View style={styles.toolsContainer}>
         <TouchableOpacity 
@@ -34,27 +34,28 @@ export function DebugTools() {
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   title: {
-    marginBottom: 16,
+    marginBottom: 12,
+    fontSize: 16,
   },
   toolsContainer: {
     flexDirection: 'row',
-    gap: 16,
+    gap: 12,
   },
   toolButton: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    padding: 16,
+    gap: 6,
+    padding: 12,
     backgroundColor: '#f8f8f8',
-    borderRadius: 8,
+    borderRadius: 6,
   },
   toolText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#333',
   },
 }); 

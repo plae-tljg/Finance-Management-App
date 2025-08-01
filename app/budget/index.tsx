@@ -5,15 +5,20 @@ import { LoadingView } from '@/components/base/LoadingView';
 import { ErrorView } from '@/components/base/ErrorView';
 import { BudgetList } from '@/components/finance/budgets/BudgetList';
 import type { BudgetWithCategory } from '@/services/database/repositories/BudgetRepository';
-import { useRouter, Stack } from 'expo-router';
+import { useRouter, Stack, useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 
 export default function BudgetsScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
   const { isReady, error, databaseService, retry } = useDatabaseSetup();
   const [budgets, setBudgets] = React.useState<BudgetWithCategory[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isRefreshing, setIsRefreshing] = React.useState(false);
+
+  // 从URL参数获取年月，如果没有则使用当前日期
+  const currentYear = params.year ? parseInt(params.year as string) : new Date().getFullYear();
+  const currentMonth = params.month ? parseInt(params.month as string) : new Date().getMonth() + 1;
 
   const budgetService = React.useMemo(
     () => databaseService ? useBudgetService(databaseService) : null,
@@ -25,7 +30,7 @@ export default function BudgetsScreen() {
     React.useCallback(() => {
       if (!isReady || !budgetService) return;
       loadBudgets();
-    }, [isReady, budgetService])
+    }, [isReady, budgetService, currentYear, currentMonth])
   );
 
   async function loadBudgets() {
@@ -33,7 +38,10 @@ export default function BudgetsScreen() {
     
     try {
       setIsLoading(true);
-      const data = await budgetService.getBudgetsWithCategory();
+      // 如果URL参数中有年月，则按月份过滤，否则获取所有预算
+      const data = params.year && params.month 
+        ? await budgetService.getBudgetsByMonthWithCategory(currentYear, currentMonth)
+        : await budgetService.getBudgetsWithCategory();
       setBudgets(data);
     } catch (err) {
       console.error('加载预算失败:', err);
@@ -82,7 +90,10 @@ export default function BudgetsScreen() {
     <>
       <Stack.Screen
         options={{
-          title: '预算管理',
+          title: params.year && params.month 
+            ? `${currentYear}年${currentMonth}月预算管理`
+            : '预算管理',
+          headerBackTitle: '返回',
         }}
       />
       <BudgetList
@@ -92,6 +103,10 @@ export default function BudgetsScreen() {
         onRefresh={onRefresh}
         onDelete={handleDelete}
         onEdit={(id) => router.push(`/budget/edit/${id}`)}
+        title={params.year && params.month 
+          ? `${currentYear}年${currentMonth}月预算管理`
+          : '所有预算记录'
+        }
       />
     </>
   );
