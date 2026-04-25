@@ -11,7 +11,9 @@ import xml.etree.ElementTree as ET
 import re
 import os
 import sys
+import calendar
 from typing import Dict, List, Tuple, Optional
+
 
 def parse_xlsx(filepath: str) -> Dict[str, List[Dict]]:
     """Parse xlsx file and return dict of sheet_name -> list of row dicts (using header row as keys)."""
@@ -48,27 +50,6 @@ def parse_xlsx(filepath: str) -> Dict[str, List[Dict]]:
                     if t.text:
                         text_parts.append(t.text)
                 shared_strings.append(''.join(text_parts))
-
-        def col_letter_to_index(col: str) -> int:
-            """Convert column letter to 0-based index."""
-            result = 0
-            for char in col:
-                result = result * 26 + (ord(char) - ord('A') + 1)
-            return result - 1
-
-        def get_cell_value(row_cells: List, col_idx: int) -> str:
-            """Get cell value by column index."""
-            if col_idx < len(row_cells):
-                cell = row_cells[col_idx]
-                cell_type = cell.get('t')
-                value_elem = cell.find('{http://schemas.openxmlformats.org/spreadsheetml/2006/main}v')
-                if value_elem is None or value_elem.text is None:
-                    return ''
-                if cell_type == 's':
-                    idx = int(value_elem.text)
-                    return shared_strings[idx] if idx < len(shared_strings) else ''
-                return value_elem.text
-            return ''
 
         for sheet_name, rel_id in sheet_ids.items():
             if rel_id not in id_to_target:
@@ -113,6 +94,9 @@ def parse_xlsx(filepath: str) -> Dict[str, List[Dict]]:
                         if not col_match:
                             continue
                         col = col_match.group(1)
+                        # Only use columns A-I for transaction data (ignore J-T which are for grouping display)
+                        if col > 'I':
+                            continue
                         val = get_cell_value_by_col(row_cells, col)
                         col_to_header[col] = val if val else col
                     continue
@@ -124,6 +108,9 @@ def parse_xlsx(filepath: str) -> Dict[str, List[Dict]]:
                     if not col_match:
                         continue
                     col = col_match.group(1)
+                    # Only use columns A-I for transaction data
+                    if col > 'I':
+                        continue
                     if col in col_to_header:
                         header = col_to_header[col]
                         val = get_cell_value_by_col(row_cells, col)
@@ -140,6 +127,55 @@ def parse_xlsx(filepath: str) -> Dict[str, List[Dict]]:
 def get_cell_value(row: Dict, col: str) -> str:
     """Get cell value safely."""
     return (row.get(col) or '').strip()
+
+
+def get_last_day_of_month(year: int, month: int) -> str:
+    """Get the last day of a month as YYYY-MM-DD string."""
+    last_day = calendar.monthrange(year, month)[1]
+    return f"{year}-{month:02d}-{last_day:02d}"
+
+
+def parse_amount(amount_str: str) -> Optional[float]:
+    """Parse amount safely."""
+    try:
+        return float(amount_str)
+    except:
+        return None
+
+
+def is_income_row(row: Dict) -> bool:
+    """Check if this row represents an income transaction."""
+    income_val = get_cell_value(row, 'income')
+    return income_val == '1' or income_val == 'True' or income_val == 'true'
+
+
+def get_hardcoded_categories() -> List[Dict]:
+    """Return hardcoded categories based on user's specification."""
+    return [
+        {'id': 1, 'name': '餐饮', 'icon': '🍜', 'type': 'expense', 'sortOrder': 1, 'isDefault': 0, 'isActive': 1},
+        {'id': 2, 'name': '交通', 'icon': '🚗', 'type': 'expense', 'sortOrder': 2, 'isDefault': 0, 'isActive': 1},
+        {'id': 3, 'name': '购物', 'icon': '🛒', 'type': 'expense', 'sortOrder': 3, 'isDefault': 0, 'isActive': 1},
+        {'id': 4, 'name': '工资', 'icon': '💰', 'type': 'income', 'sortOrder': 4, 'isDefault': 0, 'isActive': 1},
+        {'id': 5, 'name': '家用', 'icon': '🏠', 'type': 'expense', 'sortOrder': 5, 'isDefault': 0, 'isActive': 1},
+        {'id': 6, 'name': '账单', 'icon': '📄', 'type': 'expense', 'sortOrder': 6, 'isDefault': 0, 'isActive': 1},
+        {'id': 7, 'name': '医疗', 'icon': '🏥', 'type': 'expense', 'sortOrder': 7, 'isDefault': 0, 'isActive': 1},
+        {'id': 8, 'name': '零星', 'icon': '⭐', 'type': 'expense', 'sortOrder': 8, 'isDefault': 0, 'isActive': 1},
+    ]
+
+
+def init_categories_in_db(conn: sqlite3.Connection) -> Dict[str, int]:
+    """Initialize hardcoded categories in DB and return id->name mapping."""
+    categories = get_hardcoded_categories()
+    cursor = conn.cursor()
+    name_to_id = {}
+    for cat in categories:
+        cursor.execute('''
+            INSERT OR IGNORE INTO categories (id, name, icon, type, sortOrder, isDefault, isActive)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (cat['id'], cat['name'], cat['icon'], cat['type'], cat['sortOrder'], cat['isDefault'], cat['isActive']))
+        name_to_id[cat['name']] = cat['id']
+    conn.commit()
+    return name_to_id
 
 
 def parse_date(date_str: str) -> Optional[str]:
@@ -159,57 +195,19 @@ def parse_date(date_str: str) -> Optional[str]:
         return None
 
 
-def parse_amount(amount_str: str) -> Optional[float]:
-    """Parse amount safely."""
-    try:
-        return float(amount_str)
-    except:
-        return None
-
-
-def is_income_row(row: Dict) -> bool:
-    """Check if this row represents an income transaction."""
-    income_val = get_cell_value(row, 'income')
-    return income_val == '1' or income_val == 'True' or income_val == 'true'
-
-
-def extract_categories(sheets: Dict[str, List[Dict]]) -> Tuple[List[Dict], Dict]:
-    """Extract categories from param sheet. Returns (categories, xlsx_counts)."""
-    categories = []
-    xlsx_counts = {'categories': 0}
-
-    if 'param' not in sheets:
-        print(f"  WARNING: 'param' sheet not found. Available sheets: {list(sheets.keys())}")
-        return categories, xlsx_counts
-
-    for row in sheets['param']:
-        name = get_cell_value(row, 'name')
-        if not name:
-            continue
-        cat_type = get_cell_value(row, 'type')
-        if cat_type == '1':
-            cat_type = 'income'
-        elif cat_type == '0' or not cat_type:
-            cat_type = 'expense'
-
-        categories.append({
-            'name': name,
-            'icon': get_cell_value(row, 'icon') or '📦',
-            'type': cat_type,
-            'sortOrder': parse_amount(get_cell_value(row, 'sortOrder')) or 0,
-            'isDefault': get_cell_value(row, 'isDefault') in ('1', 'true', 'True'),
-            'isActive': get_cell_value(row, 'isActive') in ('1', 'true', 'True'),
-        })
-
-    xlsx_counts['categories'] = len(categories)
-    return categories, xlsx_counts
-
-
-def extract_transactions(sheets: Dict[str, List[Dict]], category_name_to_id: Dict[str, int], debug: bool = False) -> Tuple[List[Dict], Dict]:
-    """Extract transactions from all *_full sheets. Returns (transactions, xlsx_counts)."""
+def extract_transactions(sheets: Dict[str, List[Dict]]) -> Tuple[List[Dict], Dict]:
+    """
+    Extract transactions from all *_full sheets.
+    - Column B = category_id (1-8)
+    - Column C = general_name (transaction name)
+    - Column D = description
+    - Column E = amount
+    - Column F = income flag, Column G = expense flag
+    - Column H = created_at (date)
+    Returns (transactions, xlsx_counts).
+    """
     transactions = []
-    xlsx_counts = {'transactions': 0}
-    skip_reasons = {'no_amount': 0, 'no_category': 0, 'category_not_found': 0, 'no_date': 0, 'bad_id': 0}
+    xlsx_counts = {'transactions': 0, 'skipped_no_id': 0, 'skipped_no_amount': 0, 'skipped_invalid_category': 0}
 
     for sheet_name, rows in sheets.items():
         if not sheet_name.endswith('_full'):
@@ -217,54 +215,58 @@ def extract_transactions(sheets: Dict[str, List[Dict]], category_name_to_id: Dic
 
         sheet_tx_count = 0
         for row in rows:
+            # Column A = id (must be numeric for real transaction)
             id_val = get_cell_value(row, 'id')
-            if id_val and not id_val.startswith('row'):
-                try:
-                    int(id_val)
-                except:
-                    skip_reasons['bad_id'] += 1
-                    if debug:
-                        print(f"    SKIP bad_id: {id_val}")
-                    continue
+            if not id_val:
+                xlsx_counts['skipped_no_id'] += 1
+                continue
+            try:
+                int(id_val)
+            except:
+                xlsx_counts['skipped_no_id'] += 1
+                continue
 
+            # Column B = category_id
+            category_id_str = get_cell_value(row, 'category_id')
+            try:
+                cat_id = int(category_id_str)
+                if cat_id < 1 or cat_id > 8:
+                    xlsx_counts['skipped_invalid_category'] += 1
+                    continue
+            except:
+                xlsx_counts['skipped_invalid_category'] += 1
+                continue
+
+            # Column E = amount
             amount_str = get_cell_value(row, 'amount')
             amount = parse_amount(amount_str)
             if amount is None or amount == 0:
-                skip_reasons['no_amount'] += 1
-                if debug:
-                    print(f"    SKIP no_amount: {amount_str}")
+                xlsx_counts['skipped_no_amount'] += 1
                 continue
 
-            category_name = get_cell_value(row, 'general_name')
-            if not category_name:
-                skip_reasons['no_category'] += 1
-                if debug:
-                    print(f"    SKIP no_category")
-                continue
+            # Column C = general_name (transaction name)
+            name = get_cell_value(row, 'general_name')
+            if not name:
+                name = 'Unknown'
 
-            cat_id = category_name_to_id.get(category_name)
-            if cat_id is None:
-                skip_reasons['category_not_found'] += 1
-                if debug:
-                    print(f"    SKIP category_not_found: '{category_name}' not in {category_name_to_id}")
-                continue
+            # Column D = description
+            description = get_cell_value(row, 'description')
+            if not description:
+                description = name
 
+            # Column H = created_at (date)
             date_str = get_cell_value(row, 'created_at')
             parsed_date = parse_date(date_str)
             if not parsed_date:
-                skip_reasons['no_date'] += 1
-                if debug:
-                    print(f"    SKIP no_date: '{date_str}'")
+                xlsx_counts['skipped_no_id'] += 1
                 continue
 
+            # Column F = income flag, Column G = expense flag
             income = is_income_row(row)
             tx_type = 'income' if income else 'expense'
 
-            description = get_cell_value(row, 'description')
-            if not description:
-                description = category_name
-
             transactions.append({
+                'name': name,
                 'amount': abs(amount),
                 'categoryId': cat_id,
                 'description': description,
@@ -276,8 +278,9 @@ def extract_transactions(sheets: Dict[str, List[Dict]], category_name_to_id: Dic
         xlsx_counts[sheet_name] = sheet_tx_count
         xlsx_counts['transactions'] += sheet_tx_count
 
-    if skip_reasons['no_amount'] or skip_reasons['no_category'] or skip_reasons['category_not_found'] or skip_reasons['no_date'] or skip_reasons['bad_id']:
-        print(f"  Skip reasons: {skip_reasons}")
+    skip_total = xlsx_counts['skipped_no_id'] + xlsx_counts['skipped_no_amount'] + xlsx_counts['skipped_invalid_category']
+    if skip_total > 0:
+        print(f"  Skipped: {skip_total} rows (no_id={xlsx_counts['skipped_no_id']}, no_amount={xlsx_counts['skipped_no_amount']}, invalid_category={xlsx_counts['skipped_invalid_category']})")
 
     return transactions, xlsx_counts
 
@@ -334,7 +337,10 @@ def parse_rep_sheet(filepath: str, sheet_index: int) -> Dict[str, str]:
 
 
 def extract_budgets_and_balances(xlsx_files: List[str], category_name_to_id: Dict[str, int]) -> Tuple[List[Dict], List[Dict], Dict]:
-    """Extract budgets and monthly account balances from *_rep sheets. Returns (budgets, account_monthly_balances, xlsx_counts)."""
+    """
+    Extract budgets and monthly account balances from *_rep sheets.
+    Returns (budgets, account_monthly_balances, xlsx_counts).
+    """
     budgets = []
     account_monthly_balances = []
     xlsx_counts = {'budgets': 0, 'account_monthly_balances': 0}
@@ -382,7 +388,6 @@ def extract_budgets_and_balances(xlsx_files: List[str], category_name_to_id: Dic
                 a_val = row.get('A', '')
                 b_val = row.get('B', '')
                 c_val = row.get('C', '')
-                f_val = row.get('F', '')
 
                 if 'budget_info' in (a_val or '').lower():
                     in_budget_section = True
@@ -392,21 +397,20 @@ def extract_budgets_and_balances(xlsx_files: List[str], category_name_to_id: Dic
                     continue
 
                 if in_budget_section and b_val and b_val.isdigit():
-                    cat_name = c_val
-                    budget_amount = parse_amount(f_val)
+                    cat_id = int(b_val) if b_val.isdigit() else None
+                    budget_name = row.get('D', '')  # Column D = budget_name
+                    description = row.get('E', '')  # Column E = description
+                    budget_amount = parse_amount(row.get('F', ''))  # Column F = amount
 
-                    if cat_name and budget_amount:
-                        cat_id = category_name_to_id.get(cat_name)
-
+                    if cat_id and budget_amount:
                         start_date = f"{year}-{month:02d}-01"
-                        if month == 12:
-                            end_date = f"{year+1}-01-01"
-                        else:
-                            end_date = f"{year}-{month+1:02d}-01"
+                        end_date = get_last_day_of_month(year, month)
 
                         budgets.append({
-                            'name': cat_name,
+                            'name': budget_name if budget_name else c_val,
+                            'description': description if description else budget_name,
                             'categoryId': cat_id,
+                            'accountId': 2,  # bank account
                             'amount': abs(budget_amount),
                             'period': 'monthly',
                             'startDate': start_date,
@@ -417,12 +421,13 @@ def extract_budgets_and_balances(xlsx_files: List[str], category_name_to_id: Dic
                         })
                         sheet_budget_count += 1
 
+                # Extract bank balance (opening/closing balance) from _rep sheet
                 if not a_val and b_val and len(b_val) == 4 and b_val.isdigit():
                     c_val_num = parse_amount(row.get('C', ''))
                     d_val_num = parse_amount(row.get('D', ''))
                     if c_val_num is not None and d_val_num is not None:
                         account_monthly_balances.append({
-                            'accountId': 0,  # Will be replaced with actual bank account ID during insert
+                            'accountId': 2,  # bank account
                             'year': year,
                             'month': month,
                             'openingBalance': c_val_num,
@@ -474,6 +479,7 @@ def create_database(db_path: str) -> sqlite3.Connection:
         CREATE TABLE IF NOT EXISTS budgets (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
+            description TEXT,
             categoryId INTEGER NOT NULL,
             accountId INTEGER DEFAULT NULL,
             amount DECIMAL(10,2) NOT NULL,
@@ -493,11 +499,12 @@ def create_database(db_path: str) -> sqlite3.Connection:
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS transactions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT,
             amount REAL NOT NULL,
             categoryId INTEGER NOT NULL,
-            budgetId INTEGER DEFAULT 1,
-            accountId INTEGER DEFAULT 1,
-            description TEXT,
+            budgetId INTEGER NOT NULL,
+            accountId INTEGER NOT NULL DEFAULT 1,
             date DATETIME NOT NULL,
             type TEXT NOT NULL CHECK(type IN ('income', 'expense')),
             createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -523,6 +530,7 @@ def create_database(db_path: str) -> sqlite3.Connection:
         )
     ''')
 
+    # Insert default accounts
     cursor.execute('INSERT OR IGNORE INTO accounts (name, type, icon, color, balance) VALUES (?, ?, ?, ?, ?)',
                    ('现金', 'cash', '💵', '#34C759', 0))
     cursor.execute('INSERT OR IGNORE INTO accounts (name, type, icon, color, balance) VALUES (?, ?, ?, ?, ?)',
@@ -532,53 +540,6 @@ def create_database(db_path: str) -> sqlite3.Connection:
 
     conn.commit()
     return conn
-
-
-def get_bank_account_id(conn: sqlite3.Connection) -> int:
-    """Get or create bank account ID for imported balances."""
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM accounts WHERE type = 'bank' LIMIT 1")
-    row = cursor.fetchone()
-    if row:
-        return row[0]
-    cursor.execute('INSERT INTO accounts (name, type, icon, color, balance) VALUES (?, ?, ?, ?, ?)',
-                   ('银行账户', 'bank', '🏦', '#007AFF', 0))
-    return cursor.lastrowid
-
-
-def check_duplicate_transaction(conn: sqlite3.Connection, tx: Dict) -> bool:
-    """Check if transaction already exists."""
-    cursor = conn.cursor()
-    cursor.execute('''
-        SELECT id FROM transactions
-        WHERE date = ? AND amount = ? AND description = ? AND type = ?
-        LIMIT 1
-    ''', (tx['date'], tx['amount'], tx['description'], tx['type']))
-    return cursor.fetchone() is not None
-
-
-def merge_categories(conn: sqlite3.Connection, new_categories: List[Dict], existing_category_names: set) -> Dict[str, int]:
-    """Merge new categories, return name -> id mapping."""
-    cursor = conn.cursor()
-    name_to_id = {}
-
-    for cat in new_categories:
-        name = cat['name']
-        if name in existing_category_names:
-            cursor.execute('SELECT id FROM categories WHERE name = ?', (name,))
-            row = cursor.fetchone()
-            if row:
-                name_to_id[name] = row[0]
-        else:
-            cursor.execute('''
-                INSERT INTO categories (name, icon, type, sortOrder, isDefault, isActive)
-                VALUES (?, ?, ?, ?, ?, ?)
-            ''', (name, cat['icon'], cat['type'], cat['sortOrder'], cat['isDefault'], cat['isActive']))
-            name_to_id[name] = cursor.lastrowid
-            existing_category_names.add(name)
-
-    conn.commit()
-    return name_to_id
 
 
 def get_sqlite_row_counts(conn: sqlite3.Connection) -> Dict[str, int]:
@@ -600,7 +561,6 @@ def print_comparison(xlsx_counts: Dict[str, int], sqlite_counts: Dict[str, int],
     print("XLSX vs SQLite ROW COUNT COMPARISON")
     print(f"{'='*60}")
 
-    # Tables that should be compared directly
     direct_compare_tables = ['categories', 'transactions', 'budgets', 'account_monthly_balances', 'accounts']
 
     print("\n--- Direct Table Comparison ---")
@@ -610,13 +570,11 @@ def print_comparison(xlsx_counts: Dict[str, int], sqlite_counts: Dict[str, int],
         status = "✓ MATCH" if xlsx_count == sqlite_count else "✗ MISMATCH"
         print(f"  {table:30} XLSX={xlsx_count:5}  SQLite={sqlite_count:5}  [{status}]")
 
-    # Show per-sheet breakdown for debugging
     print("\n--- Per-Sheet XLSX Breakdown (for debugging) ---")
     sheet_keys = sorted([k for k in xlsx_counts.keys() if k not in direct_compare_tables])
     for key in sheet_keys:
         print(f"  {key:30} XLSX={xlsx_counts[key]:5}")
 
-    # Transaction details if SQLite available
     if sqlite_conn:
         print("\n--- Transactions per Month (SQLite) ---")
         cursor = sqlite_conn.cursor()
@@ -662,12 +620,7 @@ def main():
         print(f"Removed existing output file: {output_db}")
 
     conn = create_database(output_db)
-
-    all_category_names = set()
     cursor = conn.cursor()
-    cursor.execute('SELECT name FROM categories')
-    for row in cursor.fetchall():
-        all_category_names.add(row[0])
 
     total_categories = 0
     total_transactions = 0
@@ -679,29 +632,15 @@ def main():
 
     total_xlsx_counts = {}
 
-    name_to_id = {}
-    for xlsx_file in xlsx_files:
-        print(f"\nProcessing: {xlsx_file}")
-        sheets = parse_xlsx(xlsx_file)
-        print(f"  Available sheets: {list(sheets.keys())}")
+    # Step 1: Initialize hardcoded categories
+    name_to_id = init_categories_in_db(conn)
+    total_categories = len(name_to_id)
+    total_xlsx_counts['categories'] = total_categories
+    print(f"\nInitialized {total_categories} hardcoded categories: {name_to_id}")
 
-        categories, xlsx_counts = extract_categories(sheets)
-        for k, v in xlsx_counts.items():
-            total_xlsx_counts[k] = total_xlsx_counts.get(k, 0) + v
-
-        name_to_id = merge_categories(conn, categories, all_category_names)
-        total_categories += len(categories)
-        print(f"  Categories: {len(categories)}, name_to_id mapping: {name_to_id}")
-
-        transactions, tx_counts = extract_transactions(sheets, name_to_id)
-        for k, v in tx_counts.items():
-            total_xlsx_counts[k] = total_xlsx_counts.get(k, 0) + v
-
-        print(f"  Found {len(transactions)} transactions")
-
-        all_transactions.extend(transactions)
-
-    print("\nExtracting budgets and monthly balances...")
+    # Step 2: Extract budgets first (before transactions, so we can match budgetId)
+    print("\n" + "="*50)
+    print("Extracting budgets and monthly balances...")
     budgets, account_monthly_balances, xlsx_counts = extract_budgets_and_balances(xlsx_files, name_to_id)
     for k, v in xlsx_counts.items():
         total_xlsx_counts[k] = total_xlsx_counts.get(k, 0) + v
@@ -711,50 +650,75 @@ def main():
     all_budgets.extend(budgets)
     all_account_monthly_balances.extend(account_monthly_balances)
 
-    print(f"\nInserting transactions...")
-    for tx in all_transactions:
-        if not check_duplicate_transaction(conn, tx):
-            try:
-                cursor.execute('''
-                    INSERT INTO transactions (amount, categoryId, budgetId, accountId, description, date, type)
-                    VALUES (?, ?, 1, 1, ?, ?, ?)
-                ''', (tx['amount'], tx['categoryId'], tx['description'], tx['date'], tx['type']))
-                total_transactions += 1
-            except Exception as e:
-                pass
-
-    print(f"Inserting budgets...")
-    seen_budgets = set()
+    # Build categoryId -> budgetId mapping for later use
+    category_month_to_budget_id = {}
+    print("\nInserting budgets...")
     for budget in all_budgets:
         if budget['categoryId'] is None:
             continue
-        key = (budget['name'], budget['categoryId'], budget['month'], budget.get('accountId'))
-        if key in seen_budgets:
-            continue
-        seen_budgets.add(key)
         try:
             cursor.execute('''
-                INSERT OR IGNORE INTO budgets (name, categoryId, accountId, amount, period, startDate, endDate, month, isRegular, isBudgetExceeded)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (budget['name'], budget['categoryId'], budget.get('accountId'), budget['amount'], budget['period'],
-                  budget['startDate'], budget['endDate'], budget['month'], budget['isRegular'], budget['isBudgetExceeded']))
-            if cursor.rowcount > 0:
-                total_budgets += 1
+                INSERT INTO budgets (name, description, categoryId, accountId, amount, period, startDate, endDate, month, isRegular, isBudgetExceeded)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ''', (budget['name'], budget['description'], budget['categoryId'], budget['accountId'],
+                  budget['amount'], budget['period'], budget['startDate'], budget['endDate'],
+                  budget['month'], budget['isRegular'], budget['isBudgetExceeded']))
+            budget_id = cursor.lastrowid
+            key = (budget['categoryId'], budget['month'])
+            category_month_to_budget_id[key] = budget_id
+            total_budgets += 1
         except Exception as e:
-            pass
+            print(f"    Budget insert error: {e}")
 
-    print(f"Inserting account monthly balances...")
-    bank_account_id = get_bank_account_id(conn)
-    print(f"  Using bank account ID: {bank_account_id}")
+    conn.commit()
+    print(f"  Inserted {total_budgets} budgets")
+
+    # Get default budget ID (category 3 - purchasing)
+    DEFAULT_BUDGET_ID = category_month_to_budget_id.get((3, None), 1)
+    print(f"  Default budget ID for unmatched: {DEFAULT_BUDGET_ID}")
+
+    # Step 3: Extract transactions with budget matching
+    print("\n" + "="*50)
+    print("Extracting transactions...")
+    for xlsx_file in xlsx_files:
+        sheets = parse_xlsx(xlsx_file)
+        transactions, tx_counts = extract_transactions(sheets)
+        for k, v in tx_counts.items():
+            total_xlsx_counts[k] = total_xlsx_counts.get(k, 0) + v
+
+        print(f"  Found {len(transactions)} transactions from {os.path.basename(xlsx_file)}")
+        all_transactions.extend(transactions)
+
+    # Step 4: Insert transactions with matched budgetId
+    print(f"\nInserting transactions...")
+    for tx in all_transactions:
+        tx_date = tx['date']
+        tx_month = tx_date[:7]  # 'YYYY-MM'
+        budget_id = category_month_to_budget_id.get((tx['categoryId'], tx_month), DEFAULT_BUDGET_ID)
+
+        try:
+            cursor.execute('''
+                INSERT INTO transactions (name, description, amount, categoryId, budgetId, accountId, date, type)
+                VALUES (?, ?, ?, ?, ?, 2, ?, ?)
+            ''', (tx['name'], tx['description'], tx['amount'], tx['categoryId'], budget_id, tx['date'], tx['type']))
+            total_transactions += 1
+        except Exception as e:
+            print(f"    Transaction insert error: {e}")
+
+    print(f"  Inserted {total_transactions} transactions")
+
+    # Step 5: Insert account monthly balances
+    print(f"\nInserting account monthly balances...")
     for balance in all_account_monthly_balances:
         try:
             cursor.execute('''
                 INSERT OR REPLACE INTO account_monthly_balances (accountId, year, month, openingBalance, closingBalance)
                 VALUES (?, ?, ?, ?, ?)
-            ''', (bank_account_id, balance['year'], balance['month'], balance['openingBalance'], balance['closingBalance']))
+            ''', (balance['accountId'], balance['year'], balance['month'],
+                  balance['openingBalance'], balance['closingBalance']))
             total_balances += 1
         except Exception as e:
-            pass
+            print(f"    Balance insert error: {e}")
 
     conn.commit()
 
