@@ -11,36 +11,38 @@
 ## ER 图
 
 ```
-┌─────────────────┐       ┌─────────────────┐       ┌─────────────────────┐
-│   categories    │       │    accounts     │       │  account_balances  │
-├─────────────────┤       ├─────────────────┤       ├─────────────────────┤
-│ id (PK)         │       │ id (PK)         │◄──────│ accountId (FK)     │
-│ name            │       │ name            │       │ year, month        │
-│ icon            │       │ type            │       │ openingBalance      │
-│ type            │       │ icon            │       │ closingBalance      │
-│ sortOrder       │       │ color           │       └─────────────────────┘
+┌─────────────────┐       ┌─────────────────┐
+│   categories    │       │    accounts     │
+├─────────────────┤       ├─────────────────┤
+│ id (PK)         │       │ id (PK)         │
+│ name            │       │ name            │
+│ icon            │       │ type            │
+│ type            │       │ icon            │
+│ sortOrder       │       │ color           │
 │ isDefault       │       │ balance         │
-│ isActive        │       │ isActive        │                ▲
-│ createdAt       │       │ sortOrder       │                │
-│ updatedAt       │       │ createdAt        │       ┌────────┴────────┐
-└────────┬────────┘       │ updatedAt       │       │  grand_balances  │
-         │                └─────────────────┘       ├─────────────────────┤
-         │                         │                │ year, month         │
-         │                         │                │ openingBalance      │
-         ▼                         │                │ closingBalance      │
-┌─────────────────┐ ┌──────────────┴────────┐       └─────────────────────┘
-│  transactions   │ │      budgets         │
-├─────────────────┤ ├─────────────────────┤
-│ id (PK)         │ │ id (PK)              │
-│ amount          │◄│ categoryId (FK)      │
-│ categoryId (FK) │ │ accountId (FK, NULL) │
-│ budgetId (FK)   │ │ amount               │
-│ accountId (FK)  │ │ period               │
-│ description     │ │ startDate, endDate   │
-│ date            │ │ month (YYYY-MM)      │
-│ type            │ │ isRegular, isBudgetExceeded
-│ createdAt       │ │ createdAt, updatedAt  │
-└─────────────────┘ └─────────────────────┘
+│ isActive        │       │ isActive        │
+│ createdAt       │       │ sortOrder       │
+│ updatedAt       │       │ createdAt       │
+└────────┬────────┘       │ updatedAt       │
+         │                └─────────────────┘
+         │
+         ▼
+┌─────────────────┐ ┌──────────────┴────────┐       ┌─────────────────────────────┐
+│  transactions   │ │      budgets         │       │ account_monthly_balances │
+├─────────────────┤ ├─────────────────────┤       ├─────────────────────────────┤
+│ id (PK)         │ │ id (PK)              │       │ id (PK)                    │
+│ name            ││ name                  │       │ accountId (FK)             │
+│ description     ││ description           │◄──────│ year, month               │
+│ amount          ││ categoryId (FK)        │       │ openingBalance              │
+│ categoryId (FK) ││ accountId (FK, NULL)  │       │ closingBalance              │
+│ budgetId (FK)   ││ amount               │       │ createdAt                   │
+│ accountId (FK)  ││ period               │       │ updatedAt                   │
+│ date            ││ startDate, endDate   │       └─────────────────────────────┘
+│ type            ││ month (YYYY-MM)      │
+│ createdAt       ││ isRegular            │
+│ updatedAt       ││ isBudgetExceeded     │
+└─────────────────┘│ createdAt, updatedAt │
+                   └─────────────────────┘
 ```
 
 ## 表结构详解
@@ -62,14 +64,14 @@
 | updatedAt | DATETIME | 更新时间 |
 
 **默认分类：**
-- 餐饮 🍚 (expense)
-- 交通 🚌 (expense)
-- 购物 🛍️ (expense)
-- 工资 💰 (income)
-- 家用 🧓 (expense)
-- 账单 🧾 (expense)
-- 医疗 (expense)
-- 零星 (expense)
+- 1: 餐饮 🍜 (expense)
+- 2: 交通 🚌 (expense)
+- 3: 购物 🛍️ (expense)
+- 4: 工资 💰 (income)
+- 5: 家用 🏠 (expense)
+- 6: 账单 🧾 (expense)
+- 7: 医疗 🏥 (expense)
+- 8: 零星 ⭐ (expense)
 
 ### accounts (账户表)
 
@@ -89,9 +91,9 @@
 | updatedAt | DATETIME | 更新时间 |
 
 **默认账户：**
-- 现金 💵 (cash)
-- 银行账户 🏦 (bank)
-- 数字钱包 📱 (digital_wallet)
+- 1: 现金 💵 (cash)
+- 2: 银行账户 🏦 (bank)
+- 3: 数字钱包 📱 (digital_wallet)
 
 ### transactions (交易表)
 
@@ -100,11 +102,12 @@
 | 字段 | 类型 | 说明 |
 |------|------|------|
 | id | INTEGER | 主键，自增 |
+| name | TEXT | 交易名称 |
+| description | TEXT | 描述/备注 |
 | amount | REAL | 金额（正数） |
 | categoryId | INTEGER | 外键 -> categories.id |
 | budgetId | INTEGER | 外键 -> budgets.id |
 | accountId | INTEGER | 外键 -> accounts.id |
-| description | TEXT | 描述/备注 |
 | date | DATETIME | 交易日期 |
 | type | TEXT | 'income' 或 'expense' |
 | createdAt | DATETIME | 创建时间 |
@@ -125,12 +128,13 @@
 |------|------|------|
 | id | INTEGER | 主键，自增 |
 | name | TEXT | 预算名称 |
+| description | TEXT | 预算描述 |
 | categoryId | INTEGER | 外键 -> categories.id |
 | accountId | INTEGER | 外键 -> accounts.id (NULL表示全局预算) |
 | amount | DECIMAL | 预算金额 |
 | period | TEXT | 'daily', 'weekly', 'monthly', 'yearly' |
-| startDate | TEXT | 开始日期 |
-| endDate | TEXT | 结束日期 |
+| startDate | TEXT | 开始日期 (YYYY-MM-DD) |
+| endDate | TEXT | 结束日期 (YYYY-MM-DD) |
 | month | TEXT | 所属月份 (YYYY-MM) |
 | isRegular | BOOLEAN | 是否固定预算 |
 | isBudgetExceeded | BOOLEAN | 是否超支 |
@@ -139,25 +143,9 @@
 
 **注意：** `accountId` 为 NULL 时表示全局预算，分配到所有账户。
 
-### grand_balances (总体余额表)
+### account_monthly_balances (账户月度余额表)
 
-存储每月所有账户的总余额快照。
-
-| 字段 | 类型 | 说明 |
-|------|------|------|
-| id | INTEGER | 主键，自增 |
-| year | INTEGER | 年份 |
-| month | INTEGER | 月份 |
-| openingBalance | DECIMAL | 月初总余额（所有账户之和） |
-| closingBalance | DECIMAL | 月末总余额 |
-| createdAt | DATETIME | 创建时间 |
-| updatedAt | DATETIME | 更新时间 |
-
-**唯一约束：** `(year, month)` 唯一
-
-### account_balances (账户余额表)
-
-存储每个账户每月的余额快照。
+存储每个账户每月的余额快照。通过汇总各账户余额可得到月度总余额。
 
 | 字段 | 类型 | 说明 |
 |------|------|------|
@@ -231,6 +219,19 @@ WHERE t.date BETWEEN '2026-01-01' AND '2026-01-31'
 GROUP BY t.accountId, a.name, a.icon, a.color;
 ```
 
+### 获取月度账户总余额
+
+```sql
+SELECT
+  year,
+  month,
+  SUM(openingBalance) as totalOpeningBalance,
+  SUM(closingBalance) as totalClosingBalance
+FROM account_monthly_balances
+GROUP BY year, month
+ORDER BY year DESC, month DESC;
+```
+
 ## 数据库迁移
 
 当表结构需要变更时，使用 ALTER TABLE 迁移：
@@ -241,50 +242,37 @@ ALTER TABLE budgets ADD COLUMN isRegular INTEGER DEFAULT 0;
 ALTER TABLE budgets ADD COLUMN isBudgetExceeded INTEGER DEFAULT 0;
 ```
 
-## XLSX 导入数据结构映射
+## XLSX 导入
 
-### XLSX param sheet -> categories 表
+详细导入说明请参考 [IMPORT_SCRIPT.md](./IMPORT_SCRIPT.md)
 
-| XLSX 列 | 数据库字段 |
-|---------|-----------|
-| category_id | (忽略，使用自动增量) |
-| name | name |
-| icon | icon (空则默认为 📦) |
-| type | type (1=income, 0=expense) |
-| sortOrder | sortOrder |
-| isDefault | isDefault |
-| isActive | isActive |
+### 导入文件结构
 
-### XLSX YYMM_full sheet -> transactions 表
+**文件名格式：** `finance_record_YYMM.xlsx`
+- `YY` = 年份后两位（25 = 2025）
+- `MM` = 月份（01-12）
+- 例如：`finance_record_2505.xlsx` = 2025年5月
 
-| XLSX 列 | 数据库字段 | 说明 |
-|---------|-----------|------|
-| id | (忽略) | XLSX内部ID |
-| category_id | (忽略) | 来自旧系统 |
-| general_name | (通过name映射) | 分类名称 -> categoryId |
-| description | description | 交易描述 |
-| amount | amount | 金额（负数为支出） |
-| income | (用于判断) | 1=收入 |
-| expense | (用于判断) | 1=支出 |
-| created_at | date | 格式 260101-0800 -> 2026-01-01 08:00:00 |
+**每个文件包含多个月份的数据**
 
-### XLSX YYMM_rep sheet -> budgets + grand_balances / account_balances
+### XLSX 导入简述
 
-**bank_account_info 部分 -> grand_balances + account_balances 表：**
+1. **transactions** - 从 `*_full` sheet 导入
+   - name = C列 (general_name)
+   - description = D列
+   - categoryId = B列 (1-8)
+   - accountId = 2 (银行账户)
 
-| XLSX 位置 | 数据库字段 |
-|----------|-----------|
-| Sheet名 (如 2507) | year, month (从工作表名称提取) |
-| C2 (opening_balance) | openingBalance |
-| D2 (closing_balance) | closingBalance |
+2. **budgets** - 从 `*_rep` sheet 导入
+   - name = D列 (budget_name)
+   - description = E列
+   - categoryId = B列 (1-8)
+   - accountId = 2 (银行账户)
+   - startDate = 月初
+   - endDate = 月末
 
-每个 `_rep` 工作表提供当月的总体余额，同时也会为默认账户(accountId=1)创建账户余额记录。
+3. **account_monthly_balances** - 从 `*_rep` sheet 导入
+   - accountId = 2 (银行账户)
+   - openingBalance/closingBalance = C列/D列
 
-**budget_info 部分 -> budgets 表：**
-
-| XLSX 位置 | 数据库字段 |
-|----------|-----------|
-| B列 (category_id) | (用于映射 categoryId) |
-| C列 (category_name) | (通过name查找 categoryId) |
-| F列 (amount) | amount |
-| 月份 | month (YYYY-MM格式) |
+详细映射见 [IMPORT_SCRIPT.md](./IMPORT_SCRIPT.md)

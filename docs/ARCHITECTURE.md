@@ -24,7 +24,7 @@
 │   - BudgetService                       │
 │   - CategoryService                     │
 │   - AccountService                       │
-│   - BankBalanceService                  │
+│   - AccountMonthlyBalanceService        │
 └─────────────────────────────────────────┘
                     │
                     ▼
@@ -34,7 +34,7 @@
 │   - BudgetRepository                    │
 │   - CategoryRepository                  │
 │   - AccountRepository                   │
-│   - BankBalanceRepository               │
+│   - AccountMonthlyBalanceRepository     │
 └─────────────────────────────────────────┘
                     │
                     ▼
@@ -69,7 +69,7 @@
 - `categories` - 分类列表
 - `accounts` - 账户列表
 - `budgets` - 预算列表
-- `bankBalances` - 银行余额记录
+- `accountMonthlyBalances` - 账户月度余额记录
 
 ### 3. Service Layer (服务层)
 
@@ -82,7 +82,7 @@
 - `BudgetService` - 预算业务逻辑
 - `CategoryService` - 分类业务逻辑
 - `AccountService` - 账户业务逻辑
-- `BankBalanceService` - 银行余额业务逻辑
+- `AccountMonthlyBalanceService` - 账户月度余额业务逻辑
 
 ### 4. Repository Layer (数据访问层)
 
@@ -96,7 +96,7 @@
 - `BudgetRepository` - 预算数据访问
 - `CategoryRepository` - 分类数据访问
 - `AccountRepository` - 账户数据访问
-- `BankBalanceRepository` - 银行余额数据访问
+- `AccountMonthlyBalanceRepository` - 账户月度余额数据访问
 
 ### 5. Database Layer (数据库层)
 
@@ -143,7 +143,7 @@ interface FinanceState {
   categories: Category[];
   budgets: Budget[];
   accounts: Account[];
-  bankBalances: BankBalance[];
+  accountMonthlyBalances: AccountMonthlyBalance[];
 }
 
 interface FinanceContextType {

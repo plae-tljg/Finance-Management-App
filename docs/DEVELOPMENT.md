@@ -38,6 +38,8 @@ cd android
 
 # 构建 Release APK
 ./gradlew assembleRelease
+
+> **Note:** 如果构建失败并提示 `Keystore file not found`，请检查 `app/build.gradle` 中的 `signingConfigs.release.storeFile` 路径是否正确指向您的 keystore 文件位置。该路径应为绝对路径，且每位开发者可能不同。
 ```
 
 ### iOS 构建 (仅 macOS)

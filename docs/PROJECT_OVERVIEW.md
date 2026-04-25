@@ -86,12 +86,12 @@ Finance-Management-App/
 ### XLSX 文件命名规则
 
 `finance_record_YY_S.xlsx`
-- `YY` = 年份（26 = 2026）
-- `S` = 季度（1 = Q1 Jan-Mar, 2 = Q2 Apr-Jun, etc.）
+- `YY` = 年份后两位（25 = 2025, 26 = 2026）
+- `S` = 季度（1 = Q1 Jan-Mar, 2 = Q2 Apr-Jun, 3 = Q3 Jul-Sep, 4 = Q4 Oct-Dec）
 
 示例：
-- `finance_record_26_1.xlsx` - 2026年Q1 (1月-3月)
-- `finance_record_26_2.xlsx` - 2026年Q2 (4月-6月)
+- `finance_record_25_1.xlsx` - 2025年Q1 (1月-3月)
+- `finance_record_25_2.xlsx` - 2025年Q2 (4月-6月)
 
 ### XLSX 内部结构
 

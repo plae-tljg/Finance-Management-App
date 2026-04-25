@@ -102,7 +102,7 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('../finance-manager-release-key.keystore')
+            storeFile file('/home/lkm/00app/05web/Finance-Management-App/finance-manager-release-key.keystore')
             storePassword 'finance123'
             keyAlias 'finance-manager-key-alias'
             keyPassword 'finance123'
