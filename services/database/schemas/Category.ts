@@ -85,6 +85,11 @@ export const CategoryQueries = {
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `,
+
+  CREATE_INDEXES: `
+    CREATE INDEX IF NOT EXISTS idx_categories_type ON categories(type);
+    CREATE INDEX IF NOT EXISTS idx_categories_isActive ON categories(isActive);
+  `,
   
   INSERT: `
     INSERT INTO categories (

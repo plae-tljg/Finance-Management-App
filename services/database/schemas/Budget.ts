@@ -1,16 +1,18 @@
 export interface Budget {
   id: number;
-  name: string;          // 预算名称
-  categoryId: number;    // 关联的类别ID
-  amount: number;        // 预算金额
-  period: 'daily' | 'weekly' | 'monthly' | 'yearly';  // 预算周期
-  startDate: string;     // 预算开始日期
-  endDate: string;       // 预算结束日期
-  month: string;         // 格式: YYYY-MM
-  createdAt: string;     // 创建时间
-  updatedAt: string;     // 更新时间
-  isRegular: boolean;    // 是否为固定预算
-  isBudgetExceeded: boolean;   // 是否超出预算
+  name: string;
+  description: string | null;
+  categoryId: number;
+  accountId: number | null;
+  amount: number;
+  period: 'daily' | 'weekly' | 'monthly' | 'yearly';
+  startDate: string;
+  endDate: string;
+  month: string;
+  createdAt: string;
+  updatedAt: string;
+  isRegular: boolean;
+  isBudgetExceeded: boolean;
 }
 
 export interface BudgetWithCategory extends Budget {
@@ -19,23 +21,8 @@ export interface BudgetWithCategory extends Budget {
   spent: number;
 }
 
-// 可选：添加一些默认预算, sample data to insert
-export const DEFAULT_BUDGETS: Omit<Budget, 'id' | 'createdAt' | 'updatedAt'>[] = [
-  {
-    name: '餐饮',
-    categoryId: 1,
-    amount: 2000,
-    period: 'monthly',
-    startDate: '2024-01-01',
-    endDate: '2024-01-31',
-    month: '2024-01',
-    isRegular: true,
-    isBudgetExceeded: false
-  }
-];
-
 export const BudgetFields = {
-  UPDATABLE: ['name', 'categoryId', 'amount', 'period', 'startDate', 'endDate', 'month'] as const,
+  UPDATABLE: ['name', 'description', 'categoryId', 'accountId', 'amount', 'period', 'startDate', 'endDate', 'month', 'isRegular', 'isBudgetExceeded'] as const,
 } as const;
 
 export type UpdatableFields = typeof BudgetFields.UPDATABLE[number];
@@ -45,34 +32,54 @@ export const BudgetQueries = {
     CREATE TABLE IF NOT EXISTS budgets (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
+      description TEXT,
       categoryId INTEGER NOT NULL,
+      accountId INTEGER DEFAULT NULL,
       amount DECIMAL(10,2) NOT NULL,
       period TEXT NOT NULL CHECK(period IN ('daily', 'weekly', 'monthly', 'yearly')),
       startDate TEXT NOT NULL,
       endDate TEXT NOT NULL,
       month TEXT NOT NULL,
+      isRegular INTEGER DEFAULT 0,
+      isBudgetExceeded INTEGER DEFAULT 0,
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (categoryId) REFERENCES categories(id)
+      FOREIGN KEY (categoryId) REFERENCES categories(id),
+      FOREIGN KEY (accountId) REFERENCES accounts(id)
     )
   `,
 
+  CREATE_INDEXES: `
+    CREATE INDEX IF NOT EXISTS idx_budgets_month ON budgets(month);
+    CREATE INDEX IF NOT EXISTS idx_budgets_categoryId ON budgets(categoryId);
+    CREATE INDEX IF NOT EXISTS idx_budgets_accountId ON budgets(accountId);
+  `,
+
   INSERT: `
-    INSERT INTO budgets (name, categoryId, amount, period, startDate, endDate, month) 
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO budgets (name, description, categoryId, accountId, amount, period, startDate, endDate, month, isRegular, isBudgetExceeded)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `,
 
   UPDATE: `
-    UPDATE budgets 
+    UPDATE budgets
     SET name = COALESCE(?, name),
+        description = COALESCE(?, description),
         categoryId = COALESCE(?, categoryId),
+        accountId = COALESCE(?, accountId),
         amount = COALESCE(?, amount),
         period = COALESCE(?, period),
         startDate = COALESCE(?, startDate),
         endDate = COALESCE(?, endDate),
         month = COALESCE(?, month),
+        isRegular = COALESCE(?, isRegular),
+        isBudgetExceeded = COALESCE(?, isBudgetExceeded),
         updatedAt = CURRENT_TIMESTAMP
     WHERE id = ?
+  `,
+
+  ADD_COLUMNS_MIGRATION: `
+    ALTER TABLE budgets ADD COLUMN isRegular INTEGER DEFAULT 0;
+    ALTER TABLE budgets ADD COLUMN isBudgetExceeded INTEGER DEFAULT 0;
   `,
 
   DELETE: 'DELETE FROM budgets WHERE id = ?',

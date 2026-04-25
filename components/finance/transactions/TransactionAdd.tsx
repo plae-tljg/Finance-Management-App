@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Platform, Alert } from 'react-native';
+import { StyleSheet, View, TextInput, TouchableOpacity, Platform, Alert, ScrollView } from 'react-native';
 import { Text } from '@/components/base/Text';
 import { CategorySelector } from '@/components/finance/categories/CategorySelector';
 import { useTransactionService } from '@/services/business/TransactionService';
 import { useBudgetService } from '@/services/business/BudgetService';
+import { useAccountService } from '@/services/business/AccountService';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import type { BudgetWithCategory } from '@/services/database/schemas/Budget';
 import { BudgetSelector } from '@/components/finance/budgets/BudgetSelector';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import type { Account } from '@/services/database/schemas/Account';
+import theme from '@/theme';
 
 interface TransactionFormProps {
   onSubmit: () => void;
@@ -15,28 +18,38 @@ interface TransactionFormProps {
 
 export function TransactionForm({ onSubmit }: TransactionFormProps) {
   const { isReady, databaseService } = useDatabaseSetup();
+  const transactionService = useTransactionService(databaseService);
+  const budgetService = useBudgetService(databaseService);
+  const accountService = useAccountService(databaseService);
+
   const [type, setType] = useState<'income' | 'expense'>('expense');
+  const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [selectedBudget, setSelectedBudget] = useState<number | null>(null);
+  const [selectedAccount, setSelectedAccount] = useState<number | null>(null);
   const [description, setDescription] = useState('');
   const [budgets, setBudgets] = useState<BudgetWithCategory[]>([]);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-
-  const transactionService = React.useMemo(
-    () => isReady && databaseService ? useTransactionService(databaseService) : null,
-    [isReady, databaseService]
-  );
-
-  const budgetService = React.useMemo(
-    () => isReady && databaseService ? useBudgetService(databaseService) : null,
-    [isReady, databaseService]
-  );
+  const [accountList, setAccountList] = useState<Account[]>([]);
 
   useEffect(() => {
-    if (!budgetService) return;
-    
+    const loadAccountsData = async () => {
+      if (accountService && isReady) {
+        const data = await accountService.getAccounts();
+        setAccountList(data);
+        if (data.length > 0 && !selectedAccount) {
+          setSelectedAccount(data[0].id);
+        }
+      }
+    };
+    loadAccountsData();
+  }, [isReady, accountService]);
+
+  useEffect(() => {
+    if (!budgetService || !isReady) return;
+
     const loadBudgets = async () => {
       try {
         const data = await budgetService.getBudgetsWithCategory();
@@ -51,7 +64,7 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
     };
 
     loadBudgets();
-  }, [budgetService]);
+  }, [budgetService, isReady]);
 
   const handleDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
     if (Platform.OS === 'android') {
@@ -59,19 +72,23 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
     }
     if (selectedDate) {
       setDate(selectedDate);
-      // 当日期改变时，清除已选择的预算，因为预算可能与新日期不匹配
       setSelectedBudget(null);
     }
   };
 
   const handleSubmit = async () => {
-    if (!transactionService) {
+    if (!transactionService || !isReady) {
       console.error('交易服务未初始化');
       return;
     }
 
     if (!selectedCategory) {
       alert('请选择类别');
+      return;
+    }
+
+    if (!name.trim()) {
+      alert('请输入交易名称');
       return;
     }
 
@@ -84,13 +101,20 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
       alert('请选择预算');
       return;
     }
-    
+
+    if (!selectedAccount) {
+      alert('请选择账户');
+      return;
+    }
+
     try {
       const newTransaction = await transactionService.createTransaction({
+        name: name.trim(),
         amount: parseFloat(amount),
         categoryId: selectedCategory,
         budgetId: selectedBudget,
-        description: description.trim(),
+        accountId: selectedAccount,
+        description: description.trim() || null,
         date: date.toISOString(),
         type
       });
@@ -99,6 +123,12 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
         throw new Error('创建交易失败');
       }
 
+      if (accountService) {
+        const adjustment = type === 'income' ? parseFloat(amount) : -parseFloat(amount);
+        await accountService.adjustAccountBalance(selectedAccount, adjustment);
+      }
+
+      setName('');
       setAmount('');
       setDescription('');
       setSelectedCategory(null);
@@ -112,7 +142,7 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
   };
 
   return (
-    <View style={styles.content}>
+    <ScrollView style={styles.content}>
       <View style={styles.card}>
         <View style={styles.row}>
           <Text style={styles.label}>类型</Text>
@@ -129,7 +159,7 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
                 type === 'expense' && styles.activeTypeButtonText
               ]}>支出</Text>
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={[
                 styles.typeButton,
@@ -155,11 +185,34 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
               style={[styles.input, styles.amountInput]}
               keyboardType="numeric"
               placeholder="0.00"
-              placeholderTextColor="#999"
+              placeholderTextColor={theme.colors.textTertiary}
               value={amount}
               onChangeText={setAmount}
             />
           </View>
+        </View>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>账户</Text>
+        <View style={styles.accountSelector}>
+          {accountList.map((account) => (
+            <TouchableOpacity
+              key={account.id}
+              style={[
+                styles.accountButton,
+                selectedAccount === account.id && styles.activeAccountButton,
+                { borderColor: selectedAccount === account.id ? account.color : theme.colors.border }
+              ]}
+              onPress={() => setSelectedAccount(account.id)}
+            >
+              <Text style={styles.accountIcon}>{account.icon}</Text>
+              <Text style={[
+                styles.accountName,
+                selectedAccount === account.id && { color: account.color }
+              ]}>{account.name}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
       </View>
 
@@ -187,7 +240,7 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
 
       <View style={styles.card}>
         <Text style={styles.label}>类别</Text>
-        <CategorySelector 
+        <CategorySelector
           onSelect={(category) => {
             setSelectedCategory(category?.id || null);
             setSelectedBudget(null);
@@ -209,11 +262,22 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
       )}
 
       <View style={styles.card}>
+        <Text style={styles.label}>名称</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="输入交易名称"
+          placeholderTextColor={theme.colors.textTertiary}
+          value={name}
+          onChangeText={setName}
+        />
+      </View>
+
+      <View style={styles.card}>
         <Text style={styles.label}>描述</Text>
         <TextInput
           style={[styles.input, styles.descriptionInput]}
           placeholder="添加描述（可选）"
-          placeholderTextColor="#999"
+          placeholderTextColor={theme.colors.textTertiary}
           value={description}
           onChangeText={setDescription}
           multiline
@@ -226,33 +290,27 @@ export function TransactionForm({ onSubmit }: TransactionFormProps) {
       >
         <Text style={styles.buttonText}>保存</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-    padding: 12,
+    padding: theme.spacing.md,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+    ...theme.shadows.sm,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: theme.fontSize.sm,
+    fontWeight: theme.fontWeight.medium,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.sm,
   },
   row: {
     flexDirection: 'row',
@@ -261,81 +319,110 @@ const styles = StyleSheet.create({
   },
   input: {
     borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 6,
-    padding: 10,
-    fontSize: 14,
-    color: '#333',
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.sm,
+    padding: theme.spacing.md,
+    fontSize: theme.fontSize.md,
+    color: theme.colors.text,
   },
   typeSelector: {
     flexDirection: 'row',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 6,
+    backgroundColor: theme.colors.surfaceDark,
+    borderRadius: theme.borderRadius.sm,
     padding: 3,
     flex: 1,
-    marginLeft: 12,
+    marginLeft: theme.spacing.md,
   },
   typeButton: {
     flex: 1,
-    padding: 6,
+    padding: theme.spacing.sm,
     alignItems: 'center',
-    borderRadius: 4,
+    borderRadius: theme.borderRadius.sm - 2,
   },
   activeTypeButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
   },
   typeButtonText: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: theme.fontSize.md,
+    color: theme.colors.textSecondary,
   },
   activeTypeButtonText: {
-    color: '#fff',
+    color: theme.colors.white,
+    fontWeight: theme.fontWeight.medium,
   },
   currency: {
-    fontSize: 16,
-    marginRight: 6,
-    color: '#333',
+    fontSize: theme.fontSize.lg,
+    marginRight: theme.spacing.xs,
+    color: theme.colors.text,
   },
   amountInput: {
     flex: 1,
-    fontSize: 16,
+    fontSize: theme.fontSize.lg,
   },
   amountContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    marginLeft: 12,
+    marginLeft: theme.spacing.md,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 6,
-    paddingHorizontal: 10,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.sm,
+    paddingHorizontal: theme.spacing.md,
+    backgroundColor: theme.colors.surface,
   },
   dateButton: {
     borderWidth: 1,
-    borderColor: '#e0e0e0',
-    borderRadius: 6,
-    padding: 10,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.sm,
+    padding: theme.spacing.md,
     flex: 1,
-    marginLeft: 12,
+    marginLeft: theme.spacing.md,
   },
   dateText: {
-    fontSize: 14,
-    color: '#333',
+    fontSize: theme.fontSize.md,
+    color: theme.colors.text,
   },
   descriptionInput: {
     minHeight: 60,
     textAlignVertical: 'top',
   },
   primaryButton: {
-    backgroundColor: '#007AFF',
-    borderRadius: 6,
-    padding: 12,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: theme.spacing.md,
+    marginBottom: theme.spacing.xxl,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
+    color: theme.colors.white,
+    fontSize: theme.fontSize.lg,
+    fontWeight: theme.fontWeight.semibold,
   },
-}); 
+  accountSelector: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: theme.spacing.sm,
+  },
+  accountButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: theme.spacing.sm,
+    paddingHorizontal: theme.spacing.md,
+    borderRadius: theme.borderRadius.md,
+    backgroundColor: theme.colors.surfaceDark,
+    borderWidth: 2,
+    borderColor: theme.colors.border,
+  },
+  activeAccountButton: {
+    backgroundColor: theme.colors.surface,
+  },
+  accountIcon: {
+    fontSize: 18,
+    marginRight: theme.spacing.xs,
+  },
+  accountName: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.text,
+  },
+});

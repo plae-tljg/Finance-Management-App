@@ -16,6 +16,7 @@ export function BudgetEdit({ budget, onSave }: BudgetEditProps) {
   const budgetService = useBudgetService(databaseService);
 
   const [name, setName] = useState(budget.name);
+  const [description, setDescription] = useState(budget.description || '');
   const [amount, setAmount] = useState(budget.amount.toString());
   const [selectedCategory, setSelectedCategory] = useState<number | null>(budget.categoryId);
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>(budget.period);
@@ -48,6 +49,7 @@ export function BudgetEdit({ budget, onSave }: BudgetEditProps) {
       const updatedBudget = {
         ...budget,
         name: name.trim(),
+        description: description.trim() || null,
         amount: parseFloat(amount),
         categoryId: selectedCategory,
         period,
@@ -76,6 +78,16 @@ export function BudgetEdit({ budget, onSave }: BudgetEditProps) {
           value={name}
           onChangeText={setName}
           placeholder="输入预算名称"
+        />
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.label}>描述</Text>
+        <TextInput
+          style={styles.input}
+          value={description}
+          onChangeText={setDescription}
+          placeholder="输入描述（可选）"
         />
       </View>
 

@@ -59,7 +59,15 @@ export default function RootLayout() {
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="transaction/index" options={{ headerShown: false }} />
               <Stack.Screen name="budget/index" options={{ headerShown: false }} />
+              <Stack.Screen name="budget/edit" options={{ headerShown: false }} />
+              <Stack.Screen name="bank_balance" options={{ headerShown: false }} />
+              <Stack.Screen name="monthly_summary" options={{ headerShown: false }} />
               <Stack.Screen name="categories" options={{ headerShown: false }} />
+              <Stack.Screen name="settings" options={{ headerShown: false }} />
+              <Stack.Screen name="reports/cashflow" options={{ headerShown: false }} />
+              <Stack.Screen name="reports/yearly_summary" options={{ headerShown: false }} />
+              <Stack.Screen name="accounts" options={{ headerShown: false }} />
+              <Stack.Screen name="goals" options={{ headerShown: false }} />
             </Stack>
             <StatusBar style="dark" translucent={true} backgroundColor="transparent" />
           </ThemeProvider>

@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { BudgetItem } from './BudgetItem';
 import type { BudgetWithCategory } from '@/services/database/repositories/BudgetRepository';
+import theme from '@/theme';
 
 interface BudgetListProps {
   budgets: BudgetWithCategory[];
@@ -11,7 +11,7 @@ interface BudgetListProps {
   onRefresh: () => void;
   onDelete: (id: number) => void;
   onEdit: (id: number) => void;
-  title?: string; // 添加可选的标题属性
+  title?: string;
 }
 
 export function BudgetList({ 
@@ -25,36 +25,29 @@ export function BudgetList({
 }: BudgetListProps) {
   const handleDelete = React.useCallback(async (id: number) => {
     await onDelete(id);
-    // 删除后立即刷新列表
     onRefresh();
   }, [onDelete, onRefresh]);
 
   if (isLoading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <Text>加载中...</Text>
-      </SafeAreaView>
+      <View style={styles.emptyContainer}>
+        <Text style={styles.loadingText}>加载中...</Text>
+      </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      {title && (
-        <View style={styles.header}>
-          <Text style={styles.title}>{title}</Text>
-        </View>
-      )}
+    <View style={styles.container}>
       <FlatList
         data={budgets}
         renderItem={({ item }) => (
-          <BudgetItem 
-            budget={item} 
+          <BudgetItem
+            budget={item}
             onDelete={() => handleDelete(item.id)}
             onEdit={() => onEdit(item.id)}
           />
         )}
         keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.list}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -69,38 +62,40 @@ export function BudgetList({
           </View>
         }
       />
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
   },
   header: {
-    padding: 16,
-    backgroundColor: '#f8f9fa',
+    padding: theme.spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: '#e9ecef',
+    borderBottomColor: theme.colors.border,
   },
   title: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: theme.fontSize.lg,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
   },
   list: {
     flexGrow: 1,
-    padding: 16,
+    padding: theme.spacing.lg,
   },
   emptyContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+    padding: theme.spacing.xl,
   },
   emptyText: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: theme.fontSize.md,
+    color: theme.colors.textSecondary,
+  },
+  loadingText: {
+    color: theme.colors.textSecondary,
+    fontSize: theme.fontSize.md,
   },
 });

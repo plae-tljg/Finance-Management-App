@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, TextInput, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { Text } from '@/components/base/Text';
 import { CategorySelector } from '@/components/finance/categories/CategorySelector';
+import { BudgetSelector } from '@/components/finance/budgets/BudgetSelector';
 import { useTransactionService } from '@/services/business/TransactionService';
+import { useBudgetService } from '@/services/business/BudgetService';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import { useCategoryService } from '@/services/business/CategoryService';
 import type { Transaction } from '@/services/database/schemas/Transaction';
 import { formatCurrency } from '@/utils/format';
+import type { BudgetWithCategory } from '@/services/database/repositories/BudgetRepository';
 
 interface TransactionEditProps {
   transaction: Transaction;
@@ -16,31 +19,22 @@ interface TransactionEditProps {
 export function TransactionEdit({ transaction, onSave }: TransactionEditProps) {
   const { databaseService } = useDatabaseSetup();
   const transactionService = useTransactionService(databaseService);
+  const budgetService = useBudgetService(databaseService);
   const categoryService = useCategoryService(databaseService);
-  const [categoryName, setCategoryName] = useState<string>('未分类');
 
+  const [name, setName] = useState(transaction.name);
   const [description, setDescription] = useState(transaction.description || '');
   const [amount, setAmount] = useState(transaction.amount.toString());
   const [selectedCategory, setSelectedCategory] = useState<number | null>(transaction.categoryId);
+  const [selectedBudget, setSelectedBudget] = useState<number | null>(transaction.budgetId || null);
   const [type, setType] = useState<'income' | 'expense'>(transaction.type);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [transactionDate] = useState(() => new Date(transaction.date));
 
-  useEffect(() => {
-    const loadCategoryName = async () => {
-      if (transaction.categoryId && categoryService) {
-        try {
-          const category = await categoryService.getCategoryById(transaction.categoryId);
-          if (category) {
-            setCategoryName(category.name);
-          }
-        } catch (error) {
-          console.error('加载类别名称失败:', error);
-        }
-      }
-    };
-
-    loadCategoryName();
-  }, [transaction.categoryId, categoryService]);
+  const handleCategoryChange = (categoryId: number | null) => {
+    setSelectedCategory(categoryId);
+    setSelectedBudget(null);
+  };
 
   const handleSave = async () => {
     if (!transactionService) {
@@ -48,8 +42,8 @@ export function TransactionEdit({ transaction, onSave }: TransactionEditProps) {
       return;
     }
 
-    if (!description.trim()) {
-      Alert.alert('错误', '请输入描述');
+    if (!name.trim()) {
+      Alert.alert('错误', '请输入交易名称');
       return;
     }
 
@@ -68,9 +62,11 @@ export function TransactionEdit({ transaction, onSave }: TransactionEditProps) {
     try {
       const updatedTransaction = {
         ...transaction,
-        description: description.trim(),
+        name: name.trim(),
+        description: description.trim() || null,
         amount: parseFloat(amount),
         categoryId: selectedCategory,
+        budgetId: selectedBudget || 0,
         type,
       };
 
@@ -89,14 +85,25 @@ export function TransactionEdit({ transaction, onSave }: TransactionEditProps) {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
+      <View style={styles.card}>
+        <Text style={styles.label}>名称</Text>
+        <TextInput
+          style={styles.input}
+          value={name}
+          onChangeText={setName}
+          placeholder="输入交易名称"
+        />
+      </View>
+
       <View style={styles.card}>
         <Text style={styles.label}>描述</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, styles.multilineInput]}
           value={description}
           onChangeText={setDescription}
-          placeholder="输入交易描述"
+          placeholder="输入交易描述（可选）"
+          multiline
         />
       </View>
 
@@ -115,17 +122,24 @@ export function TransactionEdit({ transaction, onSave }: TransactionEditProps) {
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.label}>当前类别</Text>
-        <Text style={styles.value}>{categoryName}</Text>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>选择新类别</Text>
+        <Text style={styles.label}>类别</Text>
         <CategorySelector
           selectedId={selectedCategory || undefined}
-          onSelect={(category) => setSelectedCategory(category?.id || null)}
+          onSelect={(category) => handleCategoryChange(category?.id || null)}
         />
       </View>
+
+      {selectedCategory && (
+        <View style={styles.card}>
+          <Text style={styles.label}>预算</Text>
+          <BudgetSelector
+            categoryId={selectedCategory}
+            onSelect={(budget) => setSelectedBudget(budget?.id || null)}
+            selectedId={selectedBudget || undefined}
+            date={transactionDate}
+          />
+        </View>
+      )}
 
       <View style={styles.card}>
         <Text style={styles.label}>类型</Text>
@@ -170,7 +184,7 @@ export function TransactionEdit({ transaction, onSave }: TransactionEditProps) {
           {isSubmitting ? '保存中...' : '保存'}
         </Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -199,11 +213,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: '#000',
   },
-  value: {
-    fontSize: 16,
-    color: '#000',
-    marginBottom: 8,
-  },
   input: {
     height: 40,
     borderWidth: 1,
@@ -212,6 +221,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     fontSize: 16,
     color: '#000',
+  },
+  multilineInput: {
+    height: 80,
+    textAlignVertical: 'top',
+    paddingTop: 8,
   },
   amountContainer: {
     flexDirection: 'row',
@@ -260,6 +274,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     marginTop: 16,
+    marginBottom: 32,
   },
   disabledButton: {
     backgroundColor: '#999',

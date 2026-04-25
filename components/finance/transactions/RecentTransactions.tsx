@@ -6,11 +6,12 @@ import { TransactionItem } from './TransactionItem';
 import { useFinance } from '@/contexts/FinanceContext';
 import { withDataLoading } from '@/components/base/withDataLoading';
 import { router } from 'expo-router';
+import theme from '@/theme';
 
 function RecentTransactionsBase() {
   const { transactions, isLoadingTransactions } = useFinance();
   
-  const recentTransactions = transactions.slice(0, 3); // 只显示最新的3条记录
+  const recentTransactions = transactions.slice(0, 3);
 
   const handleViewAll = () => {
     router.push('/transaction');
@@ -46,8 +47,8 @@ function RecentTransactionsBase() {
             <TransactionItem
               key={transaction.id}
               transaction={transaction}
-              onDelete={() => {}} // 在主页不显示删除按钮
-              showActions={false} // 在主页不显示操作按钮
+              onDelete={() => {}}
+              showActions={false}
             />
           ))
         ) : (
@@ -62,38 +63,38 @@ function RecentTransactionsBase() {
 
 const styles = StyleSheet.create({
   card: {
-    padding: 16,
-    margin: 8,
-    borderRadius: 8,
+    padding: theme.spacing.lg,
+    margin: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: theme.spacing.md,
   },
   viewAll: {
-    color: '#007AFF',
-    fontSize: 14,
+    color: theme.colors.primary,
+    fontSize: theme.fontSize.sm,
   },
   transactionsContainer: {
-    gap: 8,
+    gap: theme.spacing.sm,
   },
   loadingContainer: {
-    padding: 20,
+    padding: theme.spacing.xl,
     alignItems: 'center',
   },
   loadingText: {
-    color: '#666',
-    fontSize: 14,
+    color: theme.colors.textSecondary,
+    fontSize: theme.fontSize.sm,
   },
   emptyContainer: {
-    padding: 20,
+    padding: theme.spacing.xl,
     alignItems: 'center',
   },
   emptyText: {
-    color: '#666',
-    fontSize: 14,
+    color: theme.colors.textSecondary,
+    fontSize: theme.fontSize.sm,
   }
 });
 

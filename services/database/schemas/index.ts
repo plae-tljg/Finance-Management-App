@@ -1,20 +1,28 @@
 import { CategoryQueries } from './Category';
 import { TransactionQueries } from './Transaction';
 import { BudgetQueries } from './Budget';
-import { BankBalanceQueries } from './BankBalance';
+import { AccountMonthlyBalanceQueries } from './AccountMonthlyBalance';
+import { RecurringTransactionQueries } from './RecurringTransaction';
+import { AccountQueries } from './Account';
+import { GoalQueries } from './Goal';
+import { TagQueries, TransactionTagQueries } from './Tag';
 
-// 集中管理数据库表结构
 export const SCHEMA_VERSIONS = {
   v1: '1.0.0',
-  // 未来版本在这里添加
+  v2: '1.1.0',
+  v3: '1.2.0',
+  v4: '1.3.0',
+  v5: '1.4.0',
 };
 
-// 按照依赖关系排序的表创建语句
 export const SCHEMAS = {
-  // 先创建没有外键依赖的表
   categories: CategoryQueries.CREATE_TABLE,
   budgets: BudgetQueries.CREATE_TABLE,
-  bank_balances: BankBalanceQueries.CREATE_TABLE,
-  // 最后创建有外键依赖的表
+  account_monthly_balances: AccountMonthlyBalanceQueries.CREATE_TABLE,
   transactions: TransactionQueries.CREATE_TABLE,
+  recurring_transactions: RecurringTransactionQueries.CREATE_TABLE,
+  accounts: AccountQueries.CREATE_TABLE,
+  goals: GoalQueries.CREATE_TABLE,
+  tags: TagQueries.CREATE_TABLE,
+  transaction_tags: TransactionTagQueries.CREATE_TABLE,
 }; 

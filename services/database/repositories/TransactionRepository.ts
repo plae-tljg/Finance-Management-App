@@ -7,6 +7,9 @@ export interface TransactionWithCategory extends Transaction {
   categoryName: string;
   categoryIcon: string;
   budgetName?: string;
+  accountName?: string;
+  accountIcon?: string;
+  accountColor?: string;
 }
 
 export interface CategorySummary {
@@ -24,6 +27,16 @@ export interface BudgetSummary {
   isExceeded: number;
 }
 
+export interface AccountSummary {
+  accountId: number;
+  accountName: string;
+  accountIcon: string;
+  accountColor: string;
+  totalIncome: number;
+  totalExpense: number;
+  transactionCount: number;
+}
+
 export class TransactionRepository implements BaseRepository<Transaction> {
   constructor(private db: QueryExecutor) {}
 
@@ -31,15 +44,17 @@ export class TransactionRepository implements BaseRepository<Transaction> {
     const result = await this.db.executeQuery<Transaction>(
       TransactionQueries.INSERT,
       [
+        data.name,
+        data.description ?? null,
         data.amount,
         data.categoryId,
         data.budgetId,
-        data.description,
+        data.accountId,
         data.date,
         data.type
       ]
     );
-    
+
     return {
       ...data,
       id: result.insertId!,
@@ -175,6 +190,30 @@ export class TransactionRepository implements BaseRepository<Transaction> {
   async getSummaryByBudget(startDate: string, endDate: string): Promise<BudgetSummary[]> {
     const result = await this.db.executeQuery<BudgetSummary>(
       TransactionQueries.GET_SUMMARY_BY_BUDGET,
+      [startDate, endDate]
+    );
+    return result.rows._array;
+  }
+
+  async findByAccountId(accountId: number): Promise<Transaction[]> {
+    const result = await this.db.executeQuery<Transaction>(
+      TransactionQueries.FIND_BY_ACCOUNT_ID,
+      [accountId]
+    );
+    return result.rows._array;
+  }
+
+  async getTotalByAccount(accountId: number, type: 'income' | 'expense'): Promise<number> {
+    const result = await this.db.executeQuery<{total: number}>(
+      TransactionQueries.GET_TOTAL_BY_ACCOUNT,
+      [accountId, type]
+    );
+    return result.rows._array[0]?.total ?? 0;
+  }
+
+  async getSummaryByAccount(startDate: string, endDate: string): Promise<AccountSummary[]> {
+    const result = await this.db.executeQuery<AccountSummary>(
+      TransactionQueries.GET_SUMMARY_BY_ACCOUNT,
       [startDate, endDate]
     );
     return result.rows._array;

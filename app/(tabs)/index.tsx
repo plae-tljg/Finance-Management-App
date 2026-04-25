@@ -2,10 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/components/base/Text';
+import { Card } from '@/components/base/Card';
+import { HeaderCard } from '@/components/base/HeaderCard';
+import { BackgroundImage } from '@/components/base/BackgroundImage';
 import { FinanceOverview } from '@/components/finance/summary/FinanceOverview';
 import { RecentTransactions } from '@/components/finance/transactions/RecentTransactions';
 import { useFinance } from '@/contexts/FinanceContext';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
+import theme from '@/theme';
 
 export default function DashboardScreen() {
   const { isReady, error } = useDatabaseSetup();
@@ -40,43 +44,46 @@ export default function DashboardScreen() {
 
   if (error) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>数据库初始化失败: {error.message}</Text>
-      </View>
+      <BackgroundImage>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>数据库初始化失败: {error.message}</Text>
+        </View>
+      </BackgroundImage>
     );
   }
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text style={styles.loadingText}>正在加载数据...</Text>
-      </View>
+      <BackgroundImage>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={styles.loadingText}>正在加载数据...</Text>
+        </View>
+      </BackgroundImage>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text variant="title">财务概览</Text>
-      </View>
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-        <FinanceOverview isReady={isReady} />
-        {isReady && <RecentTransactions isReady={isReady} />}
-      </ScrollView>
-    </SafeAreaView>
+    <BackgroundImage blurTint="light" overlayOpacity={0.05}>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <HeaderCard title="财务概览" showBack={false} />
+        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+          <FinanceOverview isReady={isReady} />
+          {isReady && <RecentTransactions isReady={isReady} />}
+        </ScrollView>
+      </SafeAreaView>
+    </BackgroundImage>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   header: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    marginHorizontal: theme.spacing.lg,
+    marginTop: theme.spacing.lg,
+    marginBottom: theme.spacing.sm,
   },
   scrollView: {
     flex: 1,
@@ -85,10 +92,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: theme.spacing.lg,
   },
   errorText: {
-    color: 'red',
+    color: theme.colors.danger,
     textAlign: 'center',
   },
   loadingContainer: {
@@ -97,7 +104,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingText: {
-    marginTop: 16,
-    color: '#666',
+    marginTop: theme.spacing.md,
+    color: theme.colors.textSecondary,
   },
 });

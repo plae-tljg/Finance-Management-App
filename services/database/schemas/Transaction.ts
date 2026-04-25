@@ -1,15 +1,13 @@
-// 这个文件定义 TypeScript 接口，用于：
-// 1. 类型检查
-// 2. 代码提示
-// 3. 定义业务层使用的属性名（通常是 camelCase）
 export interface Transaction {
   id: number;
-  amount: number;        // 金额
-  categoryId: number;    // 关联的类别ID（如：餐饮、交通等）
-  budgetId: number;      // 关联的预算ID
+  name: string;
   description: string | null;
-  date: string;         // 交易日期
-  type: 'income' | 'expense';  // 类型：收入或支出
+  amount: number;
+  categoryId: number;
+  budgetId: number;
+  accountId: number;
+  date: string;
+  type: 'income' | 'expense';
   createdAt: string;
   updatedAt: string;
 }
@@ -17,21 +15,22 @@ export interface Transaction {
 // 可选：添加一些示例交易数据用于测试
 export const SAMPLE_TRANSACTIONS: Omit<Transaction, 'id'>[] = [
   {
+    name: '午餐',
     amount: 30,
-    categoryId: 1, // 对应餐饮类别
-    budgetId: 1,   // 对应预算
+    categoryId: 1,
+    budgetId: 1,
+    accountId: 1,
     description: '午餐',
     date: new Date().toISOString(),
     type: 'expense',
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   }
-  // 可以添加更多示例...
 ];
 
 export const TransactionFields = {
-  UPDATABLE: ['amount', 'categoryId', 'budgetId', 'description', 'date', 'type'] as const,
-  REQUIRED: ['amount', 'categoryId', 'budgetId', 'date', 'type'] as const,
+  UPDATABLE: ['name', 'description', 'amount', 'categoryId', 'budgetId', 'accountId', 'date', 'type'] as const,
+  REQUIRED: ['name', 'amount', 'categoryId', 'budgetId', 'accountId', 'date', 'type'] as const,
   OPTIONAL: ['description'] as const
 } as const;
 
@@ -42,36 +41,51 @@ export const TransactionQueries = {
   CREATE_TABLE: `
     CREATE TABLE IF NOT EXISTS transactions (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      description TEXT,
       amount REAL NOT NULL,
       categoryId INTEGER NOT NULL,
       budgetId INTEGER NOT NULL,
-      description TEXT,
+      accountId INTEGER NOT NULL DEFAULT 1,
       date DATETIME NOT NULL,
       type TEXT NOT NULL CHECK(type IN ('income', 'expense')),
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (categoryId) REFERENCES categories(id),
-      FOREIGN KEY (budgetId) REFERENCES budgets(id)
+      FOREIGN KEY (budgetId) REFERENCES budgets(id),
+      FOREIGN KEY (accountId) REFERENCES accounts(id)
     )
+  `,
+
+  CREATE_INDEXES: `
+    CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date);
+    CREATE INDEX IF NOT EXISTS idx_transactions_categoryId ON transactions(categoryId);
+    CREATE INDEX IF NOT EXISTS idx_transactions_budgetId ON transactions(budgetId);
+    CREATE INDEX IF NOT EXISTS idx_transactions_accountId ON transactions(accountId);
+    CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);
   `,
   
   INSERT: `
     INSERT INTO transactions (
-      amount, 
-      categoryId, 
-      budgetId, 
-      description, 
-      date, 
+      name,
+      description,
+      amount,
+      categoryId,
+      budgetId,
+      accountId,
+      date,
       type
-    ) VALUES (?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `,
   
   UPDATE: `
-    UPDATE transactions 
-    SET amount = COALESCE(?, amount),
+    UPDATE transactions
+    SET name = COALESCE(?, name),
+        description = COALESCE(?, description),
+        amount = COALESCE(?, amount),
         categoryId = COALESCE(?, categoryId),
         budgetId = COALESCE(?, budgetId),
-        description = COALESCE(?, description),
+        accountId = COALESCE(?, accountId),
         date = COALESCE(?, date),
         type = COALESCE(?, type),
         updatedAt = CURRENT_TIMESTAMP
@@ -93,23 +107,26 @@ export const TransactionQueries = {
   COUNT_ALL: 'SELECT COUNT(*) as count FROM transactions',
 
   FIND_ALL_WITH_CATEGORY: `
-    SELECT t.*, c.name as categoryName, c.icon as categoryIcon
+    SELECT t.*, c.name as categoryName, c.icon as categoryIcon, a.name as accountName, a.icon as accountIcon, a.color as accountColor
     FROM transactions t
     LEFT JOIN categories c ON t.categoryId = c.id
+    LEFT JOIN accounts a ON t.accountId = a.id
     ORDER BY t.date DESC
   `,
 
   FIND_BY_ID_WITH_CATEGORY: `
-    SELECT t.*, c.name as categoryName, c.icon as categoryIcon
+    SELECT t.*, c.name as categoryName, c.icon as categoryIcon, a.name as accountName, a.icon as accountIcon, a.color as accountColor
     FROM transactions t
     LEFT JOIN categories c ON t.categoryId = c.id
+    LEFT JOIN accounts a ON t.accountId = a.id
     WHERE t.id = ?
   `,
 
   FIND_BY_DATE_RANGE_WITH_CATEGORY: `
-    SELECT t.*, c.name as categoryName, c.icon as categoryIcon
+    SELECT t.*, c.name as categoryName, c.icon as categoryIcon, a.name as accountName, a.icon as accountIcon, a.color as accountColor
     FROM transactions t
     LEFT JOIN categories c ON t.categoryId = c.id
+    LEFT JOIN accounts a ON t.accountId = a.id
     WHERE t.date BETWEEN ? AND ?
     ORDER BY t.date DESC
   `,
@@ -134,12 +151,12 @@ export const TransactionQueries = {
   `,
 
   GET_SUMMARY_BY_BUDGET: `
-    SELECT 
+    SELECT
       b.id as budgetId,
       b.name as budgetName,
       COALESCE(SUM(t.amount), 0) as totalSpent,
       b.amount as budgetAmount,
-      CASE 
+      CASE
         WHEN COALESCE(SUM(t.amount), 0) > b.amount THEN 1
         ELSE 0
       END as isExceeded
@@ -148,6 +165,29 @@ export const TransactionQueries = {
     WHERE t.date BETWEEN ? AND ?
     GROUP BY b.id, b.name, b.amount
   `,
+
+  GET_TOTAL_BY_ACCOUNT: `
+    SELECT COALESCE(SUM(amount), 0) as total
+    FROM transactions
+    WHERE accountId = ? AND type = ?
+  `,
+
+  GET_SUMMARY_BY_ACCOUNT: `
+    SELECT
+      t.accountId,
+      a.name as accountName,
+      a.icon as accountIcon,
+      a.color as accountColor,
+      COALESCE(SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE 0 END), 0) as totalIncome,
+      COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END), 0) as totalExpense,
+      COUNT(*) as transactionCount
+    FROM transactions t
+    LEFT JOIN accounts a ON t.accountId = a.id
+    WHERE t.date BETWEEN ? AND ?
+    GROUP BY t.accountId, a.name, a.icon, a.color
+  `,
+
+  FIND_BY_ACCOUNT_ID: 'SELECT * FROM transactions WHERE accountId = ? ORDER BY date DESC',
 
   generateUpdateQuery: (fields: string[]): string => {
     const setClause = fields.map(field => {

@@ -4,6 +4,7 @@ import { Text } from '@/components/base/Text';
 import { CategorySelector } from '@/components/finance/categories/CategorySelector';
 import { useBudgetService } from '@/services/business/BudgetService';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
+import theme from '@/theme';
 
 interface BudgetFormProps {
   onSubmit: () => void;
@@ -12,6 +13,7 @@ interface BudgetFormProps {
 export function BudgetForm({ onSubmit }: BudgetFormProps) {
   const { isReady, databaseService } = useDatabaseSetup();
   const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
@@ -50,6 +52,7 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
     try {
       const newBudget = await budgetService.createBudget({
         name: name.trim(),
+        description: description.trim() || null,
         categoryId: selectedCategory,
         amount: parseFloat(amount),
         period,
@@ -57,7 +60,8 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
         endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
         month: new Date().toISOString().substring(0, 7),
         isRegular: false,
-        isBudgetExceeded: false
+        isBudgetExceeded: false,
+        accountId: null
       });
 
       if (!newBudget) {
@@ -65,6 +69,7 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
       }
 
       setName('');
+      setDescription('');
       setAmount('');
       setSelectedCategory(null);
       onSubmit();
@@ -149,6 +154,19 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
         </View>
       </View>
 
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Text style={styles.label}>描述</Text>
+          <TextInput
+            style={[styles.input, styles.nameInput]}
+            placeholder="输入描述（可选）"
+            placeholderTextColor="#666"
+            value={description}
+            onChangeText={setDescription}
+          />
+        </View>
+      </View>
+
       <TouchableOpacity
         style={[styles.button, isSubmitting && styles.disabledButton]}
         onPress={handleSubmit}
@@ -165,35 +183,30 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
 const styles = StyleSheet.create({
   content: {
     flex: 1,
-    padding: 12,
+    padding: theme.spacing.md,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 6,
-    padding: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+    ...theme.shadows.sm,
   },
   label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000',
+    fontSize: theme.fontSize.sm,
+    fontWeight: theme.fontWeight.medium,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.sm,
   },
   input: {
-    height: 36,
+    height: 40,
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    fontSize: 14,
-    color: '#000',
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.sm,
+    paddingHorizontal: theme.spacing.md,
+    fontSize: theme.fontSize.md,
+    color: theme.colors.text,
+    backgroundColor: theme.colors.surfaceDark,
   },
   row: {
     flexDirection: 'row',
@@ -201,70 +214,75 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   currency: {
-    fontSize: 16,
-    marginRight: 6,
-    color: '#000',
+    fontSize: theme.fontSize.lg,
+    marginRight: theme.spacing.xs,
+    color: theme.colors.text,
   },
   amountInput: {
     flex: 1,
     borderWidth: 0,
     paddingHorizontal: 0,
+    backgroundColor: 'transparent',
   },
   nameInput: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: theme.spacing.md,
   },
   amountContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-    marginLeft: 12,
+    marginLeft: theme.spacing.md,
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 6,
-    paddingHorizontal: 10,
+    borderColor: theme.colors.border,
+    borderRadius: theme.borderRadius.sm,
+    paddingHorizontal: theme.spacing.md,
+    backgroundColor: theme.colors.surface,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 6,
+    gap: theme.spacing.sm,
   },
   periodButton: {
-    padding: 6,
-    borderRadius: 6,
-    backgroundColor: '#f5f5f5',
+    padding: theme.spacing.sm,
+    borderRadius: theme.borderRadius.sm,
+    backgroundColor: theme.colors.surfaceDark,
     minWidth: 50,
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
   },
   activePeriodButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
+    borderColor: theme.colors.primary,
   },
   periodButtonText: {
-    color: '#000',
-    fontSize: 12,
+    color: theme.colors.text,
+    fontSize: theme.fontSize.sm,
   },
   activePeriodButtonText: {
-    color: '#fff',
+    color: theme.colors.white,
   },
   button: {
-    backgroundColor: '#007AFF',
-    borderRadius: 6,
-    padding: 12,
+    backgroundColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: theme.spacing.md,
   },
   disabledButton: {
-    backgroundColor: '#999',
+    backgroundColor: theme.colors.textTertiary,
   },
   buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
+    color: theme.colors.white,
+    fontSize: theme.fontSize.md,
+    fontWeight: theme.fontWeight.semibold,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: theme.spacing.lg,
   },
 });

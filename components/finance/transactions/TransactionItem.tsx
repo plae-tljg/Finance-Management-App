@@ -6,31 +6,44 @@ import { router } from 'expo-router';
 import { useTransactionService } from '@/services/business/TransactionService';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import { useCategoryService } from '@/services/business/CategoryService';
-import { formatCurrency } from '@/utils/format';
+import theme from '@/theme';
 
 interface TransactionItemProps {
-  transaction: Transaction;
-  onDelete: () => void;
-  showActions?: boolean; // 添加控制是否显示操作按钮的属性
+  transaction: Transaction & {
+    categoryName?: string;
+    categoryIcon?: string;
+    accountName?: string;
+    accountIcon?: string;
+  };
+  onDelete?: () => void;
+  showActions?: boolean;
 }
 
-export const TransactionItem: React.FC<TransactionItemProps> = ({ 
-  transaction, 
-  onDelete, 
-  showActions = true 
+export const TransactionItem: React.FC<TransactionItemProps> = ({
+  transaction,
+  onDelete,
+  showActions = true
 }) => {
   const { databaseService } = useDatabaseSetup();
   const transactionService = useTransactionService(databaseService);
   const categoryService = useCategoryService(databaseService);
-  const [categoryName, setCategoryName] = useState<string>('未分类');
+  const [categoryName, setCategoryName] = useState(transaction.categoryName || '未分类');
+  const [categoryIcon, setCategoryIcon] = useState(transaction.categoryIcon || '📦');
 
   useEffect(() => {
+    if (transaction.categoryName) {
+      setCategoryName(transaction.categoryName);
+      setCategoryIcon(transaction.categoryIcon || '📦');
+      return;
+    }
+
     const loadCategoryName = async () => {
       if (transaction.categoryId && categoryService) {
         try {
           const category = await categoryService.getCategoryById(transaction.categoryId);
           if (category) {
             setCategoryName(category.name);
+            setCategoryIcon(category.icon);
           }
         } catch (error) {
           console.error('加载类别名称失败:', error);
@@ -39,7 +52,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
     };
 
     loadCategoryName();
-  }, [transaction.categoryId, categoryService]);
+  }, [transaction.categoryId, categoryService, transaction.categoryName, transaction.categoryIcon]);
 
   const handlePress = () => {
     router.push({
@@ -66,7 +79,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
               }
               const success = await transactionService.deleteTransaction(transaction.id);
               if (success) {
-                // Handle successful deletion
+                onDelete?.();
               } else {
                 throw new Error('删除交易失败');
               }
@@ -82,31 +95,52 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
 
   return (
     <TouchableOpacity onPress={handlePress} style={styles.container}>
+      <View style={styles.iconContainer}>
+        <Text style={styles.icon}>{categoryIcon}</Text>
+      </View>
+
       <View style={styles.content}>
         <View style={styles.info}>
-          <Text style={styles.description}>{transaction.description}</Text>
-          <Text style={styles.category}>{categoryName}</Text>
-          <Text style={styles.date}>{new Date(transaction.date).toLocaleDateString()}</Text>
+          <Text style={styles.name} numberOfLines={1}>
+            {transaction.name || transaction.description || categoryName}
+          </Text>
+          {transaction.description && transaction.name && (
+            <Text style={styles.description} numberOfLines={1}>
+              {transaction.description}
+            </Text>
+          )}
+          <View style={styles.metaRow}>
+            <Text style={styles.category}>{categoryName}</Text>
+            <Text style={styles.separator}>•</Text>
+            <Text style={styles.date}>
+              {new Date(transaction.date).toLocaleDateString()}
+            </Text>
+          </View>
         </View>
+
         <View style={styles.amountContainer}>
           <Text style={[
             styles.amount,
             transaction.type === 'expense' ? styles.expense : styles.income
           ]}>
             {transaction.type === 'expense' ? '-' : '+'}
-            {formatCurrency(transaction.amount)}
+            ¥{transaction.amount.toFixed(2)}
           </Text>
+          {transaction.accountIcon && (
+            <Text style={styles.accountIcon}>{transaction.accountIcon}</Text>
+          )}
         </View>
       </View>
+
       {showActions && (
         <View style={styles.actionButtons}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.actionButton, styles.editButton]}
             onPress={handlePress}
           >
             <Text style={styles.actionButtonText}>编辑</Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.actionButton, styles.deleteButton]}
             onPress={handleDelete}
           >
@@ -120,64 +154,98 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.surface,
+    padding: theme.spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: theme.colors.borderLight,
+  },
+  iconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: theme.colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: theme.spacing.md,
+  },
+  icon: {
+    fontSize: 20,
   },
   content: {
+    flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   info: {
     flex: 1,
   },
+  name: {
+    fontSize: theme.fontSize.md,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+    marginBottom: 2,
+  },
   description: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginBottom: 4,
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textSecondary,
+    marginBottom: 2,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   category: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textSecondary,
+  },
+  separator: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textTertiary,
+    marginHorizontal: theme.spacing.xs,
   },
   date: {
-    fontSize: 12,
-    color: '#999',
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textTertiary,
   },
   amountContainer: {
-    marginLeft: 16,
+    alignItems: 'flex-end',
   },
   amount: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: theme.fontSize.md,
+    fontWeight: theme.fontWeight.semibold,
   },
   expense: {
-    color: '#FF3B30',
+    color: theme.colors.expense,
   },
   income: {
-    color: '#34C759',
+    color: theme.colors.income,
+  },
+  accountIcon: {
+    fontSize: 14,
+    marginTop: 2,
   },
   actionButtons: {
     flexDirection: 'row',
-    marginTop: 8,
+    marginLeft: theme.spacing.sm,
   },
   actionButton: {
-    padding: 4,
-    borderRadius: 4,
-    marginLeft: 8,
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.borderRadius.sm,
+    marginLeft: theme.spacing.xs,
   },
   editButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
   },
   deleteButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: theme.colors.danger,
   },
   actionButtonText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '500',
+    color: theme.colors.white,
+    fontSize: theme.fontSize.xs,
+    fontWeight: theme.fontWeight.medium,
   },
 });

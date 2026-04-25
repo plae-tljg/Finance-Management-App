@@ -1,6 +1,5 @@
 import { SQLiteDatabase, SQLiteRunResult } from 'expo-sqlite';
 import { QueryExecutor, DatabaseQueryResult } from './types';
-import { BankBalanceQueries } from './schemas/BankBalance';
 
 export type DatabaseEvent = 'transaction_updated' | 'budget_updated' | 'category_updated';
 
@@ -128,10 +127,20 @@ class DatabaseService implements QueryExecutor {
 
   async tableExists(tableName: string): Promise<boolean> {
     const result = await this.executeQuery<{ count: number }>(
-      `SELECT COUNT(*) as count 
-       FROM sqlite_master 
+      `SELECT COUNT(*) as count
+       FROM sqlite_master
        WHERE type='table' AND name=?`,
       [tableName]
+    );
+    return result.rows._array[0]?.count > 0;
+  }
+
+  async columnExists(tableName: string, columnName: string): Promise<boolean> {
+    const result = await this.executeQuery<{ count: number }>(
+      `SELECT COUNT(*) as count
+       FROM pragma_table_info(?)
+       WHERE name=?`,
+      [tableName, columnName]
     );
     return result.rows._array[0]?.count > 0;
   }

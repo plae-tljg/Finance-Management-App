@@ -1,59 +1,68 @@
 import React from 'react';
-import { View, Dimensions, StyleSheet } from 'react-native';
-import { LineChart } from 'react-native-chart-kit';
+import { View, StyleSheet } from 'react-native';
 import { Text } from '@/components/base/Text';
 import { Card } from '@/components/base/Card';
-import { FinanceSummary } from './FinanceSummary';
-import { withDataLoading } from '@/components/base/withDataLoading';
+import { LineChart } from 'react-native-chart-kit';
+import { Dimensions } from 'react-native';
 import { useFinance } from '@/contexts/FinanceContext';
-
-const summaryStyles = StyleSheet.create({
-  content: {
-    padding: 10,
-  },
-  card: {
-    marginBottom: 16,
-  },
-  chart: {
-    marginVertical: 8,
-    borderRadius: 16,
-  }
-});
+import { withDataLoading } from '@/components/base/withDataLoading';
+import theme from '@/theme';
 
 function FinanceOverviewBase() {
   const { chartData } = useFinance();
-  
+
   return (
-    <View style={summaryStyles.content}>
-      <Card style={summaryStyles.card}>
-        <FinanceSummary />
-      </Card>
-      
-      <Card style={summaryStyles.card}>
-        <Text variant="subtitle">本周支出趋势</Text>
+    <View style={styles.content}>
+      <Card style={styles.card}>
+        <Text style={styles.sectionTitle}>本周支出趋势</Text>
         <LineChart
           data={chartData}
-          width={Dimensions.get('window').width - 40}
-          height={220}
+          width={Dimensions.get('window').width - 64}
+          height={200}
           chartConfig={{
-            backgroundColor: '#e26a00',
-            backgroundGradientFrom: '#fb8c00',
-            backgroundGradientTo: '#ffa726',
+            backgroundColor: theme.colors.surface,
+            backgroundGradientFrom: theme.colors.surface,
+            backgroundGradientTo: theme.colors.surface,
             decimalPlaces: 0,
-            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            color: () => theme.colors.primary,
+            labelColor: () => theme.colors.textSecondary,
             style: {
-              borderRadius: 16
-            }
+              borderRadius: theme.borderRadius.md,
+            },
+            propsForDots: {
+              r: '4',
+              strokeWidth: '2',
+              stroke: theme.colors.primary,
+            },
           }}
           bezier
-          style={summaryStyles.chart}
+          style={styles.chart}
         />
       </Card>
     </View>
   );
 }
 
+const styles = StyleSheet.create({
+  content: {
+    padding: theme.spacing.md,
+  },
+  card: {
+    padding: theme.spacing.md,
+  },
+  sectionTitle: {
+    fontSize: theme.fontSize.md,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.md,
+  },
+  chart: {
+    marginVertical: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+  },
+});
+
 export const FinanceOverview = withDataLoading(FinanceOverviewBase, {
   loadingMessage: "加载财务概览...",
   errorMessage: "加载财务概览失败"
-}); 
+});

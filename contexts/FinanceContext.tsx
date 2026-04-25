@@ -1,44 +1,60 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import { useTransactionService } from '@/services/business/TransactionService';
 import { useBudgetService } from '@/services/business/BudgetService';
 import { useCategoryService } from '@/services/business/CategoryService';
+import { useAccountService } from '@/services/business/AccountService';
+import { useGoalService } from '@/services/business/GoalService';
+import { useAccountMonthlyBalanceService } from '@/services/business/AccountMonthlyBalanceService';
 import { useTransactionUpdate, useBudgetUpdate, useCategoryUpdate } from '@/hooks/useDatabaseEvent';
 import type { Transaction } from '@/services/database/schemas/Transaction';
 import type { Budget } from '@/services/database/schemas/Budget';
 import type { Category } from '@/services/database/schemas/Category';
+import type { Account } from '@/services/database/schemas/Account';
+import type { Goal } from '@/services/database/schemas/Goal';
+import type { AccountMonthlyBalance } from '@/services/database/schemas/AccountMonthlyBalance';
 
 interface FinanceContextType {
-  // 数据库状态
   isReady: boolean;
   error: Error | null;
   retry: () => Promise<void>;
-  
-  // 交易相关
+
   transactions: Transaction[];
   isLoadingTransactions: boolean;
   isRefreshingTransactions: boolean;
   loadTransactions: () => Promise<void>;
   refreshTransactions: () => Promise<void>;
-  
-  // 预算相关
+
   budgets: Budget[];
   isLoadingBudgets: boolean;
   loadBudgets: () => Promise<void>;
-  
-  // 分类相关
+
   categories: Category[];
   isLoadingCategories: boolean;
   loadCategories: () => Promise<void>;
   updateCategory: (id: number, category: Partial<Category>) => Promise<boolean>;
-  
-  // 图表数据
+  createCategory: (category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => Promise<boolean>;
+
+  accounts: Account[];
+  isLoadingAccounts: boolean;
+  loadAccounts: () => Promise<void>;
+
+  goals: Goal[];
+  isLoadingGoals: boolean;
+  loadGoals: () => Promise<void>;
+
+  accountMonthlyBalances: AccountMonthlyBalance[];
+  isLoadingAccountMonthlyBalances: boolean;
+  loadAccountMonthlyBalances: () => Promise<void>;
+  getAccountMonthlyBalancesByAccount: (accountId: number) => Promise<AccountMonthlyBalance[]>;
+  getAccountMonthlyBalancesByMonth: (year: number, month: number) => Promise<AccountMonthlyBalance[]>;
+  getMonthlyTotalBalances: (year: number, month: number) => Promise<{ openingBalance: number; closingBalance: number }>;
+
   chartData: {
     labels: string[];
     datasets: { data: number[] }[];
   };
 
-  // 全局刷新
   refreshAllData: () => Promise<void>;
   loadInitialData: () => Promise<void>;
 }
@@ -47,94 +63,153 @@ const FinanceContext = createContext<FinanceContextType | null>(null);
 
 export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const { isReady, error, databaseService, retry } = useDatabaseSetup();
-  
-  // 交易状态
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
   const [isRefreshingTransactions, setIsRefreshingTransactions] = useState(false);
-  
-  // 预算状态
+
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [isLoadingBudgets, setIsLoadingBudgets] = useState(true);
-  
-  // 分类状态
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(true);
-  
-  // 图表数据
+
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [isLoadingAccounts, setIsLoadingAccounts] = useState(true);
+
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [isLoadingGoals, setIsLoadingGoals] = useState(true);
+
+  const [accountMonthlyBalances, setAccountMonthlyBalances] = useState<AccountMonthlyBalance[]>([]);
+  const [isLoadingAccountMonthlyBalances, setIsLoadingAccountMonthlyBalances] = useState(true);
+
   const [chartData, setChartData] = useState({
     labels: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
     datasets: [{ data: [0, 0, 0, 0, 0, 0, 0] }]
   });
 
-  // 服务实例
-  const transactionService = useTransactionService(databaseService);
-  const budgetService = useBudgetService(databaseService);
-  const categoryService = useCategoryService(databaseService);
+  const isLoadingRef = useRef(false);
+  const isRefreshingRef = useRef(false);
 
-  // 加载交易数据
-  const loadTransactions = async () => {
+  const [transactionService] = useState(() => useTransactionService(databaseService));
+  const [budgetService] = useState(() => useBudgetService(databaseService));
+  const [categoryService] = useState(() => useCategoryService(databaseService));
+  const [accountService] = useState(() => useAccountService(databaseService));
+  const [goalService] = useState(() => useGoalService(databaseService));
+  const [accountMonthlyBalanceService] = useState(() => useAccountMonthlyBalanceService(databaseService));
+
+  const loadTransactions = useCallback(async () => {
     try {
-      if (!isReady) {
-        console.log('数据库未初始化，跳过加载交易记录');
-        return;
-      }
+      if (!isReady || !transactionService) return;
       setIsLoadingTransactions(true);
-      const transactions = await transactionService.getTransactionsWithCategory();
-      setTransactions(transactions);
+      const data = await transactionService.getTransactionsWithCategory();
+      setTransactions(data);
     } catch (error) {
-      console.error('加载交易记录失败:', error);
+      console.error('Failed to load transactions:', error);
     } finally {
       setIsLoadingTransactions(false);
     }
-  };
+  }, [isReady, transactionService]);
 
-  // 刷新交易数据
-  const refreshTransactions = async () => {
+  const refreshTransactions = useCallback(async () => {
     if (!transactionService) return;
-    
+
     try {
       setIsRefreshingTransactions(true);
       await loadTransactions();
     } finally {
       setIsRefreshingTransactions(false);
     }
-  };
+  }, [transactionService, loadTransactions]);
 
-  // 加载预算数据
-  const loadBudgets = async () => {
+  const loadBudgets = useCallback(async () => {
     if (!budgetService) return;
-    
+
     try {
       setIsLoadingBudgets(true);
       const data = await budgetService.getBudgetsWithCategory();
       setBudgets(data);
     } catch (err) {
-      console.error('加载预算失败:', err);
+      console.error('Failed to load budgets:', err);
     } finally {
       setIsLoadingBudgets(false);
     }
-  };
+  }, [budgetService]);
 
-  // 加载分类数据
-  const loadCategories = async () => {
+  const loadCategories = useCallback(async () => {
     if (!categoryService) return;
-    
+
     try {
       setIsLoadingCategories(true);
       const data = await categoryService.getCategories();
       setCategories(data);
     } catch (err) {
-      console.error('加载分类失败:', err);
+      console.error('Failed to load categories:', err);
     } finally {
       setIsLoadingCategories(false);
     }
+  }, [categoryService]);
+
+  const loadAccounts = useCallback(async () => {
+    if (!accountService) return;
+
+    try {
+      setIsLoadingAccounts(true);
+      const data = await accountService.getAccounts();
+      setAccounts(data);
+    } catch (err) {
+      console.error('Failed to load accounts:', err);
+    } finally {
+      setIsLoadingAccounts(false);
+    }
+  }, [accountService]);
+
+  const loadGoals = useCallback(async () => {
+    if (!goalService) return;
+
+    try {
+      setIsLoadingGoals(true);
+      const data = await goalService.getGoals();
+      setGoals(data);
+    } catch (err) {
+      console.error('Failed to load goals:', err);
+    } finally {
+      setIsLoadingGoals(false);
+    }
+  }, [goalService]);
+
+  const loadAccountMonthlyBalances = useCallback(async () => {
+    if (!accountMonthlyBalanceService) return;
+
+    try {
+      setIsLoadingAccountMonthlyBalances(true);
+      const data = await accountMonthlyBalanceService.getAllAccountBalances();
+      setAccountMonthlyBalances(data);
+    } catch (err) {
+      console.error('Failed to load account monthly balances:', err);
+    } finally {
+      setIsLoadingAccountMonthlyBalances(false);
+    }
+  }, [accountMonthlyBalanceService]);
+
+  const getAccountMonthlyBalancesByAccount = async (accountId: number): Promise<AccountMonthlyBalance[]> => {
+    if (!accountMonthlyBalanceService) return [];
+    return await accountMonthlyBalanceService.getAccountBalancesByAccount(accountId);
   };
 
-  // 加载图表数据
-  const loadChartData = async () => {
+  const getAccountMonthlyBalancesByMonth = async (year: number, month: number): Promise<AccountMonthlyBalance[]> => {
+    if (!accountMonthlyBalanceService) return [];
+    return await accountMonthlyBalanceService.getAccountBalancesByMonth(year, month);
+  };
+
+  const getMonthlyTotalBalances = async (year: number, month: number): Promise<{ openingBalance: number; closingBalance: number }> => {
+    if (!accountMonthlyBalanceService) return { openingBalance: 0, closingBalance: 0 };
+    return await accountMonthlyBalanceService.getMonthlyTotalBalances(year, month);
+  };
+
+  const loadChartData = useCallback(async () => {
     if (!transactionService) return;
-    
+
     try {
       const today = new Date();
       const startOfWeek = new Date(today);
@@ -149,11 +224,11 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
           const nextDate = new Date(date);
           nextDate.setDate(date.getDate() + 1);
 
-          const transactions = await transactionService.getTransactionsByDateRange(
+          const txns = await transactionService.getTransactionsByDateRange(
             date.toISOString(),
             nextDate.toISOString()
           );
-          return transactions.reduce((sum, t) => t.type === 'expense' ? sum + t.amount : sum, 0);
+          return txns.reduce((sum, t) => t.type === 'expense' ? sum + t.amount : sum, 0);
         })
       );
 
@@ -162,65 +237,83 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
         datasets: [{ data: dailyExpenses }]
       });
     } catch (error) {
-      console.error('加载财务数据错误:', error);
+      console.error('Failed to load chart data:', error);
     }
-  };
+  }, [transactionService]);
 
-  // 全局刷新函数
   const refreshAllData = useCallback(async () => {
-    if (!isReady) return;
-    
+    if (!isReady || isRefreshingRef.current) return;
+
+    isRefreshingRef.current = true;
     try {
       await Promise.all([
         loadTransactions(),
         loadBudgets(),
         loadCategories(),
-        loadChartData()
+        loadAccounts(),
+        loadGoals(),
+        loadChartData(),
+        loadAccountMonthlyBalances()
       ]);
     } catch (error) {
-      console.error('刷新数据失败:', error);
+      console.error('Failed to refresh data:', error);
+    } finally {
+      isRefreshingRef.current = false;
     }
-  }, [isReady]);
+  }, [isReady, loadTransactions, loadBudgets, loadCategories, loadAccounts, loadGoals, loadChartData, loadAccountMonthlyBalances]);
 
-  // 初始数据加载
   const loadInitialData = useCallback(async () => {
-    if (!isReady) return;
-    
+    if (!isReady || isRefreshingRef.current) return;
+
+    isRefreshingRef.current = true;
     try {
-      // 先加载分类数据，因为其他数据依赖分类
-      await loadCategories();
-      
-      // 然后并行加载其他数据
+      await Promise.all([
+        loadCategories(),
+        loadAccounts(),
+        loadGoals()
+      ]);
+
       await Promise.all([
         loadTransactions(),
         loadBudgets(),
-        loadChartData()
+        loadChartData(),
+        loadAccountMonthlyBalances()
       ]);
     } catch (error) {
-      console.error('加载初始数据失败:', error);
+      console.error('Failed to load initial data:', error);
+    } finally {
+      isRefreshingRef.current = false;
     }
-  }, [isReady]);
+  }, [isReady, loadCategories, loadAccounts, loadGoals, loadTransactions, loadBudgets, loadChartData, loadAccountMonthlyBalances]);
 
-  // 监听数据更新事件
-  useTransactionUpdate(refreshAllData);
-  useBudgetUpdate(refreshAllData);
-  useCategoryUpdate(refreshAllData);
-
-  // 初始化数据
   useEffect(() => {
     if (isReady) {
       loadInitialData();
     }
-  }, [isReady]);
+  }, [isReady, loadInitialData]);
 
-  // 更新分类
+  useTransactionUpdate(refreshAllData);
+  useBudgetUpdate(refreshAllData);
+  useCategoryUpdate(refreshAllData);
+
   const updateCategory = async (id: number, category: Partial<Category>) => {
     if (!categoryService) return false;
-    
+
     try {
       return await categoryService.updateCategory(id, category);
     } catch (err) {
-      console.error('更新分类失败:', err);
+      console.error('Failed to update category:', err);
+      return false;
+    }
+  };
+
+  const createCategory = async (category: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>) => {
+    if (!categoryService) return false;
+
+    try {
+      return await categoryService.createCategory(category);
+    } catch (err) {
+      console.error('Failed to create category:', err);
       return false;
     }
   };
@@ -240,9 +333,22 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     categories,
     isLoadingCategories,
     loadCategories,
+    updateCategory,
+    createCategory,
+    accounts,
+    isLoadingAccounts,
+    loadAccounts,
+    goals,
+    isLoadingGoals,
+    loadGoals,
+    accountMonthlyBalances,
+    isLoadingAccountMonthlyBalances,
+    loadAccountMonthlyBalances,
+    getAccountMonthlyBalancesByAccount,
+    getAccountMonthlyBalancesByMonth,
+    getMonthlyTotalBalances,
     chartData,
     refreshAllData,
-    updateCategory,
     loadInitialData
   };
 

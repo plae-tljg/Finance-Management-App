@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/components/base/Text';
-import { useRouter, useLocalSearchParams, Stack } from 'expo-router';
+import { Card } from '@/components/base/Card';
+import { HeaderCard } from '@/components/base/HeaderCard';
+import { BackgroundImage } from '@/components/base/BackgroundImage';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
-import { useBankBalanceService } from '@/services/business/BankBalanceService';
+import { useAccountMonthlyBalanceService } from '@/services/business/AccountMonthlyBalanceService';
 import { useTransactionService } from '@/services/business/TransactionService';
 import { useBudgetService } from '@/services/business/BudgetService';
 import { useCategoryService } from '@/services/business/CategoryService';
-import type { BankBalance } from '@/services/database/schemas/BankBalance';
+import type { AccountMonthlyBalance } from '@/services/database/schemas/AccountMonthlyBalance';
 import type { Transaction } from '@/services/database/schemas/Transaction';
 import type { Budget } from '@/services/database/schemas/Budget';
 import type { Category } from '@/services/database/schemas/Category';
+import theme from '@/theme';
 
 interface CategorySummary {
   category: Category;
@@ -23,19 +28,19 @@ export default function MonthlySummaryScreen() {
   const router = useRouter();
   const params = useLocalSearchParams();
   const { databaseService, isReady } = useDatabaseSetup();
-  const [bankBalance, setBankBalance] = useState<BankBalance | null>(null);
+  const [totalOpeningBalance, setTotalOpeningBalance] = useState(0);
+  const [totalClosingBalance, setTotalClosingBalance] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [budgets, setBudgets] = useState<Budget[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [categorySummaries, setCategorySummaries] = useState<CategorySummary[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // 从URL参数获取年月，如果没有则使用当前日期
   const currentYear = params.year ? parseInt(params.year as string) : new Date().getFullYear();
   const currentMonth = params.month ? parseInt(params.month as string) : new Date().getMonth() + 1;
 
-  const bankBalanceService = React.useMemo(
-    () => databaseService ? useBankBalanceService(databaseService) : null,
+  const accountMonthlyBalanceService = React.useMemo(
+    () => databaseService ? useAccountMonthlyBalanceService(databaseService) : null,
     [databaseService]
   );
 
@@ -59,34 +64,30 @@ export default function MonthlySummaryScreen() {
       console.log('数据库未初始化，跳过加载月度数据');
       return;
     }
-    if (!bankBalanceService || !transactionService || !budgetService || !categoryService) return;
+    if (!accountMonthlyBalanceService || !transactionService || !budgetService || !categoryService) return;
 
     const loadData = async () => {
       try {
         setIsLoading(true);
-        // 加载银行余额
-        const balance = await bankBalanceService.getBankBalance(currentYear, currentMonth);
-        setBankBalance(balance);
+        const totals = await accountMonthlyBalanceService.getMonthlyTotalBalances(currentYear, currentMonth);
+        setTotalOpeningBalance(totals.openingBalance);
+        setTotalClosingBalance(totals.closingBalance);
 
-        // 加载当月交易
         const monthlyTransactions = await transactionService.getTransactionsByMonth(currentYear, currentMonth);
         setTransactions(monthlyTransactions);
 
-        // 加载预算
         const monthlyBudgets = await budgetService.getBudgetsByMonth(currentYear, currentMonth);
         setBudgets(monthlyBudgets);
 
-        // 加载类别
         const allCategories = await categoryService.getCategories();
         setCategories(allCategories);
 
-        // 计算每个类别的支出和预算
         const summaries = allCategories.map(category => {
           const categoryTransactions = monthlyTransactions.filter(t => t.categoryId === category.id);
           const spent = categoryTransactions
             .filter(t => t.type === 'expense')
             .reduce((sum, t) => sum + t.amount, 0);
-          
+
           const budget = monthlyBudgets.find(b => b.categoryId === category.id)?.amount || 0;
           const remaining = budget - spent;
 
@@ -109,42 +110,38 @@ export default function MonthlySummaryScreen() {
     loadData();
   }, [isReady]);
 
-  // 计算总支出
   const totalExpense = transactions
     .filter(t => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0);
 
-  // 计算总收入
   const totalIncome = transactions
     .filter(t => t.type === 'income')
     .reduce((sum, t) => sum + t.amount, 0);
 
-  // 计算预期期末余额
-  const expectedClosingBalance = (bankBalance?.openingBalance || 0) + totalIncome - totalExpense;
+  const expectedClosingBalance = totalOpeningBalance + totalIncome - totalExpense;
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
-        <Text>加载中...</Text>
-      </View>
+      <BackgroundImage>
+        <View style={styles.container}>
+          <Text style={styles.loadingText}>加载中...</Text>
+        </View>
+      </BackgroundImage>
     );
   }
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: `${currentYear}年${currentMonth}月财务概览`,
-          headerBackTitle: '返回',
-        }}
-      />
-      <View style={styles.container}>
+    <BackgroundImage>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <HeaderCard
+          title={`${currentYear}年${currentMonth}月财务概览`}
+        />
         <ScrollView style={styles.content}>
           <View style={styles.summaryCard}>
             <Text style={styles.sectionTitle}>月度总览</Text>
             <View style={styles.summaryItem}>
               <Text style={styles.label}>期初余额</Text>
-              <Text style={styles.value}>¥{bankBalance?.openingBalance.toFixed(2) || '0.00'}</Text>
+              <Text style={styles.value}>¥{totalOpeningBalance.toFixed(2)}</Text>
             </View>
 
             <View style={styles.summaryItem}>
@@ -164,16 +161,16 @@ export default function MonthlySummaryScreen() {
 
             <View style={styles.summaryItem}>
               <Text style={styles.label}>实际期末余额</Text>
-              <Text style={styles.value}>¥{bankBalance?.closingBalance.toFixed(2) || '0.00'}</Text>
+              <Text style={styles.value}>¥{totalClosingBalance.toFixed(2)}</Text>
             </View>
 
             <View style={styles.summaryItem}>
               <Text style={styles.label}>差额</Text>
               <Text style={[
                 styles.value,
-                Math.abs(expectedClosingBalance - (bankBalance?.closingBalance || 0)) > 0.01 ? styles.warning : null
+                Math.abs(expectedClosingBalance - totalClosingBalance) > 0.01 ? styles.warning : null
               ]}>
-                ¥{(expectedClosingBalance - (bankBalance?.closingBalance || 0)).toFixed(2)}
+                ¥{(expectedClosingBalance - totalClosingBalance).toFixed(2)}
               </Text>
             </View>
           </View>
@@ -194,16 +191,16 @@ export default function MonthlySummaryScreen() {
                     {summary.remaining >= 0 ? '剩余' : '超支'} ¥{Math.abs(summary.remaining).toFixed(2)}
                   </Text>
                 </View>
-                
+
                 <View style={styles.progressBar}>
-                  <View 
+                  <View
                     style={[
                       styles.progressFill,
-                      { 
+                      {
                         width: `${Math.min(100, (summary.spent / summary.budget) * 100)}%`,
-                        backgroundColor: summary.spent > summary.budget ? '#F44336' : '#4CAF50'
+                        backgroundColor: summary.spent > summary.budget ? theme.colors.danger : theme.colors.success
                       }
-                    ]} 
+                    ]}
                   />
                 </View>
 
@@ -215,80 +212,67 @@ export default function MonthlySummaryScreen() {
             ))}
           </View>
         </ScrollView>
-
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Text style={styles.backButtonText}>返回</Text>
-        </TouchableOpacity>
-      </View>
-    </>
+      </SafeAreaView>
+    </BackgroundImage>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   header: {
-    padding: 16,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e1e1e1',
+    marginHorizontal: theme.spacing.lg,
+    marginTop: theme.spacing.lg,
+    marginBottom: theme.spacing.sm,
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: theme.spacing.lg,
+    paddingTop: 0,
   },
   summaryCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 16,
+    fontSize: theme.fontSize.lg,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.md,
   },
   summaryItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: theme.spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.colors.borderLight,
   },
   label: {
-    fontSize: 16,
-    color: '#666',
+    fontSize: theme.fontSize.md,
+    color: theme.colors.textSecondary,
   },
   value: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: theme.fontSize.md,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
   },
   income: {
-    color: '#4CAF50',
+    color: theme.colors.income,
   },
   expense: {
-    color: '#F44336',
+    color: theme.colors.expense,
   },
   warning: {
-    color: '#FF9800',
+    color: theme.colors.warning,
   },
   categoryItem: {
-    paddingVertical: 12,
+    paddingVertical: theme.spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.colors.borderLight,
   },
   lastCategoryItem: {
     borderBottomWidth: 0,
@@ -297,25 +281,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
   },
   categoryName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: theme.fontSize.md,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
   },
   remaining: {
-    fontSize: 14,
-    color: '#4CAF50',
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.success,
   },
   overBudget: {
-    color: '#F44336',
+    color: theme.colors.danger,
   },
   progressBar: {
     height: 8,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: theme.colors.border,
     borderRadius: 4,
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
     overflow: 'hidden',
   },
   progressFill: {
@@ -327,19 +311,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   detailText: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textSecondary,
   },
-  backButton: {
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    padding: 16,
-    margin: 16,
-    alignItems: 'center',
+  loadingText: {
+    color: theme.colors.textSecondary,
+    fontSize: theme.fontSize.md,
   },
-  backButtonText: {
-    color: '#333',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-}); 
+});

@@ -11,7 +11,7 @@ interface TransactionDetailProps {
 }
 
 export function TransactionDetail({ transaction }: TransactionDetailProps) {
-  const { amount, description, date, type, categoryId, budgetId } = transaction;
+  const { name, description, amount, date, type, categoryId, budgetId } = transaction;
   const { databaseService } = useDatabaseSetup();
   const categoryService = useCategoryService(databaseService);
   const [categoryName, setCategoryName] = useState<string>('未分类');
@@ -36,6 +36,11 @@ export function TransactionDetail({ transaction }: TransactionDetailProps) {
   return (
     <View style={styles.container}>
       <View style={styles.card}>
+        <Text style={styles.label}>名称</Text>
+        <Text style={styles.value}>{name}</Text>
+      </View>
+
+      <View style={styles.card}>
         <Text style={styles.label}>金额</Text>
         <Text style={[
           styles.amount,
@@ -45,10 +50,12 @@ export function TransactionDetail({ transaction }: TransactionDetailProps) {
         </Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>描述</Text>
-        <Text style={styles.value}>{description || '无描述'}</Text>
-      </View>
+      {description && (
+        <View style={styles.card}>
+          <Text style={styles.label}>描述</Text>
+          <Text style={styles.value}>{description}</Text>
+        </View>
+      )}
 
       <View style={styles.card}>
         <Text style={styles.label}>日期</Text>

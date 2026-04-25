@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Text } from './Text';
+import { BackgroundImage } from './BackgroundImage';
+import theme from '@/theme';
 
 interface LoadingViewProps {
   message?: string;
@@ -8,13 +10,15 @@ interface LoadingViewProps {
 
 export function LoadingView({ message = '加载中...' }: LoadingViewProps) {
   return (
-    <View style={styles.container}>
-      <ActivityIndicator 
-        size="large" 
-        color="#007AFF"
-      />
-      <Text style={styles.text}>{message}</Text>
-    </View>
+    <BackgroundImage>
+      <View style={styles.container}>
+        <ActivityIndicator 
+          size="large" 
+          color={theme.colors.primary}
+        />
+        <Text style={styles.text}>{message}</Text>
+      </View>
+    </BackgroundImage>
   );
 }
 
@@ -23,11 +27,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
+    padding: theme.spacing.lg,
   },
   text: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 12,
+    fontSize: theme.fontSize.md,
+    color: theme.colors.textSecondary,
+    marginTop: theme.spacing.md,
   }
 });

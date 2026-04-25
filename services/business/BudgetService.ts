@@ -54,9 +54,7 @@ export function useBudgetService(databaseService: DatabaseService) {
 
   const getBudgetsWithCategory = async () => {
     try {
-      console.log('开始获取预算记录...');
       const budgets = await repository.findAllWithCategory();
-      console.log('获取到的预算记录:', budgets);
       return budgets;
     } catch (error) {
       console.error('获取预算记录失败:', error);

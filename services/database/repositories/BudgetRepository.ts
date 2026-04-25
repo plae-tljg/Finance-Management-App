@@ -33,17 +33,20 @@ export class BudgetRepository implements BaseRepository<Budget> {
 
   async create(budget: Omit<Budget, 'id' | 'createdAt' | 'updatedAt'>): Promise<Budget> {
     try {
-      // 执行插入操作
       const insertResult = await this.db.executeQuery<Budget>(
         BudgetQueries.INSERT,
         [
           budget.name,
+          budget.description ?? null,
           budget.categoryId,
+          budget.accountId ?? null,
           budget.amount,
           budget.period,
           budget.startDate,
           budget.endDate,
-          budget.month
+          budget.month,
+          budget.isRegular ? 1 : 0,
+          budget.isBudgetExceeded ? 1 : 0
         ]
       );
 
@@ -77,6 +80,8 @@ export class BudgetRepository implements BaseRepository<Budget> {
         budget.startDate,
         budget.endDate,
         budget.month,
+        budget.isRegular !== undefined ? (budget.isRegular ? 1 : 0) : null,
+        budget.isBudgetExceeded !== undefined ? (budget.isBudgetExceeded ? 1 : 0) : null,
         id
       ]
     );

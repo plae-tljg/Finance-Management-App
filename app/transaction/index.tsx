@@ -6,8 +6,11 @@ import { ErrorView } from '@/components/base/ErrorView';
 import { TransactionList } from '@/components/finance/transactions/TransactionList';
 import type { Transaction } from '@/services/database/schemas/Transaction';
 import { useFocusEffect } from '@react-navigation/native';
-import { Stack, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet } from 'react-native';
+import { HeaderCard } from '@/components/base/HeaderCard';
+import { BackgroundImage } from '@/components/base/BackgroundImage';
 
 export default function TransactionsScreen() {
   const params = useLocalSearchParams();
@@ -86,34 +89,33 @@ export default function TransactionsScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Stack.Screen
-        options={{
-          title: params.year && params.month 
+    <BackgroundImage>
+      <SafeAreaView style={styles.container} edges={['top']}>
+        <HeaderCard
+          title={params.year && params.month
             ? `${currentYear}年${currentMonth}月交易记录`
-            : '交易记录',
-          headerBackTitle: '返回',
-        }}
-      />
-      <TransactionList
-        transactions={transactions}
-        isLoading={isLoading}
-        isRefreshing={isRefreshing}
-        onRefresh={onRefresh}
-        onDelete={handleDelete}
-        title={params.year && params.month 
-          ? `${currentYear}年${currentMonth}月交易记录`
-          : '所有交易记录'
-        }
-        fullScreen={true}
-      />
-    </SafeAreaView>
+            : '交易记录'
+          }
+        />
+        <TransactionList
+          transactions={transactions}
+          isLoading={isLoading}
+          isRefreshing={isRefreshing}
+          onRefresh={onRefresh}
+          onDelete={handleDelete}
+          title={params.year && params.month
+            ? `${currentYear}年${currentMonth}月交易记录`
+            : '所有交易记录'
+          }
+          fullScreen={true}
+        />
+      </SafeAreaView>
+    </BackgroundImage>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
 }); 

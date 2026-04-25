@@ -97,6 +97,9 @@ export const BudgetItem: React.FC<BudgetItemProps> = ({ budget, onDelete, onEdit
       <View style={styles.content}>
         <View style={styles.info}>
           <Text style={styles.name}>{budget.name}</Text>
+          {budget.description && (
+            <Text style={styles.description} numberOfLines={1}>{budget.description}</Text>
+          )}
           <View style={styles.details}>
             <Text style={styles.category}>{categoryName}</Text>
             <Text style={styles.period}>{getPeriodText(budget.period)}</Text>
@@ -143,6 +146,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#000',
+    marginBottom: 2,
+  },
+  description: {
+    fontSize: 13,
+    color: '#666',
     marginBottom: 4,
   },
   details: {
