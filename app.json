@@ -32,10 +32,11 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/amiya_background.png",
+          "image": "./assets/images/amiya_splash_screen.png",
           "imageWidth": 300,
           "resizeMode": "cover",
-          "backgroundColor": "#1a1a2e"
+          "backgroundColor": "#1a1a2e",
+          "androidStatusBarTranslucent": false
         }
       ],
       "expo-sqlite"

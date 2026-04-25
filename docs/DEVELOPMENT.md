@@ -400,3 +400,59 @@ CREATE INDEX IF NOT EXISTS idx_transactions_categoryId ON transactions(categoryI
 1. 运行 `npx expo prebuild` 清理并重新生成原生项目
 2. 检查 `android/` 或 `ios/` 目录是否有冲突文件
 3. 确认 Gradle/Xcode 版本兼容
+
+### Q: 闪屏屏幕图片不更新？
+
+如果修改了 `app.json` 中的 `expo-splash-screen` 配置后，闪屏图片仍然显示旧的图片，需要手动同步 Android 资源：
+
+```bash
+# 方案一：完全清理后重新生成
+rm -rf android ios
+npx expo prebuild --clean
+npx expo run:android
+
+# 方案二：手动复制图片到各 density 文件夹
+# 将你的闪屏图片复制到所有 drawable-* 目录（确保命名一致）
+for dir in hdpi mdpi xhdpi xxhdpi xxxhdpi; do
+  cp ./assets/images/your-splash.png android/app/src/main/res/drawable-$dir/splashscreen_logo.png
+done
+npx expo run:android
+```
+
+注意：使用 `expo-dev-client` 时，闪屏配置可能存在已知问题，建议同时在 `app.json` 中添加 `androidStatusBarTranslucent: false` 配置。
+
+### Q: 应用名称显示有下划线？
+
+如果应用在设备上显示为 "finance_manager" 而不是 "Finance Manager"，需要修改原生资源文件：
+
+**Android:**
+```bash
+# 修改 android/app/src/main/res/values/strings.xml
+<string name="app_name">Finance Manager</string>
+```
+
+**iOS:**
+```bash
+# 修改 ios/financemanager/Info.plist 中的 CFBundleDisplayName
+<key>CFBundleDisplayName</key>
+<string>Finance Manager</string>
+```
+
+修改后需要重新构建应用才能生效。
+
+## 应用发布
+
+### 构建 Release APK
+
+1. 确保 `android/app/build.gradle` 中的签名配置正确
+2. 执行构建：
+```bash
+cd android
+./gradlew assembleRelease
+```
+
+### 应用名称与图标
+
+- 应用名称在 `app.json` 的 `expo.name` 和 `android/app/src/main/res/values/strings.xml` 中定义
+- 应用图标在 `app.json` 的 `expo.icon` 中配置
+- Android 自适应图标在 `expo.android.adaptiveIcon` 中配置

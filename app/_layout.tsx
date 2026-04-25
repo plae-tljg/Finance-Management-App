@@ -7,6 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { SQLiteProvider } from 'expo-sqlite';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { DefaultTheme } from '@react-navigation/native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { FinanceProvider } from '@/contexts/FinanceContext';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
@@ -52,10 +53,11 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <SQLiteProvider databaseName="finance.db">
-        <FinanceProvider>
-          <ThemeProvider value={DefaultTheme}>
-            <Stack>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <SQLiteProvider databaseName="finance.db">
+          <FinanceProvider>
+            <ThemeProvider value={DefaultTheme}>
+              <Stack>
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
               <Stack.Screen name="transaction/index" options={{ headerShown: false }} />
               <Stack.Screen name="budget/index" options={{ headerShown: false }} />
@@ -73,6 +75,7 @@ export default function RootLayout() {
           </ThemeProvider>
         </FinanceProvider>
       </SQLiteProvider>
+      </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 }
