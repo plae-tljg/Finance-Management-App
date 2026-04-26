@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
 import { Text } from '@/components/base/Text';
 import type { BudgetWithCategory } from '@/services/database/repositories/BudgetRepository';
@@ -8,6 +8,7 @@ import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import { useCategoryService } from '@/services/business/CategoryService';
 import { Ionicons } from '@expo/vector-icons';
 import { formatCurrency } from '@/utils/format';
+import theme from '@/theme';
 
 interface BudgetItemProps {
   budget: BudgetWithCategory;
@@ -15,7 +16,14 @@ interface BudgetItemProps {
   onEdit: () => void;
 }
 
-export const BudgetItem: React.FC<BudgetItemProps> = ({ budget, onDelete, onEdit }) => {
+const PERIOD_TEXTS: Record<string, string> = {
+  daily: '日',
+  weekly: '周',
+  monthly: '月',
+  yearly: '年',
+};
+
+export const BudgetItem: React.FC<BudgetItemProps> = memo(({ budget, onDelete, onEdit }) => {
   const { databaseService } = useDatabaseSetup();
   const budgetService = useBudgetService(databaseService);
   const categoryService = useCategoryService(databaseService);
@@ -38,14 +46,14 @@ export const BudgetItem: React.FC<BudgetItemProps> = ({ budget, onDelete, onEdit
     loadCategoryName();
   }, [budget.categoryId, categoryService]);
 
-  const handlePress = () => {
+  const handlePress = useCallback(() => {
     router.push({
       pathname: '/budget/[id]',
       params: { id: budget.id }
     });
-  };
+  }, [budget.id]);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     Alert.alert(
       '删除预算',
       '确定要删除这个预算吗？',
@@ -75,22 +83,11 @@ export const BudgetItem: React.FC<BudgetItemProps> = ({ budget, onDelete, onEdit
         }
       ]
     );
-  };
+  }, [budgetService, budget.id, onDelete]);
 
-  const getPeriodText = (period: string) => {
-    switch (period) {
-      case 'daily':
-        return '日';
-      case 'weekly':
-        return '周';
-      case 'monthly':
-        return '月';
-      case 'yearly':
-        return '年';
-      default:
-        return period;
-    }
-  };
+  const handleEdit = useCallback(() => {
+    onEdit();
+  }, [onEdit]);
 
   return (
     <View style={styles.container}>
@@ -102,37 +99,32 @@ export const BudgetItem: React.FC<BudgetItemProps> = ({ budget, onDelete, onEdit
           )}
           <View style={styles.details}>
             <Text style={styles.category}>{categoryName}</Text>
-            <Text style={styles.period}>{getPeriodText(budget.period)}</Text>
+            <Text style={styles.period}>{PERIOD_TEXTS[budget.period] || budget.period}</Text>
           </View>
           <Text style={styles.amount}>{formatCurrency(budget.amount)}</Text>
         </View>
         <View style={styles.actions}>
-          <TouchableOpacity onPress={onEdit} style={styles.actionButton}>
-            <Ionicons name="pencil" size={24} color="#007AFF" />
+          <TouchableOpacity onPress={handleEdit} style={styles.actionButton}>
+            <Ionicons name="pencil" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
-            <Ionicons name="trash" size={24} color="#FF3B30" />
+            <Ionicons name="trash" size={24} color={theme.colors.danger} />
           </TouchableOpacity>
         </View>
       </View>
     </View>
   );
-};
+});
+
+BudgetItem.displayName = 'BudgetItem';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginBottom: 8,
-    padding: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    marginBottom: theme.spacing.sm,
+    padding: theme.spacing.md,
+    ...theme.shadows.sm,
   },
   content: {
     flexDirection: 'row',
@@ -143,14 +135,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   name: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#000',
+    fontSize: theme.fontSize.md,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
     marginBottom: 2,
   },
   description: {
-    fontSize: 13,
-    color: '#666',
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textSecondary,
     marginBottom: 4,
   },
   details: {
@@ -159,25 +151,25 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   category: {
-    fontSize: 14,
-    color: '#666',
-    marginRight: 8,
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textSecondary,
+    marginRight: theme.spacing.sm,
   },
   period: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.textSecondary,
   },
   amount: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#007AFF',
+    fontSize: theme.fontSize.md,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.primary,
   },
   actions: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   actionButton: {
-    padding: 8,
-    marginLeft: 8,
+    padding: theme.spacing.sm,
+    marginLeft: theme.spacing.xs,
   },
-}); 
+});

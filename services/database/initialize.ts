@@ -8,11 +8,10 @@ import { SCHEMAS } from './schemas';
 import { CategoryQueries } from './schemas/Category';
 import { TransactionQueries } from './schemas/Transaction';
 import { BudgetQueries } from './schemas/Budget';
+import { BudgetDefaultQueries } from './schemas/BudgetDefault';
 
-import { RecurringTransactionQueries } from './schemas/RecurringTransaction';
 import { AccountQueries } from './schemas/Account';
 import { GoalQueries } from './schemas/Goal';
-import { TagQueries, TransactionTagQueries } from './schemas/Tag';
 import { DEFAULT_ACCOUNTS } from './schemas/Account';
 import Constants from 'expo-constants';
 
@@ -22,7 +21,7 @@ declare global {
 
 let globalIsInitializing = false;
 let initializationPromise: Promise<any> | null = null;
-const CURRENT_SCHEMA_VERSION = 4;
+const CURRENT_SCHEMA_VERSION = 5;
 
 interface SchemaVersion {
   version: number;
@@ -50,18 +49,6 @@ const MIGRATIONS: SchemaVersion[] = [
     version: 3,
     migrate: async () => {
       console.log('Running migration to version 3...');
-      const hasRecurring = await databaseService.tableExists('recurring_transactions');
-      if (!hasRecurring) {
-        await databaseService.executeQuery(RecurringTransactionQueries.CREATE_TABLE);
-        await databaseService.executeQuery(RecurringTransactionQueries.CREATE_INDEXES);
-        console.log('Created recurring_transactions table and indexes');
-      }
-    }
-  },
-  {
-    version: 4,
-    migrate: async () => {
-      console.log('Running migration to version 4...');
       const hasAccounts = await databaseService.tableExists('accounts');
       if (!hasAccounts) {
         await databaseService.executeQuery(AccountQueries.CREATE_TABLE);
@@ -74,12 +61,17 @@ const MIGRATIONS: SchemaVersion[] = [
         await databaseService.executeQuery(GoalQueries.CREATE_INDEXES);
         console.log('Created goals table and indexes');
       }
-      const hasTags = await databaseService.tableExists('tags');
-      if (!hasTags) {
-        await databaseService.executeQuery(TagQueries.CREATE_TABLE);
-        await databaseService.executeQuery(TagQueries.CREATE_INDEXES);
-        await databaseService.executeQuery(TransactionTagQueries.CREATE_TABLE);
-        console.log('Created tags and transaction_tags tables');
+    }
+  },
+  {
+    version: 4,
+    migrate: async () => {
+      console.log('Running migration to version 4...');
+      const hasBudgetDefaults = await databaseService.tableExists('budget_defaults');
+      if (!hasBudgetDefaults) {
+        await databaseService.executeQuery(BudgetDefaultQueries.CREATE_TABLE);
+        await databaseService.executeQuery(BudgetDefaultQueries.CREATE_INDEXES);
+        console.log('Created budget_defaults table and indexes');
       }
       const hasAccountId = await databaseService.columnExists('transactions', 'accountId');
       if (!hasAccountId) {
@@ -137,7 +129,7 @@ export async function initializeDatabase(db: any) {
       }
 
       console.log('Creating tables...');
-      const tableNames = ['categories', 'budgets', 'account_monthly_balances', 'transactions', 'recurring_transactions', 'accounts', 'goals', 'tags', 'transaction_tags'];
+      const tableNames = ['categories', 'budgets', 'budget_defaults', 'account_monthly_balances', 'transactions', 'accounts', 'goals'];
       for (const tableName of tableNames) {
         const exists = await databaseService.tableExists(tableName);
         if (!exists) {
@@ -216,25 +208,21 @@ async function runMigrations() {
 export async function resetDatabase(db: any) {
   await databaseService.executeTransaction([
     { query: 'PRAGMA foreign_keys = OFF;' },
-    { query: 'DROP TABLE IF EXISTS transaction_tags;' },
-    { query: 'DROP TABLE IF EXISTS tags;' },
     { query: 'DROP TABLE IF EXISTS goals;' },
     { query: 'DROP TABLE IF EXISTS accounts;' },
-    { query: 'DROP TABLE IF EXISTS recurring_transactions;' },
     { query: 'DROP TABLE IF EXISTS transactions;' },
     { query: 'DROP TABLE IF EXISTS budgets;' },
+    { query: 'DROP TABLE IF EXISTS budget_defaults;' },
     { query: 'DROP TABLE IF EXISTS categories;' },
     { query: 'DROP TABLE IF EXISTS account_monthly_balances;' },
     { query: 'DROP TABLE IF EXISTS schema_version;' },
     { query: SCHEMAS.categories },
     { query: SCHEMAS.budgets },
+    { query: SCHEMAS.budget_defaults },
     { query: SCHEMAS.transactions },
     { query: SCHEMAS.account_monthly_balances },
-    { query: SCHEMAS.recurring_transactions },
     { query: SCHEMAS.accounts },
     { query: SCHEMAS.goals },
-    { query: SCHEMAS.tags },
-    { query: SCHEMAS.transaction_tags },
     { query: 'PRAGMA foreign_keys = ON;' }
   ]);
 
@@ -285,4 +273,4 @@ async function initializeDefaultData(repositories: {
     console.error('Default data initialization failed:', error);
     throw error;
   }
-} 
+}

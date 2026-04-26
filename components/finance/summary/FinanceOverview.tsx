@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text } from '@/components/base/Text';
 import { Card } from '@/components/base/Card';
@@ -8,8 +8,18 @@ import { useFinance } from '@/contexts/FinanceContext';
 import { withDataLoading } from '@/components/base/withDataLoading';
 import theme from '@/theme';
 
-function FinanceOverviewBase() {
-  const { chartData } = useFinance();
+interface FinanceOverviewProps {
+  isReady: boolean;
+}
+
+function FinanceOverviewBase({ isReady }: FinanceOverviewProps) {
+  const { chartData, loadChartData } = useFinance();
+
+  useEffect(() => {
+    if (isReady) {
+      loadChartData();
+    }
+  }, [isReady, loadChartData]);
 
   return (
     <View style={styles.content}>

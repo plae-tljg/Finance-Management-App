@@ -1,12 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import { Card } from '@/components/base/Card';
 import { Text } from '@/components/base/Text';
-import { HeaderCard } from '@/components/base/HeaderCard';
-import { BackgroundImage } from '@/components/base/BackgroundImage';
+import { PageTemplate } from '@/components/base/PageTemplate';
 import { useFinance } from '@/contexts/FinanceContext';
 import { useTransactionService } from '@/services/business/TransactionService';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
@@ -115,114 +113,97 @@ export default function CashFlowPage() {
   };
 
   return (
-    <BackgroundImage>
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <HeaderCard title="现金流" />
+    <PageTemplate title="现金流">
+      <Card style={styles.summaryCard}>
+        <Text style={styles.sectionTitle}>本月概况</Text>
+        <View style={styles.summaryRow}>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryLabel}>收入</Text>
+            <Text style={[styles.summaryValue, { color: theme.colors.income }]}>
+              ¥{currentMonthSummary.income.toFixed(2)}
+            </Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryLabel}>支出</Text>
+            <Text style={[styles.summaryValue, { color: theme.colors.expense }]}>
+              ¥{currentMonthSummary.expense.toFixed(2)}
+            </Text>
+          </View>
+          <View style={styles.summaryItem}>
+            <Text style={styles.summaryLabel}>结余</Text>
+            <Text style={[styles.summaryValue, {
+              color: currentMonthSummary.balance >= 0 ? theme.colors.income : theme.colors.expense
+            }]}>
+              ¥{currentMonthSummary.balance.toFixed(2)}
+            </Text>
+          </View>
+        </View>
+      </Card>
 
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          <Card style={styles.summaryCard}>
-            <Text style={styles.sectionTitle}>本月概况</Text>
-            <View style={styles.summaryRow}>
-              <View style={styles.summaryItem}>
-                <Text style={styles.summaryLabel}>收入</Text>
-                <Text style={[styles.summaryValue, { color: theme.colors.income }]}>
-                  ¥{currentMonthSummary.income.toFixed(2)}
-                </Text>
-              </View>
-              <View style={styles.summaryItem}>
-                <Text style={styles.summaryLabel}>支出</Text>
-                <Text style={[styles.summaryValue, { color: theme.colors.expense }]}>
-                  ¥{currentMonthSummary.expense.toFixed(2)}
-                </Text>
-              </View>
-              <View style={styles.summaryItem}>
-                <Text style={styles.summaryLabel}>结余</Text>
-                <Text style={[styles.summaryValue, {
-                  color: currentMonthSummary.balance >= 0 ? theme.colors.income : theme.colors.expense
-                }]}>
-                  ¥{currentMonthSummary.balance.toFixed(2)}
-                </Text>
-              </View>
-            </View>
-          </Card>
+      <Card style={styles.chartCard}>
+        <Text style={styles.sectionTitle}>收支趋势 (近6月)</Text>
+        <LineChart
+          data={chartData}
+          width={Dimensions.get('window').width - 64}
+          height={220}
+          chartConfig={{
+            backgroundColor: theme.colors.surface,
+            backgroundGradientFrom: theme.colors.surface,
+            backgroundGradientTo: theme.colors.surface,
+            decimalPlaces: 0,
+            color: () => theme.colors.primary,
+            labelColor: () => theme.colors.textSecondary,
+            style: {
+              borderRadius: theme.borderRadius.md,
+            },
+            propsForDots: {
+              r: '4',
+              strokeWidth: '2',
+            },
+          }}
+          bezier
+          style={styles.chart}
+        />
+      </Card>
 
-          <Card style={styles.chartCard}>
-            <Text style={styles.sectionTitle}>收支趋势 (近6月)</Text>
-            <LineChart
-              data={chartData}
-              width={Dimensions.get('window').width - 64}
-              height={220}
-              chartConfig={{
-                backgroundColor: theme.colors.surface,
-                backgroundGradientFrom: theme.colors.surface,
-                backgroundGradientTo: theme.colors.surface,
-                decimalPlaces: 0,
-                color: () => theme.colors.primary,
-                labelColor: () => theme.colors.textSecondary,
-                style: {
-                  borderRadius: theme.borderRadius.md,
-                },
-                propsForDots: {
-                  r: '4',
-                  strokeWidth: '2',
-                },
-              }}
-              bezier
-              style={styles.chart}
-            />
-          </Card>
-
-          <Card style={styles.statsCard}>
-            <Text style={styles.sectionTitle}>统计</Text>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>平均月收入</Text>
-              <Text style={styles.statValue}>
-                ¥{monthlyData.income.length > 0
-                  ? (monthlyData.income.reduce((a, b) => a + b, 0) / monthlyData.income.length).toFixed(2)
-                  : '0.00'
-                }
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>平均月支出</Text>
-              <Text style={styles.statValue}>
-                ¥{monthlyData.expense.length > 0
-                  ? (monthlyData.expense.reduce((a, b) => a + b, 0) / monthlyData.expense.length).toFixed(2)
-                  : '0.00'
-                }
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>最高收入</Text>
-              <Text style={[styles.statValue, { color: theme.colors.income }]}>
-                ¥{Math.max(...monthlyData.income).toFixed(2)}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>最高支出</Text>
-              <Text style={[styles.statValue, { color: theme.colors.expense }]}>
-                ¥{Math.max(...monthlyData.expense).toFixed(2)}
-              </Text>
-            </View>
-          </Card>
-        </ScrollView>
-      </SafeAreaView>
-    </BackgroundImage>
+      <Card style={styles.statsCard}>
+        <Text style={styles.sectionTitle}>统计</Text>
+        <View style={styles.statRow}>
+          <Text style={styles.statLabel}>平均月收入</Text>
+          <Text style={styles.statValue}>
+            ¥{monthlyData.income.length > 0
+              ? (monthlyData.income.reduce((a, b) => a + b, 0) / monthlyData.income.length).toFixed(2)
+              : '0.00'
+            }
+          </Text>
+        </View>
+        <View style={styles.statRow}>
+          <Text style={styles.statLabel}>平均月支出</Text>
+          <Text style={styles.statValue}>
+            ¥{monthlyData.expense.length > 0
+              ? (monthlyData.expense.reduce((a, b) => a + b, 0) / monthlyData.expense.length).toFixed(2)
+              : '0.00'
+            }
+          </Text>
+        </View>
+        <View style={styles.statRow}>
+          <Text style={styles.statLabel}>最高收入</Text>
+          <Text style={[styles.statValue, { color: theme.colors.income }]}>
+            ¥{Math.max(...monthlyData.income).toFixed(2)}
+          </Text>
+        </View>
+        <View style={styles.statRow}>
+          <Text style={styles.statLabel}>最高支出</Text>
+          <Text style={[styles.statValue, { color: theme.colors.expense }]}>
+            ¥{Math.max(...monthlyData.expense).toFixed(2)}
+          </Text>
+        </View>
+      </Card>
+    </PageTemplate>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    marginHorizontal: theme.spacing.lg,
-    marginTop: theme.spacing.lg,
-    marginBottom: theme.spacing.sm,
-  },
-  scrollView: {
-    flex: 1,
-  },
   summaryCard: {
     margin: theme.spacing.lg,
     marginBottom: theme.spacing.md,

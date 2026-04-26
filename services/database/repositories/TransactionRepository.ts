@@ -104,10 +104,12 @@ export class TransactionRepository implements BaseRepository<Transaction> {
     const result = await this.db.executeQuery(
       TransactionQueries.UPDATE,
       [
+        data.name,
+        data.description,
         data.amount,
         data.categoryId,
         data.budgetId,
-        data.description,
+        data.accountId,
         data.date,
         data.type,
         id

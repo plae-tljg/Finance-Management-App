@@ -1,97 +1,44 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
+import React, { useCallback, memo } from 'react';
+import { StyleSheet, View, ScrollView } from 'react-native';
+import { useBudgetForm } from '@/hooks/useBudgetForm';
+import {
+  FormCard,
+  AmountInput,
+  CategoryInput,
+  PeriodSelector,
+  SubmitButton,
+} from '@/components/ui/form';
+import { TextInput } from 'react-native';
 import { Text } from '@/components/base/Text';
-import { CategorySelector } from '@/components/finance/categories/CategorySelector';
-import { useBudgetService } from '@/services/business/BudgetService';
-import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import theme from '@/theme';
 
-interface BudgetFormProps {
+interface BudgetAddProps {
   onSubmit: () => void;
 }
 
-export function BudgetForm({ onSubmit }: BudgetFormProps) {
-  const { isReady, databaseService } = useDatabaseSetup();
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly' | 'yearly'>('monthly');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export const BudgetAdd = memo(function BudgetAdd({ onSubmit }: BudgetAddProps) {
+  const {
+    name,
+    description,
+    amount,
+    selectedCategory,
+    period,
+    isLoading,
+    setName,
+    setDescription,
+    setAmount,
+    setSelectedCategory,
+    setPeriod,
+    submit,
+  } = useBudgetForm({ onSuccess: onSubmit });
 
-  const budgetService = useBudgetService(databaseService);
-
-  const handleSubmit = async () => {
-    if (!isReady || !databaseService) {
-      console.error('数据库未就绪');
-      alert('数据库未就绪，请稍后再试');
-      return;
-    }
-
-    if (!name.trim()) {
-      alert('请输入预算名称');
-      return;
-    }
-
-    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
-      alert('请输入有效金额');
-      return;
-    }
-
-    if (!selectedCategory) {
-      alert('请选择类别');
-      return;
-    }
-
-    if (isSubmitting) {
-      return;
-    }
-    
-    setIsSubmitting(true);
-    
-    try {
-      const newBudget = await budgetService.createBudget({
-        name: name.trim(),
-        description: description.trim() || null,
-        categoryId: selectedCategory,
-        amount: parseFloat(amount),
-        period,
-        startDate: new Date().toISOString(),
-        endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).toISOString(),
-        month: new Date().toISOString().substring(0, 7),
-        isRegular: false,
-        isBudgetExceeded: false,
-        accountId: null
-      });
-
-      if (!newBudget) {
-        throw new Error('创建预算失败');
-      }
-
-      setName('');
-      setDescription('');
-      setAmount('');
-      setSelectedCategory(null);
-      onSubmit();
-    } catch (error) {
-      console.error('创建预算失败:', error);
-      alert('创建预算失败，请重试');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (!isReady) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>数据库正在初始化中...</Text>
-      </View>
-    );
-  }
+  const handleSubmit = useCallback(async () => {
+    await submit();
+  }, [submit]);
 
   return (
     <View style={styles.content}>
-      <View style={styles.card}>
+      <FormCard>
         <View style={styles.row}>
           <Text style={styles.label}>预算名称</Text>
           <TextInput
@@ -102,59 +49,30 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
             onChangeText={setName}
           />
         </View>
-      </View>
+      </FormCard>
 
-      <View style={styles.card}>
-        <View style={styles.row}>
-          <Text style={styles.label}>金额</Text>
-          <View style={styles.amountContainer}>
-            <Text style={styles.currency}>¥</Text>
-            <TextInput
-              style={[styles.input, styles.amountInput]}
-              keyboardType="numeric"
-              placeholder="0.00"
-              placeholderTextColor="#666"
-              value={amount}
-              onChangeText={setAmount}
-            />
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.label}>类别</Text>
-        <CategorySelector 
-          onSelect={(category) => setSelectedCategory(category?.id || null)}
-          selectedId={selectedCategory || undefined}
+      <FormCard>
+        <AmountInput
+          value={amount}
+          onChange={setAmount}
         />
-      </View>
+      </FormCard>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>周期</Text>
-        <View style={styles.grid}>
-          {(['daily', 'weekly', 'monthly', 'yearly'] as const).map((p) => (
-            <TouchableOpacity
-              key={p}
-              style={[
-                styles.periodButton,
-                period === p && styles.activePeriodButton
-              ]}
-              onPress={() => setPeriod(p)}
-            >
-              <Text style={[
-                styles.periodButtonText,
-                period === p && styles.activePeriodButtonText
-              ]}>
-                {p === 'daily' ? '日' : 
-                 p === 'weekly' ? '周' : 
-                 p === 'monthly' ? '月' : '年'}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </View>
+      <FormCard>
+        <CategoryInput
+          selectedId={selectedCategory}
+          onSelect={(category) => setSelectedCategory(category?.id || null)}
+        />
+      </FormCard>
 
-      <View style={styles.card}>
+      <FormCard>
+        <PeriodSelector
+          value={period}
+          onChange={setPeriod}
+        />
+      </FormCard>
+
+      <FormCard>
         <View style={styles.row}>
           <Text style={styles.label}>描述</Text>
           <TextInput
@@ -165,38 +83,32 @@ export function BudgetForm({ onSubmit }: BudgetFormProps) {
             onChangeText={setDescription}
           />
         </View>
-      </View>
+      </FormCard>
 
-      <TouchableOpacity
-        style={[styles.button, isSubmitting && styles.disabledButton]}
+      <SubmitButton
         onPress={handleSubmit}
-        disabled={isSubmitting}
-      >
-        <Text style={styles.buttonText}>
-          {isSubmitting ? '保存中...' : '保存'}
-        </Text>
-      </TouchableOpacity>
+        loading={isLoading}
+      />
     </View>
   );
-}
+});
+
+BudgetAdd.displayName = 'BudgetAdd';
 
 const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: theme.spacing.md,
   },
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    marginBottom: theme.spacing.md,
-    ...theme.shadows.sm,
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   label: {
     fontSize: theme.fontSize.sm,
     fontWeight: theme.fontWeight.medium,
     color: theme.colors.textSecondary,
-    marginBottom: theme.spacing.sm,
   },
   input: {
     height: 40,
@@ -208,81 +120,8 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     backgroundColor: theme.colors.surfaceDark,
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  currency: {
-    fontSize: theme.fontSize.lg,
-    marginRight: theme.spacing.xs,
-    color: theme.colors.text,
-  },
-  amountInput: {
-    flex: 1,
-    borderWidth: 0,
-    paddingHorizontal: 0,
-    backgroundColor: 'transparent',
-  },
   nameInput: {
     flex: 1,
     marginLeft: theme.spacing.md,
-  },
-  amountContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    marginLeft: theme.spacing.md,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.borderRadius.sm,
-    paddingHorizontal: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: theme.spacing.sm,
-  },
-  periodButton: {
-    padding: theme.spacing.sm,
-    borderRadius: theme.borderRadius.sm,
-    backgroundColor: theme.colors.surfaceDark,
-    minWidth: 50,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-  },
-  activePeriodButton: {
-    backgroundColor: theme.colors.primary,
-    borderColor: theme.colors.primary,
-  },
-  periodButtonText: {
-    color: theme.colors.text,
-    fontSize: theme.fontSize.sm,
-  },
-  activePeriodButtonText: {
-    color: theme.colors.white,
-  },
-  button: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: theme.borderRadius.md,
-    padding: theme.spacing.md,
-    alignItems: 'center',
-    marginTop: theme.spacing.md,
-  },
-  disabledButton: {
-    backgroundColor: theme.colors.textTertiary,
-  },
-  buttonText: {
-    color: theme.colors.white,
-    fontSize: theme.fontSize.md,
-    fontWeight: theme.fontWeight.semibold,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: theme.spacing.lg,
   },
 });

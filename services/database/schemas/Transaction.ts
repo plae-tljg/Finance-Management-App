@@ -102,7 +102,7 @@ export const TransactionQueries = {
   
   FIND_BY_BUDGET_ID: 'SELECT * FROM transactions WHERE budgetId = ? ORDER BY date DESC',
   
-  FIND_BY_DATE_RANGE: 'SELECT * FROM transactions WHERE date BETWEEN ? AND ? ORDER BY date DESC',
+  FIND_BY_DATE_RANGE: 'SELECT * FROM transactions WHERE date >= ? AND date < ? ORDER BY date DESC',
   
   COUNT_ALL: 'SELECT COUNT(*) as count FROM transactions',
 

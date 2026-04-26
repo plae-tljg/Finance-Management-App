@@ -530,6 +530,51 @@ def create_database(db_path: str) -> sqlite3.Connection:
         )
     ''')
 
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS budget_defaults (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            categoryId INTEGER NOT NULL UNIQUE,
+            amount DECIMAL(10,2) NOT NULL,
+            period TEXT NOT NULL DEFAULT 'monthly' CHECK(period IN ('daily', 'weekly', 'monthly', 'yearly')),
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (categoryId) REFERENCES categories(id)
+        )
+    ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS goals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT,
+            targetAmount REAL NOT NULL,
+            currentAmount REAL DEFAULT 0,
+            deadline TEXT,
+            isCompleted INTEGER DEFAULT 0,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS schema_version (
+            version INTEGER PRIMARY KEY,
+            appliedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    cursor.execute('INSERT OR IGNORE INTO schema_version (version) VALUES (5)')
+
+    # Create indexes
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_budgets_month ON budgets(month)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_budgets_categoryId ON budgets(categoryId)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_budgets_accountId ON budgets(accountId)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(date)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_transactions_categoryId ON transactions(categoryId)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_transactions_accountId ON transactions(accountId)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_accounts_type ON accounts(type)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_accounts_isActive ON accounts(isActive)')
+    cursor.execute('CREATE INDEX IF NOT EXISTS idx_budget_defaults_categoryId ON budget_defaults(categoryId)')
+
     # Insert default accounts
     cursor.execute('INSERT OR IGNORE INTO accounts (name, type, icon, color, balance) VALUES (?, ?, ?, ?, ?)',
                    ('现金', 'cash', '💵', '#34C759', 0))
@@ -570,8 +615,14 @@ def print_comparison(xlsx_counts: Dict[str, int], sqlite_counts: Dict[str, int],
         status = "✓ MATCH" if xlsx_count == sqlite_count else "✗ MISMATCH"
         print(f"  {table:30} XLSX={xlsx_count:5}  SQLite={sqlite_count:5}  [{status}]")
 
+    print("\n--- New Tables (expected 0 from XLSX) ---")
+    new_tables = ['budget_defaults', 'goals', 'schema_version']
+    for table in new_tables:
+        sqlite_count = sqlite_counts.get(table, 0)
+        print(f"  {table:30} XLSX=0     SQLite={sqlite_count:5}")
+
     print("\n--- Per-Sheet XLSX Breakdown (for debugging) ---")
-    sheet_keys = sorted([k for k in xlsx_counts.keys() if k not in direct_compare_tables])
+    sheet_keys = sorted([k for k in xlsx_counts.keys() if k not in direct_compare_tables and k not in new_tables])
     for key in sheet_keys:
         print(f"  {key:30} XLSX={xlsx_counts[key]:5}")
 

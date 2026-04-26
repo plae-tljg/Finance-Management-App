@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, StyleSheet } from 'react-native';
 import { Text } from '@/components/base/Text';
 import { Card } from '@/components/base/Card';
-import { HeaderCard } from '@/components/base/HeaderCard';
-import { BackgroundImage } from '@/components/base/BackgroundImage';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { PageTemplate } from '@/components/base/PageTemplate';
+import { useLocalSearchParams } from 'expo-router';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import { useAccountMonthlyBalanceService } from '@/services/business/AccountMonthlyBalanceService';
 import { useTransactionService } from '@/services/business/TransactionService';
 import { useBudgetService } from '@/services/business/BudgetService';
 import { useCategoryService } from '@/services/business/CategoryService';
-import type { AccountMonthlyBalance } from '@/services/database/schemas/AccountMonthlyBalance';
 import type { Transaction } from '@/services/database/schemas/Transaction';
 import type { Budget } from '@/services/database/schemas/Budget';
 import type { Category } from '@/services/database/schemas/Category';
@@ -25,7 +22,6 @@ interface CategorySummary {
 }
 
 export default function MonthlySummaryScreen() {
-  const router = useRouter();
   const params = useLocalSearchParams();
   const { databaseService, isReady } = useDatabaseSetup();
   const [totalOpeningBalance, setTotalOpeningBalance] = useState(0);
@@ -122,115 +118,95 @@ export default function MonthlySummaryScreen() {
 
   if (isLoading) {
     return (
-      <BackgroundImage>
-        <View style={styles.container}>
-          <Text style={styles.loadingText}>加载中...</Text>
-        </View>
-      </BackgroundImage>
+      <PageTemplate title="加载中..." showBack={false}>
+        <Text style={styles.loadingText}>加载中...</Text>
+      </PageTemplate>
     );
   }
 
   return (
-    <BackgroundImage>
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <HeaderCard
-          title={`${currentYear}年${currentMonth}月财务概览`}
-        />
-        <ScrollView style={styles.content}>
-          <View style={styles.summaryCard}>
-            <Text style={styles.sectionTitle}>月度总览</Text>
-            <View style={styles.summaryItem}>
-              <Text style={styles.label}>期初余额</Text>
-              <Text style={styles.value}>¥{totalOpeningBalance.toFixed(2)}</Text>
-            </View>
+    <PageTemplate
+      title={`${currentYear}年${currentMonth}月财务概览`}
+    >
+      <View style={styles.summaryCard}>
+        <Text style={styles.sectionTitle}>月度总览</Text>
+        <View style={styles.summaryItem}>
+          <Text style={styles.label}>期初余额</Text>
+          <Text style={styles.value}>¥{totalOpeningBalance.toFixed(2)}</Text>
+        </View>
 
-            <View style={styles.summaryItem}>
-              <Text style={styles.label}>总收入</Text>
-              <Text style={[styles.value, styles.income]}>¥{totalIncome.toFixed(2)}</Text>
-            </View>
+        <View style={styles.summaryItem}>
+          <Text style={styles.label}>总收入</Text>
+          <Text style={[styles.value, styles.income]}>¥{totalIncome.toFixed(2)}</Text>
+        </View>
 
-            <View style={styles.summaryItem}>
-              <Text style={styles.label}>总支出</Text>
-              <Text style={[styles.value, styles.expense]}>¥{totalExpense.toFixed(2)}</Text>
-            </View>
+        <View style={styles.summaryItem}>
+          <Text style={styles.label}>总支出</Text>
+          <Text style={[styles.value, styles.expense]}>¥{totalExpense.toFixed(2)}</Text>
+        </View>
 
-            <View style={styles.summaryItem}>
-              <Text style={styles.label}>预期期末余额</Text>
-              <Text style={styles.value}>¥{expectedClosingBalance.toFixed(2)}</Text>
-            </View>
+        <View style={styles.summaryItem}>
+          <Text style={styles.label}>预期期末余额</Text>
+          <Text style={styles.value}>¥{expectedClosingBalance.toFixed(2)}</Text>
+        </View>
 
-            <View style={styles.summaryItem}>
-              <Text style={styles.label}>实际期末余额</Text>
-              <Text style={styles.value}>¥{totalClosingBalance.toFixed(2)}</Text>
-            </View>
+        <View style={styles.summaryItem}>
+          <Text style={styles.label}>实际期末余额</Text>
+          <Text style={styles.value}>¥{totalClosingBalance.toFixed(2)}</Text>
+        </View>
 
-            <View style={styles.summaryItem}>
-              <Text style={styles.label}>差额</Text>
+        <View style={styles.summaryItem}>
+          <Text style={styles.label}>差额</Text>
+          <Text style={[
+            styles.value,
+            Math.abs(expectedClosingBalance - totalClosingBalance) > 0.01 ? styles.warning : null
+          ]}>
+            ¥{(expectedClosingBalance - totalClosingBalance).toFixed(2)}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.summaryCard}>
+        <Text style={styles.sectionTitle}>类别支出与预算</Text>
+        {categorySummaries.map((summary, index) => (
+          <View key={summary.category.id} style={[
+            styles.categoryItem,
+            index === categorySummaries.length - 1 && styles.lastCategoryItem
+          ]}>
+            <View style={styles.categoryHeader}>
+              <Text style={styles.categoryName}>{summary.category.name}</Text>
               <Text style={[
-                styles.value,
-                Math.abs(expectedClosingBalance - totalClosingBalance) > 0.01 ? styles.warning : null
+                styles.remaining,
+                summary.remaining < 0 ? styles.overBudget : null
               ]}>
-                ¥{(expectedClosingBalance - totalClosingBalance).toFixed(2)}
+                {summary.remaining >= 0 ? '剩余' : '超支'} ¥{Math.abs(summary.remaining).toFixed(2)}
               </Text>
             </View>
+
+            <View style={styles.progressBar}>
+              <View
+                style={[
+                  styles.progressFill,
+                  {
+                    width: `${Math.min(100, (summary.spent / summary.budget) * 100)}%`,
+                    backgroundColor: summary.spent > summary.budget ? theme.colors.danger : theme.colors.success
+                  }
+                ]}
+              />
+            </View>
+
+            <View style={styles.categoryDetails}>
+              <Text style={styles.detailText}>已支出: ¥{summary.spent.toFixed(2)}</Text>
+              <Text style={styles.detailText}>预算: ¥{summary.budget.toFixed(2)}</Text>
+            </View>
           </View>
-
-          <View style={styles.summaryCard}>
-            <Text style={styles.sectionTitle}>类别支出与预算</Text>
-            {categorySummaries.map((summary, index) => (
-              <View key={summary.category.id} style={[
-                styles.categoryItem,
-                index === categorySummaries.length - 1 && styles.lastCategoryItem
-              ]}>
-                <View style={styles.categoryHeader}>
-                  <Text style={styles.categoryName}>{summary.category.name}</Text>
-                  <Text style={[
-                    styles.remaining,
-                    summary.remaining < 0 ? styles.overBudget : null
-                  ]}>
-                    {summary.remaining >= 0 ? '剩余' : '超支'} ¥{Math.abs(summary.remaining).toFixed(2)}
-                  </Text>
-                </View>
-
-                <View style={styles.progressBar}>
-                  <View
-                    style={[
-                      styles.progressFill,
-                      {
-                        width: `${Math.min(100, (summary.spent / summary.budget) * 100)}%`,
-                        backgroundColor: summary.spent > summary.budget ? theme.colors.danger : theme.colors.success
-                      }
-                    ]}
-                  />
-                </View>
-
-                <View style={styles.categoryDetails}>
-                  <Text style={styles.detailText}>已支出: ¥{summary.spent.toFixed(2)}</Text>
-                  <Text style={styles.detailText}>预算: ¥{summary.budget.toFixed(2)}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </BackgroundImage>
+        ))}
+      </View>
+    </PageTemplate>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    marginHorizontal: theme.spacing.lg,
-    marginTop: theme.spacing.lg,
-    marginBottom: theme.spacing.sm,
-  },
-  content: {
-    flex: 1,
-    padding: theme.spacing.lg,
-    paddingTop: 0,
-  },
   summaryCard: {
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.lg,

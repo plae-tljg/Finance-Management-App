@@ -1,11 +1,10 @@
 import { CategoryQueries } from './Category';
 import { TransactionQueries } from './Transaction';
 import { BudgetQueries } from './Budget';
+import { BudgetDefaultQueries } from './BudgetDefault';
 import { AccountMonthlyBalanceQueries } from './AccountMonthlyBalance';
-import { RecurringTransactionQueries } from './RecurringTransaction';
 import { AccountQueries } from './Account';
 import { GoalQueries } from './Goal';
-import { TagQueries, TransactionTagQueries } from './Tag';
 
 export const SCHEMA_VERSIONS = {
   v1: '1.0.0',
@@ -18,11 +17,9 @@ export const SCHEMA_VERSIONS = {
 export const SCHEMAS = {
   categories: CategoryQueries.CREATE_TABLE,
   budgets: BudgetQueries.CREATE_TABLE,
+  budget_defaults: BudgetDefaultQueries.CREATE_TABLE,
   account_monthly_balances: AccountMonthlyBalanceQueries.CREATE_TABLE,
   transactions: TransactionQueries.CREATE_TABLE,
-  recurring_transactions: RecurringTransactionQueries.CREATE_TABLE,
   accounts: AccountQueries.CREATE_TABLE,
   goals: GoalQueries.CREATE_TABLE,
-  tags: TagQueries.CREATE_TABLE,
-  transaction_tags: TransactionTagQueries.CREATE_TABLE,
-}; 
+};

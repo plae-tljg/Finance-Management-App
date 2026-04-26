@@ -3,8 +3,9 @@ import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-nat
 import { Text } from '@/components/base/Text';
 import { Card } from '@/components/base/Card';
 import { databaseService } from '@/services/database/DatabaseService';
-import { initializeDatabase } from '@/services/database/initialize';
+import { initializeDatabase, resetDatabase } from '@/services/database/initialize';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
+import { SCHEMAS } from '@/services/database/schemas';
 
 interface TableInfo {
   name: string;
@@ -117,6 +118,64 @@ export function DatabaseDebug() {
     );
   };
 
+  const handleFixDatabase = async () => {
+    Alert.alert(
+      '修复数据库',
+      '这将创建缺失的数据库表，不会删除现有数据。确定要继续吗？',
+      [
+        {
+          text: '取消',
+          style: 'cancel'
+        },
+        {
+          text: '确定',
+          onPress: async () => {
+            try {
+              const tableNames = ['budget_defaults', 'goals', 'schema_version'];
+              let createdCount = 0;
+
+              for (const tableName of tableNames) {
+                try {
+                  const exists = await databaseService.tableExists(tableName);
+                  if (!exists && SCHEMAS[tableName as keyof typeof SCHEMAS]) {
+                    console.log(`Creating missing table: ${tableName}`);
+                    await databaseService.executeQuery(SCHEMAS[tableName as keyof typeof SCHEMAS]);
+                    createdCount++;
+                  }
+                } catch (e) {
+                  console.error(`Error creating table ${tableName}:`, e);
+                }
+              }
+
+              // Ensure schema_version exists and has version 5
+              try {
+                const svExists = await databaseService.tableExists('schema_version');
+                if (!svExists) {
+                  await databaseService.executeQuery(`
+                    CREATE TABLE IF NOT EXISTS schema_version (
+                      version INTEGER PRIMARY KEY,
+                      appliedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )
+                  `);
+                  await databaseService.executeQuery('INSERT OR IGNORE INTO schema_version (version) VALUES (5)');
+                  createdCount++;
+                }
+              } catch (e) {
+                console.error('Error with schema_version:', e);
+              }
+
+              await loadTables();
+              Alert.alert('成功', `数据库已修复，创建了 ${createdCount} 个缺失的表`);
+            } catch (error) {
+              console.error('修复数据库失败:', error);
+              Alert.alert('错误', `修复数据库失败: ${error}`);
+            }
+          }
+        }
+      ]
+    );
+  };
+
   if (!isReady) {
     return (
       <View style={styles.loadingContainer}>
@@ -148,7 +207,16 @@ export function DatabaseDebug() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.refreshButton, styles.halfButton, isRefreshing && styles.disabledButton]}
+              style={[styles.fixButton, styles.halfButton]}
+              onPress={handleFixDatabase}
+            >
+              <Text style={styles.fixButtonText}>修复数据库</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={[styles.refreshButton, styles.fullButton, isRefreshing && styles.disabledButton]}
               onPress={handleRefresh}
               disabled={isRefreshing}
             >
@@ -225,8 +293,18 @@ const styles = StyleSheet.create({
     flex: 1,
     marginHorizontal: 4,
   },
+  fullButton: {
+    flex: 1,
+    marginHorizontal: 4,
+  },
   resetButton: {
     backgroundColor: '#FF3B30',
+    padding: 10,
+    borderRadius: 6,
+    alignItems: 'center',
+  },
+  fixButton: {
+    backgroundColor: '#FF9500',
     padding: 10,
     borderRadius: 6,
     alignItems: 'center',
@@ -241,6 +319,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#999',
   },
   resetButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  fixButtonText: {
     color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',

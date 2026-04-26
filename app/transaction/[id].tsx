@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import { useTransactionService } from '@/services/business/TransactionService';
 import { TransactionEdit } from '@/components/finance/transactions/TransactionEdit';
+import { PageTemplate } from '@/components/base/PageTemplate';
 import type { Transaction } from '@/services/database/schemas/Transaction';
 
 export default function TransactionEditScreen() {
@@ -62,14 +63,8 @@ export default function TransactionEditScreen() {
   }
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: '编辑交易',
-          headerBackTitle: '返回',
-        }}
-      />
+    <PageTemplate title="编辑交易">
       <TransactionEdit transaction={transaction} onSave={handleSave} />
-    </>
+    </PageTemplate>
   );
 } 

@@ -5,6 +5,7 @@ import { StorageAccessFramework } from 'expo-file-system';
 import { Text } from '@/components/base/Text';
 import { Card } from '@/components/base/Card';
 import { databaseService } from '@/services/database/DatabaseService';
+import { initializeDatabase } from '@/services/database/initialize';
 
 export function DatabaseExport() {
   const [isExporting, setIsExporting] = useState(false);
@@ -178,7 +179,7 @@ export function DatabaseExport() {
                           });
                           console.log('新数据库写入完成');
 
-                          Alert.alert('成功', `数据库已成功导入，备份文件保存在: ${backupPath}\n请重启应用以应用更改`);
+                          Alert.alert('成功', `数据库已成功导入，备份文件保存在: ${backupPath}\n\n如果导入后发现某些功能异常，请到设置 > 数据库调试 > 修复数据库来创建缺失的表。\n\n请重启应用以应用更改`);
                         } catch (error: any) {
                           console.error('导入数据库失败:', error);
                           Alert.alert('错误', `导入数据库失败: ${error?.message || '未知错误'}`);

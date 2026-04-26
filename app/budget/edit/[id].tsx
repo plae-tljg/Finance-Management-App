@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, ActivityIndicator, Alert } from 'react-native';
-import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import { useBudgetService } from '@/services/business/BudgetService';
 import { BudgetEdit } from '@/components/finance/budgets/BudgetEdit';
+import { PageTemplate } from '@/components/base/PageTemplate';
 import type { Budget } from '@/services/database/schemas/Budget';
 
 export default function BudgetEditScreen() {
@@ -62,14 +63,8 @@ export default function BudgetEditScreen() {
   }
 
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: '编辑预算',
-          headerBackTitle: '返回',
-        }}
-      />
+    <PageTemplate title="编辑预算">
       <BudgetEdit budget={budget} onSave={handleSave} />
-    </>
+    </PageTemplate>
   );
 } 

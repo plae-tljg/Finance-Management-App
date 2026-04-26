@@ -55,6 +55,7 @@ interface FinanceContextType {
     datasets: { data: number[] }[];
   };
 
+  loadChartData: () => Promise<void>;
   refreshAllData: () => Promise<void>;
   loadInitialData: () => Promise<void>;
 }
@@ -212,22 +213,24 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const today = new Date();
+      const dayOfWeek = today.getDay();
+      const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
       const startOfWeek = new Date(today);
-      startOfWeek.setDate(today.getDate() - today.getDay());
-      const endOfWeek = new Date(today);
-      endOfWeek.setDate(today.getDate() + (6 - today.getDay()));
+      startOfWeek.setDate(today.getDate() + mondayOffset);
+      startOfWeek.setHours(0, 0, 0, 0);
 
       const dailyExpenses = await Promise.all(
         Array.from({ length: 7 }).map(async (_, index) => {
           const date = new Date(startOfWeek);
-          date.setDate(date.getDate() + index);
+          date.setDate(startOfWeek.getDate() + index);
           const nextDate = new Date(date);
           nextDate.setDate(date.getDate() + 1);
 
-          const txns = await transactionService.getTransactionsByDateRange(
-            date.toISOString(),
-            nextDate.toISOString()
-          );
+          const pad = (n: number) => String(n).padStart(2, '0');
+          const dateStr = `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
+          const nextDateStr = `${nextDate.getFullYear()}-${pad(nextDate.getMonth()+1)}-${pad(nextDate.getDate())}`;
+
+          const txns = await transactionService.getTransactionsByDateRange(dateStr, nextDateStr);
           return txns.reduce((sum, t) => t.type === 'expense' ? sum + t.amount : sum, 0);
         })
       );
@@ -311,7 +314,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     if (!categoryService) return false;
 
     try {
-      return await categoryService.createCategory(category);
+      const result = await categoryService.createCategory(category);
+      return !!result;
     } catch (err) {
       console.error('Failed to create category:', err);
       return false;
@@ -348,6 +352,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     getAccountMonthlyBalancesByMonth,
     getMonthlyTotalBalances,
     chartData,
+    loadChartData,
     refreshAllData,
     loadInitialData
   };

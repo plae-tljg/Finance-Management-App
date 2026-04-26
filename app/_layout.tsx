@@ -57,19 +57,20 @@ export default function RootLayout() {
         <SQLiteProvider databaseName="finance.db">
           <FinanceProvider>
             <ThemeProvider value={DefaultTheme}>
-              <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="transaction/index" options={{ headerShown: false }} />
-              <Stack.Screen name="budget/index" options={{ headerShown: false }} />
-              <Stack.Screen name="budget/edit" options={{ headerShown: false }} />
-              <Stack.Screen name="bank_balance" options={{ headerShown: false }} />
-              <Stack.Screen name="monthly_summary" options={{ headerShown: false }} />
-              <Stack.Screen name="categories" options={{ headerShown: false }} />
-              <Stack.Screen name="settings" options={{ headerShown: false }} />
-              <Stack.Screen name="reports/cashflow" options={{ headerShown: false }} />
-              <Stack.Screen name="reports/yearly_summary" options={{ headerShown: false }} />
-              <Stack.Screen name="accounts" options={{ headerShown: false }} />
-              <Stack.Screen name="goals" options={{ headerShown: false }} />
+              <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="transaction/index" />
+              <Stack.Screen name="budget/index" />
+              <Stack.Screen name="budget/edit" />
+              <Stack.Screen name="budget-defaults" />
+              <Stack.Screen name="bank_balance" />
+              <Stack.Screen name="monthly_summary" />
+              <Stack.Screen name="categories" />
+              <Stack.Screen name="settings" />
+              <Stack.Screen name="reports/cashflow" />
+              <Stack.Screen name="reports/yearly_summary" />
+              <Stack.Screen name="accounts" />
+              <Stack.Screen name="goals" />
             </Stack>
             <StatusBar style="dark" translucent={true} backgroundColor="transparent" />
           </ThemeProvider>

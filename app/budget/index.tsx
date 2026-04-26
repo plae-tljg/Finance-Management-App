@@ -7,10 +7,8 @@ import { BudgetList } from '@/components/finance/budgets/BudgetList';
 import type { BudgetWithCategory } from '@/services/database/repositories/BudgetRepository';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet } from 'react-native';
-import { HeaderCard } from '@/components/base/HeaderCard';
-import { BackgroundImage } from '@/components/base/BackgroundImage';
+import { PageTemplate } from '@/components/base/PageTemplate';
 
 export default function BudgetsScreen() {
   const router = useRouter();
@@ -91,33 +89,28 @@ export default function BudgetsScreen() {
   }
 
   return (
-    <BackgroundImage>
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <HeaderCard
-          title={params.year && params.month
-            ? `${currentYear}年${currentMonth}月预算管理`
-            : '预算管理'
-          }
-        />
-        <BudgetList
-          budgets={budgets}
-          isLoading={isLoading}
-          isRefreshing={isRefreshing}
-          onRefresh={onRefresh}
-          onDelete={handleDelete}
-          onEdit={(id) => router.push(`/budget/edit/${id}`)}
-          title={params.year && params.month
-            ? `${currentYear}年${currentMonth}月预算管理`
-            : '所有预算记录'
-          }
-        />
-      </SafeAreaView>
-    </BackgroundImage>
+    <PageTemplate
+      title={params.year && params.month
+        ? `${currentYear}年${currentMonth}月预算管理`
+        : '预算管理'
+      }
+      scrollable={false}
+    >
+      <BudgetList
+        budgets={budgets}
+        isLoading={isLoading}
+        isRefreshing={isRefreshing}
+        onRefresh={onRefresh}
+        onDelete={handleDelete}
+        onEdit={(id) => router.push(`/budget/edit/${id}`)}
+        title={params.year && params.month
+          ? `${currentYear}年${currentMonth}月预算管理`
+          : '所有预算记录'
+        }
+      />
+    </PageTemplate>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
 }); 

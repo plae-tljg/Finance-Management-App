@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card } from '@/components/base/Card';
 import { Text } from '@/components/base/Text';
-import { HeaderCard } from '@/components/base/HeaderCard';
-import { BackgroundImage } from '@/components/base/BackgroundImage';
+import { PageTemplate } from '@/components/base/PageTemplate';
 import { useFinance } from '@/contexts/FinanceContext';
 import { useTransactionService } from '@/services/business/TransactionService';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
@@ -117,119 +115,102 @@ export default function YearlySummaryPage() {
   };
 
   return (
-    <BackgroundImage>
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <HeaderCard title="年度总结" />
+    <PageTemplate title="年度总结">
+      <View style={styles.yearSelector}>
+        {yearlyStats.map((stat) => (
+          <TouchableOpacity
+            key={stat.year}
+            style={[
+              styles.yearButton,
+              selectedYear === stat.year && styles.yearButtonActive,
+            ]}
+            onPress={() => setSelectedYear(stat.year)}
+          >
+            <Text style={[
+              styles.yearButtonText,
+              selectedYear === stat.year && styles.yearButtonTextActive,
+            ]}>
+              {stat.year}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
 
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          <View style={styles.yearSelector}>
-            {yearlyStats.map((stat) => (
-              <TouchableOpacity
-                key={stat.year}
-                style={[
-                  styles.yearButton,
-                  selectedYear === stat.year && styles.yearButtonActive,
-                ]}
-                onPress={() => setSelectedYear(stat.year)}
-              >
-                <Text style={[
-                  styles.yearButtonText,
-                  selectedYear === stat.year && styles.yearButtonTextActive,
-                ]}>
-                  {stat.year}
-                </Text>
-              </TouchableOpacity>
-            ))}
+      <Card style={styles.summaryCard}>
+        <Text style={styles.sectionTitle}>{selectedYear}年总结</Text>
+
+        <View style={styles.yearTotalRow}>
+          <View style={styles.yearTotalItem}>
+            <Text style={styles.yearTotalLabel}>总收入</Text>
+            <Text style={[styles.yearTotalValue, { color: theme.colors.income }]}>
+              ¥{selectedYearStat.totalIncome.toFixed(2)}
+            </Text>
           </View>
+          <View style={styles.yearTotalItem}>
+            <Text style={styles.yearTotalLabel}>总支出</Text>
+            <Text style={[styles.yearTotalValue, { color: theme.colors.expense }]}>
+              ¥{selectedYearStat.totalExpense.toFixed(2)}
+            </Text>
+          </View>
+        </View>
 
-          <Card style={styles.summaryCard}>
-            <Text style={styles.sectionTitle}>{selectedYear}年总结</Text>
+        <View style={[styles.yearTotalRow, styles.balanceRow]}>
+          <Text style={styles.yearTotalLabel}>年度结余</Text>
+          <Text style={[
+            styles.balanceValue,
+            { color: selectedYearStat.balance >= 0 ? theme.colors.income : theme.colors.expense }
+          ]}>
+            ¥{selectedYearStat.balance.toFixed(2)}
+          </Text>
+        </View>
 
-            <View style={styles.yearTotalRow}>
-              <View style={styles.yearTotalItem}>
-                <Text style={styles.yearTotalLabel}>总收入</Text>
-                <Text style={[styles.yearTotalValue, { color: theme.colors.income }]}>
-                  ¥{selectedYearStat.totalIncome.toFixed(2)}
+        <View style={styles.statRow}>
+          <Text style={styles.statLabel}>交易笔数</Text>
+          <Text style={styles.statValue}>{selectedYearStat.transactionCount} 笔</Text>
+        </View>
+        <View style={styles.statRow}>
+          <Text style={styles.statLabel}>月均支出</Text>
+          <Text style={styles.statValue}>
+            ¥{(selectedYearStat.totalExpense / 12).toFixed(2)}
+          </Text>
+        </View>
+        <View style={styles.statRow}>
+          <Text style={styles.statLabel}>月均收入</Text>
+          <Text style={styles.statValue}>
+            ¥{(selectedYearStat.totalIncome / 12).toFixed(2)}
+          </Text>
+        </View>
+      </Card>
+
+      {monthlyBreakdown.length > 0 && (
+        <Card style={styles.monthlyCard}>
+          <Text style={styles.sectionTitle}>月度明细</Text>
+          {monthlyBreakdown.map((item, index) => (
+            <View key={index} style={styles.monthlyRow}>
+              <Text style={styles.monthlyMonth}>{item.month}</Text>
+              <View style={styles.monthlyValues}>
+                <Text style={[styles.monthlyValue, { color: theme.colors.income }]}>
+                  +¥{item.income.toFixed(0)}
+                </Text>
+                <Text style={[styles.monthlyValue, { color: theme.colors.expense }]}>
+                  -¥{item.expense.toFixed(0)}
+                </Text>
+                <Text style={[
+                  styles.monthlyBalance,
+                  { color: (item.income - item.expense) >= 0 ? theme.colors.income : theme.colors.expense }
+                ]}>
+                  ¥{(item.income - item.expense).toFixed(0)}
                 </Text>
               </View>
-              <View style={styles.yearTotalItem}>
-                <Text style={styles.yearTotalLabel}>总支出</Text>
-                <Text style={[styles.yearTotalValue, { color: theme.colors.expense }]}>
-                  ¥{selectedYearStat.totalExpense.toFixed(2)}
-                </Text>
-              </View>
             </View>
-
-            <View style={[styles.yearTotalRow, styles.balanceRow]}>
-              <Text style={styles.yearTotalLabel}>年度结余</Text>
-              <Text style={[
-                styles.balanceValue,
-                { color: selectedYearStat.balance >= 0 ? theme.colors.income : theme.colors.expense }
-              ]}>
-                ¥{selectedYearStat.balance.toFixed(2)}
-              </Text>
-            </View>
-
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>交易笔数</Text>
-              <Text style={styles.statValue}>{selectedYearStat.transactionCount} 笔</Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>月均支出</Text>
-              <Text style={styles.statValue}>
-                ¥{(selectedYearStat.totalExpense / 12).toFixed(2)}
-              </Text>
-            </View>
-            <View style={styles.statRow}>
-              <Text style={styles.statLabel}>月均收入</Text>
-              <Text style={styles.statValue}>
-                ¥{(selectedYearStat.totalIncome / 12).toFixed(2)}
-              </Text>
-            </View>
-          </Card>
-
-          {monthlyBreakdown.length > 0 && (
-            <Card style={styles.monthlyCard}>
-              <Text style={styles.sectionTitle}>月度明细</Text>
-              {monthlyBreakdown.map((item, index) => (
-                <View key={index} style={styles.monthlyRow}>
-                  <Text style={styles.monthlyMonth}>{item.month}</Text>
-                  <View style={styles.monthlyValues}>
-                    <Text style={[styles.monthlyValue, { color: theme.colors.income }]}>
-                      +¥{item.income.toFixed(0)}
-                    </Text>
-                    <Text style={[styles.monthlyValue, { color: theme.colors.expense }]}>
-                      -¥{item.expense.toFixed(0)}
-                    </Text>
-                    <Text style={[
-                      styles.monthlyBalance,
-                      { color: (item.income - item.expense) >= 0 ? theme.colors.income : theme.colors.expense }
-                    ]}>
-                      ¥{(item.income - item.expense).toFixed(0)}
-                    </Text>
-                  </View>
-                </View>
-              ))}
-            </Card>
-          )}
-        </ScrollView>
-      </SafeAreaView>
-    </BackgroundImage>
+          ))}
+        </Card>
+      )}
+    </PageTemplate>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    marginHorizontal: theme.spacing.lg,
-    marginTop: theme.spacing.lg,
-    marginBottom: theme.spacing.sm,
-  },
-  scrollView: {
-    flex: 1,
-  },
   yearSelector: {
     flexDirection: 'row',
     padding: theme.spacing.lg,

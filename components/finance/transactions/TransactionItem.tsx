@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, memo } from 'react';
 import { StyleSheet, View, TouchableOpacity, Alert } from 'react-native';
 import { Text } from '@/components/base/Text';
 import type { Transaction } from '@/services/database/schemas/Transaction';
@@ -19,7 +19,7 @@ interface TransactionItemProps {
   showActions?: boolean;
 }
 
-export const TransactionItem: React.FC<TransactionItemProps> = ({
+export const TransactionItem: React.FC<TransactionItemProps> = memo(({
   transaction,
   onDelete,
   showActions = true
@@ -54,14 +54,14 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
     loadCategoryName();
   }, [transaction.categoryId, categoryService, transaction.categoryName, transaction.categoryIcon]);
 
-  const handlePress = () => {
+  const handlePress = useCallback(() => {
     router.push({
       pathname: '/transaction/[id]',
       params: { id: transaction.id }
     });
-  };
+  }, [transaction.id]);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     Alert.alert(
       '删除交易',
       '确定要删除这笔交易吗？',
@@ -91,7 +91,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
         }
       ]
     );
-  };
+  }, [transactionService, transaction.id, onDelete]);
 
   return (
     <TouchableOpacity onPress={handlePress} style={styles.container}>
@@ -150,7 +150,9 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
       )}
     </TouchableOpacity>
   );
-};
+});
+
+TransactionItem.displayName = 'TransactionItem';
 
 const styles = StyleSheet.create({
   container: {

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/components/base/Text';
 import { Card } from '@/components/base/Card';
-import { HeaderCard } from '@/components/base/HeaderCard';
-import { BackgroundImage } from '@/components/base/BackgroundImage';
+import { PageTemplate } from '@/components/base/PageTemplate';
 import { FinanceOverview } from '@/components/finance/summary/FinanceOverview';
 import { RecentTransactions } from '@/components/finance/transactions/RecentTransactions';
 import { useFinance } from '@/contexts/FinanceContext';
@@ -44,50 +42,34 @@ export default function DashboardScreen() {
 
   if (error) {
     return (
-      <BackgroundImage>
+      <PageTemplate title="错误" showBack={false}>
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>数据库初始化失败: {error.message}</Text>
         </View>
-      </BackgroundImage>
+      </PageTemplate>
     );
   }
 
   if (isLoading) {
     return (
-      <BackgroundImage>
+      <PageTemplate title="加载中..." showBack={false}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
           <Text style={styles.loadingText}>正在加载数据...</Text>
         </View>
-      </BackgroundImage>
+      </PageTemplate>
     );
   }
 
   return (
-    <BackgroundImage blurTint="light" overlayOpacity={0.05}>
-      <SafeAreaView style={styles.container} edges={['top']}>
-        <HeaderCard title="财务概览" showBack={false} />
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          <FinanceOverview isReady={isReady} />
-          {isReady && <RecentTransactions isReady={isReady} />}
-        </ScrollView>
-      </SafeAreaView>
-    </BackgroundImage>
+    <PageTemplate title="财务概览" showBack={false}>
+      <FinanceOverview isReady={isReady} />
+      {isReady && <RecentTransactions isReady={isReady} />}
+    </PageTemplate>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    marginHorizontal: theme.spacing.lg,
-    marginTop: theme.spacing.lg,
-    marginBottom: theme.spacing.sm,
-  },
-  scrollView: {
-    flex: 1,
-  },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',

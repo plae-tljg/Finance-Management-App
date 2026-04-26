@@ -86,6 +86,18 @@ export function useTransactionService(databaseService: DatabaseService) {
     });
   };
 
+  const getTransactionsByAccountId = async (accountId: number): Promise<Transaction[]> => {
+    return await repository.findByAccountId(accountId);
+  };
+
+  const getTransactionsByMonthAndAccount = async (year: number, month: number, accountId: number): Promise<Transaction[]> => {
+    const allTransactions = await repository.findByAccountId(accountId);
+    return allTransactions.filter(t => {
+      const date = new Date(t.date);
+      return date.getFullYear() === year && date.getMonth() + 1 === month;
+    });
+  };
+
   return {
     getTransactions,
     getTransactionById,
@@ -103,6 +115,8 @@ export function useTransactionService(databaseService: DatabaseService) {
     getTransactionsSummaryByCategory,
     getTransactionsSummaryByBudget,
     getRecentTransactions,
-    getTransactionsByMonth
+    getTransactionsByMonth,
+    getTransactionsByAccountId,
+    getTransactionsByMonthAndAccount
   };
 } 
