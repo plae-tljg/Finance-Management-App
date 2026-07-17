@@ -504,3 +504,129 @@ interface BankBalance {
   updatedAt: string;
 }
 ```
+
+---
+
+## Web 模式 REST API
+
+当应用开启「Web 模式」时，Android 进程内嵌的 `FinanceHttpServer`（Kotlin + NanoHTTPD）会暴露以下端点。所有 `/api/*` 端点都需要 `Authorization: Bearer <token>` header（或 `?token=<token>` 查询参数）；token 在打开 Web 模式时一次性生成。
+
+**Base URL：** `http://<phone-ip>:8080`
+
+### 通用
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| `GET` | `/api/health` | 健康检查，返回 `{ ok: true, schemaVersion: 5 }` |
+| `GET` | `/api/schema` | 返回所有表的 DDL 和当前 schema 版本 |
+
+### 账户 (accounts)
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| `GET` | `/api/accounts` | 列出所有账户 |
+| `GET` | `/api/accounts/:id` | 按 ID 获取账户 |
+| `POST` | `/api/accounts` | 创建账户 |
+| `PUT` | `/api/accounts/:id` | 更新账户（部分字段即可） |
+| `PATCH` | `/api/accounts/:id/balance` | 仅更新余额（用于交易后调整） |
+| `DELETE` | `/api/accounts/:id` | 删除账户 |
+
+### 分类 (categories)
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| `GET` | `/api/categories` | 列出所有分类 |
+| `GET` | `/api/categories/:id` | 按 ID 获取分类 |
+| `POST` | `/api/categories` | 创建分类 |
+| `PUT` | `/api/categories/:id` | 更新分类 |
+| `DELETE` | `/api/categories/:id` | 删除分类 |
+
+### 交易 (transactions)
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| `GET` | `/api/transactions` | 列出所有交易 |
+| `GET` | `/api/transactions/:id` | 按 ID 获取交易 |
+| `POST` | `/api/transactions` | 创建交易 |
+| `PUT` | `/api/transactions/:id` | 更新交易 |
+| `DELETE` | `/api/transactions/:id` | 删除交易 |
+
+### 预算 (budgets) / 预算模板 (budget_defaults)
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| `GET` | `/api/budgets` | 列出所有预算 |
+| `GET` | `/api/budgets/:id` | 按 ID 获取预算 |
+| `POST` | `/api/budgets` | 创建预算 |
+| `PUT` | `/api/budgets/:id` | 更新预算 |
+| `DELETE` | `/api/budgets/:id` | 删除预算 |
+| `GET` | `/api/budget-defaults` | 列出所有预算模板 |
+| `POST` | `/api/budget-defaults` | 创建预算模板 |
+| `PUT` | `/api/budget-defaults/:id` | 更新预算模板 |
+| `DELETE` | `/api/budget-defaults/:id` | 删除预算模板 |
+
+### 目标 (goals) / 账户月度余额 (account-monthly-balances)
+
+| 方法 | 路径 | 说明 |
+|---|---|---|
+| `GET` | `/api/goals` | 列出所有目标 |
+| `POST` | `/api/goals` | 创建目标 |
+| `PUT` | `/api/goals/:id` | 更新目标 |
+| `DELETE` | `/api/goals/:id` | 删除目标 |
+| `GET` | `/api/account-monthly-balances` | 列出所有账户月度余额 |
+| `POST` | `/api/account-monthly-balances` | 创建 |
+| `PUT` | `/api/account-monthly-balances/:id` | 更新 |
+| `DELETE` | `/api/account-monthly-balances/:id` | 删除 |
+
+### 请求/响应格式
+
+请求体和响应体都是 JSON。`POST`/`PUT` 的字段直接对应表列（camelCase 即可，server 自动映射）：
+
+```json
+// POST /api/transactions
+{
+  "amount": 100,
+  "categoryId": 1,
+  "budgetId": null,
+  "accountId": 1,
+  "description": "午餐",
+  "date": "2026-01-15T12:00:00.000Z",
+  "type": "expense"
+}
+
+// 200 OK
+{
+  "ok": true,
+  "id": 42
+}
+```
+
+错误响应：
+
+```json
+// 401 Unauthorized（token 缺失或错误）
+{ "error": "Missing or invalid token" }
+
+// 404 Not Found
+{ "error": "Account not found: 999" }
+
+// 400 Bad Request（SQL 解析失败 / 字段缺失）
+{ "error": "Invalid request body" }
+```
+
+### Web 侧实现
+
+Web 端不直接发 HTTP；它走 `DatabaseServiceFacade` 接口，由 `WebDatabase` 拦截 SQL 调用并翻译成对以上端点的请求。代码入口：
+
+- `web/api/ApiClient.ts` — HTTP 客户端，自动注入 Bearer token
+- `web/api/endpoints.ts` — 类型化端点（`AccountsApi.update(id, data)` 等）
+- `services/database/web/WebDatabase.ts` — SQL → REST 翻译器
+
+如果想直接用 curl 调试（不在浏览器里），在 token URL 后面带 `?token=xxx` 即可：
+
+```bash
+curl -X GET 'http://192.168.1.10:8080/api/health?token=1234'
+curl -X POST 'http://192.168.1.10:8080/api/transactions?token=1234' \
+  -H 'Content-Type: application/json' \
+  -d '{"amount":50,"categoryId":1,"accountId":1,"type":"expense","date":"2026-01-15T12:00:00.000Z"}'
+```

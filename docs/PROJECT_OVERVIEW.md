@@ -7,8 +7,8 @@
 **技术栈：**
 - **前端框架：** React Native + Expo
 - **状态管理：** React Context
-- **数据库：** SQLite (expo-sqlite)
-- **架构模式：** 领域驱动设计 (DDD)
+- **数据库：** SQLite (expo-sqlite) + 原生 Kotlin HTTP server (Web 模式)
+- **架构模式：** 领域驱动设计 (DDD) + 平台分叉 (native / web)
 
 ## 核心功能
 
@@ -41,11 +41,24 @@
 - 记录每月银行账户余额
 - 计算实际储蓄
 
+### 7. Web 模式（局域网访问）
+应用内置一个轻量级 HTTP server（Kotlin + NanoHTTPD）。打开后，手机会在 LAN 上托管完整的 Web 版应用，任何同 Wi-Fi 下的浏览器都能扫码或输入 URL 访问、实时编辑数据，无需切换应用或安装 Termux。
+
+- 设置 → **Web 模式** → 打开开关
+- 手机会显示一个 URL（含一次性 token）和二维码
+- 浏览器里所有改动通过 REST API 写入本机 SQLite，原生应用自动同步刷新
+- 关闭开关后服务立即停止；切到后台超过 5 分钟也会自动停止以省电，回到前台自动重启
+
+**架构：**
+- 原生侧：Kotlin 的 `FinanceHttpServer`（`android/.../webserver/`）从 APK 内嵌的 `assets/web/` 提供 Expo Web 打包产物，并暴露 `/api/*` REST 端点代理到同一个 SQLite 文件
+- Web 侧：`WebDatabase`（`services/database/web/WebDatabase.ts`）拦截 SQL 调用，转成对原生 HTTP 服务的 REST 请求
+- 两者共享同一份 `FinanceManager.db` —— 浏览器写的，原生立刻能看见；原生写的，浏览器刷新就能看见
+
 ## 离线优先设计
 
 应用设计为完全离线运行：
 - 所有数据存储在本地 SQLite 数据库
-- 不需要网络连接
+- 不需要网络连接（Web 模式只在本地 Wi-Fi 网段内）
 - 数据隐私安全
 
 ## 目录结构
