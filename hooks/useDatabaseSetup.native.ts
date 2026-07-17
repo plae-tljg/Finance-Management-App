@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import * as SQLite from 'expo-sqlite';
-import { initializeDatabase } from '@/services/database/initialize';
-import { databaseService } from '@/services/database/DatabaseService';
+import { databaseService, getDatabaseService } from '@/services/database';
+import type { DatabaseServiceType } from '@/services/database';
 
 // 全局初始化状态
 let isDatabaseInitialized = false;
@@ -13,14 +12,12 @@ export function useDatabaseSetup() {
   const [error, setError] = useState<Error | null>(null);
 
   const setupDatabase = useCallback(async () => {
-    // 如果数据库已经初始化，直接返回
     if (isDatabaseInitialized) {
       setIsReady(true);
       return;
     }
 
-    // 如果正在初始化，等待初始化完成
-    if (initializationInProgress) {
+    if (initializationInProgress && initializationPromise) {
       try {
         await initializationPromise;
         setIsReady(true);
@@ -33,18 +30,25 @@ export function useDatabaseSetup() {
     }
 
     initializationInProgress = true;
-    
+
     try {
-      // 创建新的数据库连接
-      const db = await SQLite.openDatabaseAsync('FinanceManager.db', {
-        useNewConnection: true
+      const db = getDatabaseService() as DatabaseServiceType;
+
+      // Native 模式：expo-sqlite 初始化路径。Metro 在 web 打包时把
+      // `expo-sqlite` 替换为 stub（见 metro.config.js），所以这里只在原生
+      // 构建里真正工作。
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const SQLite = require('expo-sqlite');
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { initializeDatabase } = require('@/services/database/initialize');
+
+      const sqliteDb = await SQLite.openDatabaseAsync('FinanceManager.db', {
+        useNewConnection: true,
       });
 
-      // 开始初始化
       initializationPromise = (async () => {
         try {
-          // 初始化数据库服务
-          await initializeDatabase(db);
+          await initializeDatabase(sqliteDb);
           isDatabaseInitialized = true;
           console.log('数据库初始化完成');
         } catch (err) {

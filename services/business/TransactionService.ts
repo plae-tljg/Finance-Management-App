@@ -1,8 +1,8 @@
 import { TransactionRepository } from '../database/repositories/TransactionRepository';
 import type { Transaction } from '../database/schemas/Transaction';
-import { DatabaseService } from '../database/DatabaseService';
+import { DatabaseServiceType } from '../database/DatabaseService';
 
-export function useTransactionService(databaseService: DatabaseService) {
+export function useTransactionService(databaseService: DatabaseServiceType) {
   const repository = new TransactionRepository(databaseService);
   
   const getTransactions = async () => {

@@ -1,0 +1,13 @@
+// Finance-Management-App: workaround for flaky snapshot repo.
+// RN's gradle-plugin adds https://oss.sonatype.org/.../snapshots/ — that
+// host returns 504 frequently, which Gradle treats as a fatal repository
+// failure. Strip it from every project after evaluation.
+
+gradle.beforeProject { project ->
+    project.afterEvaluate {
+        project.repositories.removeAll { repo ->
+            def u = repo.hasProperty('url') ? repo.url?.toString() : null
+            u != null && u.contains('oss.sonatype.org')
+        }
+    }
+}

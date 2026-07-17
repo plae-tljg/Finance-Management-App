@@ -1,6 +1,6 @@
 import { BudgetRepository } from '../database/repositories/BudgetRepository';
 import { TransactionRepository } from '../database/repositories/TransactionRepository';
-import { DatabaseService } from '../database/DatabaseService';
+import { DatabaseServiceType } from '../database/DatabaseService';
 
 export type AlertThreshold = 50 | 80 | 100;
 
@@ -27,7 +27,7 @@ const DEFAULT_SETTINGS: AlertSettings = {
   notifyOnExceeded: true,
 };
 
-export function createBudgetAlertService(databaseService: DatabaseService) {
+export function createBudgetAlertService(databaseService: DatabaseServiceType) {
   const budgetRepo = new BudgetRepository(databaseService);
   const transactionRepo = new TransactionRepository(databaseService);
 

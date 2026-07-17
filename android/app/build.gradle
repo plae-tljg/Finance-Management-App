@@ -4,6 +4,34 @@ apply plugin: "com.facebook.react"
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
+// Copy the Expo web bundle (dist/) into APK assets so the embedded HTTP
+// server can serve the SPA. Runs before the bundleRelease task.
+task copyWebBundle(type: Copy) {
+    def src = file("${projectRoot}/dist")
+    def dst = file("${buildDir}/generated/assets/web")
+    from(src)
+    into(dst)
+    onlyIf { src.exists() }
+}
+
+afterEvaluate {
+    tasks.matching { it.name == "mergeReleaseAssets" || it.name == "mergeDebugAssets" }.configureEach {
+        dependsOn copyWebBundle
+        // Also copy from generated into the actual assets/web/ folder Android expects.
+        doLast {
+            def generated = file("${buildDir}/generated/assets/web")
+            def dest = file("src/main/assets/web")
+            if (generated.exists()) {
+                delete dest
+                copy {
+                    from generated
+                    into dest
+                }
+            }
+        }
+    }
+}
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -149,6 +177,9 @@ android {
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+
+    // Embedded HTTP server for the in-app "Web Mode" feature.
+    implementation("org.nanohttpd:nanohttpd:2.3.1")
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

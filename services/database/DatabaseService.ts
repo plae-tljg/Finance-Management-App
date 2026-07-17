@@ -1,7 +1,28 @@
-import { SQLiteDatabase, SQLiteRunResult } from 'expo-sqlite';
+// Type-only import — erased at compile time so Metro does not pull
+// `expo-sqlite` into the web bundle (which has no native module bridge).
+import type { SQLiteDatabase, SQLiteRunResult } from 'expo-sqlite';
 import { QueryExecutor, DatabaseQueryResult } from './types';
 
 export type DatabaseEvent = 'transaction_updated' | 'budget_updated' | 'category_updated';
+
+// Public surface that both the native DatabaseService and the web WebDatabase
+// implement. Business code uses this type so the same code runs on both.
+export interface DatabaseServiceType extends QueryExecutor {
+  initialize(db?: any): void;
+  on(event: DatabaseEvent, callback: () => void): () => void;
+  tableExists(tableName: string): Promise<boolean>;
+  columnExists(tableName: string, columnName: string): Promise<boolean>;
+  getTableSchema(tableName: string): Promise<string>;
+  reset(): Promise<void>;
+  close(): Promise<void>;
+  executeTransaction<T>(
+    queries: Array<{ query: string; params?: any[] }>,
+  ): Promise<T[]>;
+  executeBatch<T>(
+    query: string,
+    paramsList: any[][],
+  ): Promise<DatabaseQueryResult<T>[]>;
+}
 
 class DatabaseService implements QueryExecutor {
   private static instance: DatabaseService | null = null;
@@ -213,10 +234,7 @@ class DatabaseService implements QueryExecutor {
 }
 
 // 导出单例实例
-export const databaseService = DatabaseService.getInstance();
-
-// 导出类型定义
-export type { DatabaseService };
+export const databaseService: DatabaseServiceType = DatabaseService.getInstance() as unknown as DatabaseServiceType;
 
 // 添加初始化方法
 export async function initializeDatabase(db: SQLiteDatabase) {

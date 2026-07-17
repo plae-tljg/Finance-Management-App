@@ -37,13 +37,17 @@ export default function BudgetsScreen() {
 
   async function loadBudgets() {
     if (!budgetService) return;
-    
+
     try {
       setIsLoading(true);
-      // 如果URL参数中有年月，则按月份过滤，否则获取所有预算
-      const data = params.year && params.month 
-        ? await budgetService.getBudgetsByMonthWithCategory(currentYear, currentMonth)
-        : await budgetService.getBudgetsWithCategory();
+      // Always filter by the current month (or the month passed in the URL).
+      // Previously this fell back to "all budgets" when no query params were
+      // present, which made the web view (which never carries those params)
+      // show every month at once.
+      const data = await budgetService.getBudgetsByMonthWithCategory(
+        currentYear,
+        currentMonth,
+      );
       setBudgets(data);
     } catch (err) {
       console.error('加载预算失败:', err);
@@ -103,10 +107,7 @@ export default function BudgetsScreen() {
         onRefresh={onRefresh}
         onDelete={handleDelete}
         onEdit={(id) => router.push(`/budget/edit/${id}`)}
-        title={params.year && params.month
-          ? `${currentYear}年${currentMonth}月预算管理`
-          : '所有预算记录'
-        }
+        title={`${currentYear}年${currentMonth}月预算管理`}
       />
     </PageTemplate>
   );

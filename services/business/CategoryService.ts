@@ -1,8 +1,8 @@
 import { CategoryRepository } from '../database/repositories/CategoryRepository';
 import type { Category } from '../database/schemas/Category';
-import { DatabaseService } from '../database/DatabaseService';
+import { DatabaseServiceType } from '../database/DatabaseService';
 
-export function useCategoryService(databaseService: DatabaseService) {
+export function useCategoryService(databaseService: DatabaseServiceType) {
   const repository = new CategoryRepository(databaseService);
   
   const getCategories = async () => {

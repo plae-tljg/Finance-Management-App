@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, View, ViewProps } from 'react-native';
+import { ImageBackground, Platform, StyleSheet, View, ViewProps } from 'react-native';
 import { BlurView } from 'expo-blur';
 
 interface BackgroundImageProps extends ViewProps {
@@ -19,6 +19,8 @@ export function BackgroundImage({
   style,
   ...props
 }: BackgroundImageProps) {
+  const isWeb = Platform.OS === 'web';
+
   return (
     <ImageBackground
       source={require('@/assets/images/amiya_background.png')}
@@ -26,11 +28,22 @@ export function BackgroundImage({
       resizeMode="cover"
       {...props}
     >
-      <BlurView
-        intensity={80}
-        style={styles.blurOverlay}
-        tint={blurTint}
-      />
+      {isWeb ? (
+        <View
+          style={[
+            styles.blurOverlay,
+            {
+              backgroundColor: blurTint === 'dark' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.6)',
+            },
+          ]}
+        />
+      ) : (
+        <BlurView
+          intensity={80}
+          style={styles.blurOverlay}
+          tint={blurTint}
+        />
+      )}
       {overlay && (
         <View
           style={[

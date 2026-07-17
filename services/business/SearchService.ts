@@ -1,7 +1,7 @@
 import { TransactionRepository } from '../database/repositories/TransactionRepository';
 import { BudgetRepository } from '../database/repositories/BudgetRepository';
 import { CategoryRepository } from '../database/repositories/CategoryRepository';
-import { DatabaseService } from '../database/DatabaseService';
+import { DatabaseServiceType } from '../database/DatabaseService';
 
 export interface TransactionFilter {
   searchText?: string;
@@ -40,7 +40,7 @@ export interface CategorySummary {
   type: 'income' | 'expense';
 }
 
-export function createSearchService(databaseService: DatabaseService) {
+export function createSearchService(databaseService: DatabaseServiceType) {
   const transactionRepo = new TransactionRepository(databaseService);
   const budgetRepo = new BudgetRepository(databaseService);
   const categoryRepo = new CategoryRepository(databaseService);

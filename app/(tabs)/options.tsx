@@ -18,6 +18,13 @@ interface MenuItem {
 
 const MENU_ITEMS: MenuItem[] = [
   {
+    id: 'web-mode',
+    title: 'Web 模式',
+    description: '在浏览器中访问和编辑此设备的财务数据',
+    icon: 'globe',
+    route: '/settings/web-mode',
+  },
+  {
     id: 'budget-defaults',
     title: '预算默认设置',
     description: '设置每月预算默认值',

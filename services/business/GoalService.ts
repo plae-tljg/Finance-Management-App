@@ -1,8 +1,8 @@
 import { GoalRepository } from '../database/repositories/GoalRepository';
 import type { Goal } from '../database/schemas/Goal';
-import { DatabaseService } from '../database/DatabaseService';
+import { DatabaseServiceType } from '../database/DatabaseService';
 
-export function useGoalService(databaseService: DatabaseService) {
+export function useGoalService(databaseService: DatabaseServiceType) {
   const repository = new GoalRepository(databaseService);
 
   const getGoals = async () => {

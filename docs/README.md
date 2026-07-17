@@ -7,7 +7,8 @@
 3. [数据库设计](./DATABASE.md) - 表结构、ER图、SQL查询示例、XLSX映射
 4. [XLSX 数据导入工具](./XLSX_IMPORT.md) - 使用方法、处理逻辑、故障排除
 5. [开发指南](./DEVELOPMENT.md) - 环境搭建、代码组织、常用命令
-6. [API 参考](./API_REFERENCE.md) - 所有服务、Context、Repository 接口
+6. [调试与故障排查](./DEBUG.md) - 日常开发、logcat 过滤器、常见问题修复
+7. [API 参考](./API_REFERENCE.md) - 所有服务、Context、Repository 接口
 
 ## 快速开始
 
@@ -44,5 +45,6 @@ cp finance_imported.db FinanceManager.db
 ## 快速链接
 
 - [README](../README.md) - 项目简介
-- [DEVELOPMENT](../DEVELOPMENT.md) - 原始开发指南
+- [DEBUG](./DEBUG.md) - 调试与故障排查（必读，含 env vars 与 Web 模式测试步骤）
+- [DEVELOPMENT](./DEVELOPMENT.md) - 原始开发指南
 - [finance_imported.db](../finance_imported.db) - 最新导入的测试数据

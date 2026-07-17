@@ -44,6 +44,15 @@ cd android
 ./gradlew clean
 ./gradlew assembleRelease
 
+# Web 模式 (LAN access) — re-export the embedded web bundle
+# before re-building the APK, otherwise the browser-side app is stale
+bash scripts/build-web.sh          # Linux/Mac/git-bash
+# or on Windows PowerShell:
+#   Remove-Item dist -Recurse -Force
+#   npx expo export --platform web
+#   Remove-Item android\app\src\main\assets\web -Recurse -Force
+#   Copy-Item dist android\app\src\main\assets\web -Recurse -Force
+
 ```
 ### 1. 组件设计
 - 遵循单一职责原则
@@ -204,31 +213,34 @@ npm run start:clear
 ### 4. 开发环境要求
 
 #### 1. 基础开发工具
-- Node.js: v20.14.0
-- npm: v10.7.0
+- Node.js: v20+ (本机实测 v24.18.0 也能跑)
+- npm: v10+ (本机实测 v11.16.0)
 - Yarn: v1.22.0 或更高版本（可选）
 
-#### 2. Android 开发环境
-- JDK: OpenJDK 17.0.14
-- Gradle: 8.10.2
+#### 2. Android 开发环境 (Windows)
+- **JDK**: 用 Android Studio 自带的 **JBR** (`D:\Android\Android_Studio\jbr`)，无需单独装。实测 OpenJDK 21.0.10。也可以用系统 OpenJDK 17+。
+- Gradle: 8.10.2 (由 wrapper 管理，无需手动装)
 - Kotlin: 1.9.24
-- Android Studio: 2022.3.1 (Giraffe) 或更高版本
+- Android Studio: 任意较新版本
 - Android SDK:
-  - Android SDK Platform 35
-  - Android SDK Build-Tools 35.0.0
-  - Android SDK Command-line Tools
-  - Android Emulator
-  - Android SDK Platform-Tools
-- Android Debug Bridge: 1.0.41
-- 环境变量设置：
-  ```bash
-  # 在 ~/.bashrc 或 ~/.zshrc 中添加
-  export ANDROID_HOME=$HOME/Android/Sdk
-  export PATH=$PATH:$ANDROID_HOME/emulator
-  export PATH=$PATH:$ANDROID_HOME/platform-tools
-  export PATH=$PATH:$ANDROID_HOME/tools
-  export PATH=$PATH:$ANDROID_HOME/tools/bin
+  - 平台: `android-36.1` (项目里 `compileSdk 35 / targetSdk 34` 也能正常用)
+  - Build-Tools: `36.0.0` (项目 `android/build.gradle` 写的是 `35.0.0`，会从 SDK 找更新的)
+  - Platform-Tools, NDK 26.1.10909125, CMake 3.22.1
+- adb 1.0.41
+- **环境变量 (PowerShell，每次新开 shell 都要重设)**:
+  ```powershell
+  $env:JAVA_HOME = 'D:\Android\Android_Studio\jbr'
+  $env:ANDROID_HOME = 'D:\Android\Sdk'
+  $env:Path = "$env:JAVA_HOME\bin;$env:ANDROID_HOME\platform-tools;$env:ANDROID_HOME\build-tools\36.0.0;$env:ANDROID_HOME\cmdline-tools\latest\bin;" + $env:Path
   ```
+  Linux/macOS 等价：
+  ```bash
+  export JAVA_HOME=/path/to/jdk-17-or-21
+  export ANDROID_HOME=$HOME/Android/Sdk
+  export PATH=$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin
+  ```
+
+> **PowerShell 特别提示**：默认执行策略会拦截 `npm.ps1`，一律用 `& 'C:\Program Files\nodejs\npm.cmd' ...` 调用 npm；或 `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned` 之后用 `npm` 即可。调用 gradle 直接用 `.\gradlew.bat` (PowerShell 原生)。
 
 #### 3. iOS 开发环境 (macOS 用户)
 - Xcode: 14.0 或更高版本
@@ -236,7 +248,7 @@ npm run start:clear
 - iOS 模拟器: iOS 16.0 或更高版本
 
 #### 4. React Native 相关
-- React Native: 0.76.9
+- React Native: 0.76.9 (**注意**：`react-native-svg` 必须用 `15.8.0` 固定版本，^15.15+ 会用 `StyleSizeLength` Yoga API，跟 RN 0.76 的 Yoga 不兼容)
 - Expo SDK: 52.0.46
 - React Navigation: 7.2.0
 - React: 18.3.1
@@ -256,12 +268,12 @@ npm run start:clear
   - SQLite Viewer
 
 #### 7. 检查环境配置
-```bash
+```powershell
 # 检查 Node.js 版本
 node -v
 
-# 检查 npm 版本
-npm -v
+# 检查 npm 版本 (走 .cmd 避免 PS 执行策略)
+& 'C:\Program Files\nodejs\npm.cmd' -v
 
 # 检查 JDK 版本
 java -version
@@ -272,6 +284,17 @@ adb --version
 # 检查 React Native 环境
 npx react-native doctor
 ```
+
+#### 8. Web 模式开发注意事项
+
+Web 模式走的是同一个 `expo` 打包流程，但 web 包跑在浏览器里，没有原生模块桥。所以：
+
+- **不要在 web 会被打包到的文件顶层 `import` `expo-sqlite`**，类型用 `import type`
+- 平台相关初始化拆成 `*.native.ts(x)` 和 `*.web.ts(x)`，让 Metro 平台解析器挑
+- `metro.config.js` 已经把 web 打包时的 `expo-sqlite` 别名到 `web/expo-sqlite.web.stub.js`，所以即使漏过去也是空操作
+- Web 端拿 PIN：从 URL `?token=xxx` 解析后通过 `WebDatabase.connect(baseUrl, token)` 设为 Bearer 头
+
+详见 [`docs/DEBUG.md`](docs/DEBUG.md)。
 
 #### 8. 常见问题解决
 1. Android SDK 找不到

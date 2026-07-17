@@ -227,6 +227,32 @@ export const MyQueries = {
 };
 ```
 
+## Web 模式开发
+
+应用内置 Web 模式（局域网 HTTP 服务），让手机充当 Web 服务器，让同 Wi-Fi 的浏览器可以访问和编辑数据。
+
+### 工作原理
+
+- **原生侧**: Kotlin 的 `FinanceHttpServer`（`android/.../webserver/`）从 APK 内嵌的 `assets/web/` 提供 Expo Web 打包产物，并暴露 `/api/*` REST 端点代理到同一 SQLite 文件
+- **Web 侧**: `WebDatabase`（`services/database/web/WebDatabase.ts`）拦截 SQL 调用，转成对原生 HTTP 服务的 REST 请求；`useDatabaseSetup.web.ts` 启动时从 URL 的 `?token=` 拿到 PIN 并设为 Bearer 头
+- **共享**: 两者共享同一份 `FinanceManager.db`，浏览器写的原生立刻看见，原生写的浏览器刷新就能看见
+
+### 关键约束
+
+- **Web 端不能有 `expo-sqlite` 顶层 import** —— 浏览器里没有原生模块桥，否则页面崩溃 (`Cannot find native module 'ExpoSQLite'`)
+- 平台相关初始化用 `*.native.ts(x)` / `*.web.ts(x)` 文件分离，让 Metro 平台解析器挑选
+- `metro.config.js` 已经把 web 打包时的 `expo-sqlite` 别名到 `web/expo-sqlite.web.stub.js`，作为最后一道防线
+- 业务代码如果要 import SQLite 类型，用 `import type`（运行时擦除）
+
+### 测试 Web 模式
+
+1. 启动应用：`npm run android`
+2. 设置 → Web 模式 → 打开开关
+3. 手机显示 URL（含 PIN）和二维码
+4. PC 浏览器扫码或输入 URL 访问
+
+详细故障排查、logcat 过滤器、env vars 详见 [`docs/DEBUG.md`](DEBUG.md)。
+
 ## 常用命令
 
 ```bash

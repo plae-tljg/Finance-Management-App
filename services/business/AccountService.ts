@@ -1,8 +1,8 @@
 import { AccountRepository } from '../database/repositories/AccountRepository';
 import type { Account } from '../database/schemas/Account';
-import { DatabaseService } from '../database/DatabaseService';
+import { DatabaseServiceType } from '../database/DatabaseService';
 
-export function useAccountService(databaseService: DatabaseService) {
+export function useAccountService(databaseService: DatabaseServiceType) {
   const repository = new AccountRepository(databaseService);
 
   const getAccounts = async () => {

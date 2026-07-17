@@ -1,9 +1,9 @@
 import { BudgetDefaultRepository } from '../database/repositories/BudgetDefaultRepository';
 import { BudgetDefault } from '../database/schemas/BudgetDefault';
-import { DatabaseService } from '../database/DatabaseService';
+import { DatabaseServiceType } from '../database/DatabaseService';
 import { BudgetRepository } from '../database/repositories/BudgetRepository';
 
-export function useBudgetDefaultService(databaseService: DatabaseService) {
+export function useBudgetDefaultService(databaseService: DatabaseServiceType) {
   const repository = new BudgetDefaultRepository(databaseService);
   const budgetRepository = new BudgetRepository(databaseService);
 

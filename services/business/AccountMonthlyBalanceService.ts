@@ -1,8 +1,8 @@
 import { AccountMonthlyBalanceRepository } from '../database/repositories/AccountMonthlyBalanceRepository';
-import { DatabaseService } from '../database/DatabaseService';
+import { DatabaseServiceType } from '../database/DatabaseService';
 import type { AccountMonthlyBalance } from '../database/schemas/AccountMonthlyBalance';
 
-export function useAccountMonthlyBalanceService(databaseService: DatabaseService) {
+export function useAccountMonthlyBalanceService(databaseService: DatabaseServiceType) {
   const repository = new AccountMonthlyBalanceRepository(databaseService);
 
   const getAccountBalance = async (

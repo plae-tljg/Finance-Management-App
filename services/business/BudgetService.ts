@@ -1,9 +1,9 @@
 import { BudgetRepository } from '../database/repositories/BudgetRepository';
 import type { Budget } from '../database/schemas/Budget';
 import type { BudgetWithCategory } from '../database/repositories/BudgetRepository';
-import { DatabaseService } from '../database/DatabaseService';
+import { DatabaseServiceType } from '../database/DatabaseService';
 
-export function useBudgetService(databaseService: DatabaseService) {
+export function useBudgetService(databaseService: DatabaseServiceType) {
   const repository = new BudgetRepository(databaseService);
   
   const getBudgets = async (): Promise<Budget[]> => {
