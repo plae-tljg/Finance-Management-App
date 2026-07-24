@@ -21,6 +21,13 @@ export class CategoryRepository implements BaseRepository<Category> {
     return result.rows._array;
   }
 
+  async findActive(): Promise<Category[]> {
+    const result = await this.db.executeQuery<Category>(
+      CategoryQueries.FIND_ACTIVE
+    );
+    return result.rows._array;
+  }
+
   async findAllWithType(): Promise<(Category & { typeName: string })[]> {
     const result = await this.db.executeQuery<Category & { typeName: string }>(
       CategoryQueries.FIND_BY_TYPE_WITH_NAME

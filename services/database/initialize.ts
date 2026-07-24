@@ -79,6 +79,32 @@ const MIGRATIONS: SchemaVersion[] = [
         console.log('Added accountId to transactions');
       }
     }
+  },
+  {
+    version: 5,
+    migrate: async () => {
+      // Backfill default categories for installs that pre-date the expanded set.
+      // Idempotent: skip any name that already exists in the table.
+      console.log('Running migration to version 5: backfilling default categories...');
+      const existing = await databaseService.executeQuery<{ name: string }>(
+        'SELECT name FROM categories'
+      );
+      const existingNames = new Set(existing.rows._array.map(r => r.name));
+      let inserted = 0;
+      for (const category of DEFAULT_CATEGORIES) {
+        if (existingNames.has(category.name)) continue;
+        await databaseService.executeQuery(CategoryQueries.INSERT, [
+          category.name,
+          category.icon,
+          category.type,
+          category.sortOrder,
+          category.isDefault ? 1 : 0,
+          category.isActive ? 1 : 0,
+        ]);
+        inserted += 1;
+      }
+      console.log(`Backfilled ${inserted} new default categories (skipped ${DEFAULT_CATEGORIES.length - inserted} existing)`);
+    }
   }
 ];
 
@@ -248,15 +274,21 @@ async function initializeDefaultData(repositories: {
   accounts: AccountRepository;
 }) {
   try {
+    // Idempotent by name: skip any default that already exists. This is the
+    // safety belt for the `resetDatabase` path (which drops all tables and
+    // bypasses the migration system). The v5 migration does the same check
+    // for the upgrade path; both paths converge on the same final set.
     const existingCategories = await repositories.categories.findAll();
-    if (existingCategories.length === 0) {
-      console.log('Initializing default categories...');
-      for (const category of DEFAULT_CATEGORIES) {
+    const existingCategoryNames = new Set(existingCategories.map(c => c.name));
+    const missingCategories = DEFAULT_CATEGORIES.filter(c => !existingCategoryNames.has(c.name));
+    if (missingCategories.length > 0) {
+      console.log(`Initializing ${missingCategories.length} default categories (${existingCategories.length} already present)...`);
+      for (const category of missingCategories) {
         await repositories.categories.create(category);
       }
-      console.log(`Created ${DEFAULT_CATEGORIES.length} default categories`);
+      console.log(`Created ${missingCategories.length} new default categories`);
     } else {
-      console.log(`Categories already exist (${existingCategories.length}), skipping defaults`);
+      console.log(`All ${DEFAULT_CATEGORIES.length} default categories already present, skipping`);
     }
 
     const existingAccounts = await repositories.accounts.findAll();

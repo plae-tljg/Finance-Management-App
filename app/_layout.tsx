@@ -16,6 +16,12 @@ import { WebServerLifecycleManager } from '@/components/common/WebServerLifecycl
 // `SQLiteProvider` (expo-sqlite), `.web.tsx` is a passthrough so the web
 // bundle never imports `expo-sqlite`.
 import { DatabaseProviders } from '@/components/common/DatabaseProviders';
+// `WebShell` is platform-resolved via `WebShell.web.tsx` (real desktop
+// shell) and `WebShell.native.tsx` (passthrough). Metro picks the right
+// one per platform. The web version wraps the navigator with a
+// desktop-friendly top nav, a max-width content column, and a real
+// connecting / error state.
+import { WebShell } from '@/components/common/WebShell';
 
 const IS_WEB = Platform.OS === 'web';
 
@@ -40,7 +46,11 @@ export default function RootLayout() {
   useEffect(() => {
     if (dbError) {
       console.error('数据库初始化错误:', dbError);
-      throw dbError;
+      // On web, let the WebShell render the error state so the user
+      // can retry, instead of throwing and getting a blank page.
+      if (!IS_WEB) {
+        throw dbError;
+      }
     }
   }, [dbError]);
 
@@ -57,7 +67,10 @@ export default function RootLayout() {
     console.log('等待字体加载...');
     return null;
   }
-  if (!isReady) {
+  // On web we still render the navigator so the WebShell can show a real
+  // connecting / error state. The Stack content itself stays empty until
+  // the LAN HTTP server is reachable (WebShell gates the children).
+  if (!isReady && !IS_WEB) {
     console.log('等待数据库/Web 服务器连接...');
     return null;
   }
@@ -83,7 +96,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <FinanceProvider>
           <ThemeProvider value={DefaultTheme}>
-            {stack}
+            <WebShell>{stack}</WebShell>
             <StatusBar style="dark" />
           </ThemeProvider>
         </FinanceProvider>

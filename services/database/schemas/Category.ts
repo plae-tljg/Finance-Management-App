@@ -11,12 +11,15 @@ export interface Category {
 }
 
 // 默认类别数据
+// 6 个一级类别。如果想加细分类别，请用 `transaction_templates`（transaction
+// 模板）来快速录入同样的组合，不要把类别拆细——类别一多反而选择困难。
+// 排序约定：1xx = 餐饮，2xx = 交通，3xx = 购物，4xx = 居家，6xx = 账单，9xx = 收入。
 export const DEFAULT_CATEGORIES: Omit<Category, 'id' | 'createdAt' | 'updatedAt'>[] = [
   {
     name: '餐饮',
     icon: '🍚',
     type: 'expense',
-    sortOrder: 1,
+    sortOrder: 100,
     isDefault: true,
     isActive: true,
   },
@@ -24,7 +27,7 @@ export const DEFAULT_CATEGORIES: Omit<Category, 'id' | 'createdAt' | 'updatedAt'
     name: '交通',
     icon: '🚌',
     type: 'expense',
-    sortOrder: 2,
+    sortOrder: 200,
     isDefault: true,
     isActive: true
   },
@@ -32,15 +35,7 @@ export const DEFAULT_CATEGORIES: Omit<Category, 'id' | 'createdAt' | 'updatedAt'
     name: '购物',
     icon: '🛍️',
     type: 'expense',
-    sortOrder: 3,
-    isDefault: true,
-    isActive: true
-  },
-  {
-    name: '工资',
-    icon: '💰',
-    type: 'income',
-    sortOrder: 1,
+    sortOrder: 300,
     isDefault: true,
     isActive: true
   },
@@ -48,7 +43,7 @@ export const DEFAULT_CATEGORIES: Omit<Category, 'id' | 'createdAt' | 'updatedAt'
     name: '家用',
     icon: '🧓',
     type: 'expense',
-    sortOrder: 5,
+    sortOrder: 400,
     isDefault: true,
     isActive: true
   },
@@ -56,10 +51,18 @@ export const DEFAULT_CATEGORIES: Omit<Category, 'id' | 'createdAt' | 'updatedAt'
     name: '账单',
     icon: '🧾',
     type: 'expense',
-    sortOrder: 6,
+    sortOrder: 600,
     isDefault: true,
     isActive: true
-  }
+  },
+  {
+    name: '工资',
+    icon: '💰',
+    type: 'income',
+    sortOrder: 900,
+    isDefault: true,
+    isActive: true
+  },
 ];
 
 export const CategoryFields = {
@@ -119,6 +122,8 @@ export const CategoryQueries = {
   FIND_BY_ID: 'SELECT * FROM categories WHERE id = ?',
   
   FIND_ALL: 'SELECT * FROM categories',
+
+  FIND_ACTIVE: 'SELECT * FROM categories WHERE isActive = 1',
   
   FIND_BY_TYPE: 'SELECT * FROM categories WHERE type = ? AND isActive = 1',
   

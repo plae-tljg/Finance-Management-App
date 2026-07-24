@@ -21,7 +21,10 @@ export const CategoryInput = memo(function CategoryInput({ selectedId, onSelect 
     const loadCategories = async () => {
       if (!databaseService || !isReady) return;
       const categoryService = useCategoryService(databaseService);
-      const data = await categoryService.getCategories();
+      // Picker hides retired categories — getActiveCategories filters
+      // isActive = 1. The "categories management" page uses findAll()
+      // directly so it can see (and re-activate) retired rows.
+      const data = await categoryService.getActiveCategories();
       setCategories(data);
       setIsLoading(false);
     };

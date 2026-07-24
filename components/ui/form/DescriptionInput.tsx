@@ -3,7 +3,7 @@ import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/base/Text';
 import theme from '@/theme';
 
-const TEMPLATE_OPTIONS = ['午餐', '午餐晚餐', '午餐面包', '晚餐', '早餐'];
+const TEMPLATE_OPTIONS = ['午餐', '午餐晚餐', '午餐面包', '午餐晚餐面包', '晚餐', '早餐'];
 
 interface DescriptionInputProps {
   value: string;
