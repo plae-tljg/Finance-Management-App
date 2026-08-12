@@ -5,13 +5,18 @@ export interface ExtractedTransaction {
   name: string;
   amount: number;
   date: string;
+  time?: string;
   type: 'income' | 'expense';
   categoryName: string;
   paymentMethod?: string;
   description?: string;
 }
 
-export type StreamCallback = (chunk: string, fullText: string) => void;
+export type StreamCallback = (
+  type: 'thinking' | 'response',
+  chunk: string,
+  fullText: string
+) => void;
 
 const VALID_CATEGORIES = ['餐饮', '交通', '购物', '家用', '账单', '工资'];
 
@@ -47,6 +52,7 @@ JSON数组中每个对象包含以下字段：
 - name: string, 交易名称/商户名
 - amount: number, 金额（正数，不带货币符号）
 - date: string, 日期，格式 YYYY-MM-DD
+- time: string, 时间，格式 HH:MM（如果截图中有时间）
 - type: string, "expense" 或 "income"
 - categoryName: string, 必须是以下之一：餐饮、交通、购物、家用、账单、工资
 - paymentMethod: string, 支付方式（如支付宝、微信支付、银行卡等）
@@ -80,6 +86,7 @@ function parseAIResponse(content: string): ExtractedTransaction[] {
           name: String(item.name || item.merchant || item.description || '未知'),
           amount: Math.abs(Number(item.amount || item.price || item.total || 0)),
           date: item.date || new Date().toISOString().split('T')[0],
+          time: item.time || undefined,
           type: item.type === 'income' ? 'income' : 'expense',
           categoryName: validateCategory(item.categoryName || item.category || ''),
           paymentMethod: item.paymentMethod || item.payment || undefined,
@@ -110,6 +117,7 @@ function parseAIResponse(content: string): ExtractedTransaction[] {
         name: String(item.name || item.merchant || '未知'),
         amount: Math.abs(Number(item.amount || 0)),
         date: item.date || new Date().toISOString().split('T')[0],
+        time: item.time || undefined,
         type: item.type === 'income' ? 'income' : 'expense',
         categoryName: validateCategory(item.categoryName || item.category || ''),
         paymentMethod: item.paymentMethod || undefined,
@@ -174,7 +182,8 @@ export async function extractTransactionsFromImages(
       if (streamResponse.ok && streamResponse.body) {
         const reader = streamResponse.body.getReader();
         const decoder = new TextDecoder();
-        let fullText = '';
+        let thinkingText = '';
+        let responseText = '';
         let buffer = '';
 
         while (true) {
@@ -193,12 +202,17 @@ export async function extractTransactionsFromImages(
 
             try {
               const chunk = JSON.parse(data);
-              const delta = chunk.choices?.[0]?.delta?.content
-                || chunk.choices?.[0]?.delta?.reasoning_content
-                || '';
-              if (delta) {
-                fullText += delta;
-                onStream(delta, fullText);
+              const delta = chunk.choices?.[0]?.delta;
+              const reasoning = delta?.reasoning_content;
+              const content = delta?.content;
+
+              if (reasoning) {
+                thinkingText += reasoning;
+                onStream('thinking', reasoning, thinkingText);
+              }
+              if (content) {
+                responseText += content;
+                onStream('response', content, responseText);
               }
             } catch {
               // Skip malformed chunks
@@ -206,7 +220,9 @@ export async function extractTransactionsFromImages(
           }
         }
 
-        if (fullText) return parseAIResponse(fullText);
+        // Use response text for parsing, fall back to thinking text
+        const textToParse = responseText || thinkingText;
+        if (textToParse) return parseAIResponse(textToParse);
       }
     } catch {
       // Streaming not supported, fall through to non-streaming
@@ -239,7 +255,7 @@ export async function extractTransactionsFromImages(
     || data.choices?.[0]?.message?.reasoning_content
     || '';
   if (!content) throw new Error('AI 返回内容为空');
-  if (onStream) onStream(content, content);
+  if (onStream) onStream('response', content, content);
   return parseAIResponse(content);
 }
 

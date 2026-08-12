@@ -36,7 +36,9 @@ export const ImageImport = memo(function ImageImport({ onSubmit }: ImageImportPr
     selectedImages,
     extractedTransactions,
     importProgress,
-    streamText,
+    importFailures,
+    thinkingText,
+    responseText,
     error,
     pickImages,
     analyzeImages,
@@ -54,6 +56,7 @@ export const ImageImport = memo(function ImageImport({ onSubmit }: ImageImportPr
   }, [isReady, categoryService, accountService]);
 
   const includedCount = extractedTransactions.filter(t => t.included).length;
+  const noBudgetCount = extractedTransactions.filter(t => !t.budgetId).length;
 
   // Select step
   if (step === 'select') {
@@ -90,12 +93,12 @@ export const ImageImport = memo(function ImageImport({ onSubmit }: ImageImportPr
     );
   }
 
-  // Analyzing step - chat-like streaming
+  // Analyzing step - chat with thinking + response
   if (step === 'analyzing') {
     return (
       <View style={styles.chatContainer}>
         <ScrollView style={styles.chatScroll} contentContainerStyle={styles.chatContent}>
-          {/* User bubble with images */}
+          {/* User bubble */}
           <View style={styles.chatRowUser}>
             <View style={styles.chatBubbleUser}>
               <Text style={styles.chatBubbleUserText}>请识别这些账单截图中的交易记录</Text>
@@ -110,38 +113,58 @@ export const ImageImport = memo(function ImageImport({ onSubmit }: ImageImportPr
             </View>
           </View>
 
-          {/* AI bubble with streaming response */}
-          <View style={styles.chatRowAI}>
-            <View style={styles.chatAvatarAI}>
-              <Ionicons name="sparkles" size={16} color={theme.colors.white} />
-            </View>
-            <View style={styles.chatBubbleAI}>
-              {streamText ? (
-                <>
-                  <Text style={styles.chatAIText} selectable>{streamText}</Text>
-                  <ActivityIndicator size="small" color={theme.colors.primary} style={styles.chatTyping} />
-                </>
-              ) : (
-                <View style={styles.chatThinking}>
-                  <ActivityIndicator size="small" color={theme.colors.primary} />
-                  <Text style={styles.chatThinkingText}>正在思考...</Text>
+          {/* AI thinking bubble */}
+          {thinkingText && (
+            <View style={styles.chatRowAI}>
+              <View style={styles.chatAvatarAI}>
+                <Ionicons name="sparkles" size={16} color={theme.colors.white} />
+              </View>
+              <View style={styles.chatThinkingBubble}>
+                <View style={styles.thinkingLabel}>
+                  <Ionicons name="bulb-outline" size={12} color={theme.colors.textSecondary} />
+                  <Text style={styles.thinkingLabelText}>思考中</Text>
                 </View>
-              )}
+                <Text style={styles.chatThinkingText} numberOfLines={3} ellipsizeMode="tail">
+                  {thinkingText}
+                </Text>
+              </View>
             </View>
-          </View>
+          )}
+
+          {/* AI response bubble */}
+          {(responseText || (!thinkingText && !responseText)) && (
+            <View style={styles.chatRowAI}>
+              <View style={styles.chatAvatarAI}>
+                <Ionicons name="sparkles" size={16} color={theme.colors.white} />
+              </View>
+              <View style={styles.chatBubbleAI}>
+                {responseText ? (
+                  <Text style={styles.chatAIText} selectable>{responseText}</Text>
+                ) : (
+                  <View style={styles.chatWaiting}>
+                    <ActivityIndicator size="small" color={theme.colors.primary} />
+                    <Text style={styles.chatWaitingText}>等待 AI 响应...</Text>
+                  </View>
+                )}
+                {thinkingText && !responseText && (
+                  <ActivityIndicator size="small" color={theme.colors.primary} style={{ marginTop: 6 }} />
+                )}
+              </View>
+            </View>
+          )}
         </ScrollView>
       </View>
     );
   }
 
-  // Review step - table-like approval
+  // Review step - card-based
   if (step === 'review') {
     return (
       <ScrollView style={styles.content}>
         <Card style={styles.summaryCard}>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryText}>
-              识别到 {extractedTransactions.length} 笔交易
+              识别到 {extractedTransactions.length} 笔交易，已选 {includedCount}
             </Text>
             <TouchableOpacity onPress={() => toggleAll(includedCount < extractedTransactions.length)}>
               <Text style={styles.selectAllText}>
@@ -149,106 +172,27 @@ export const ImageImport = memo(function ImageImport({ onSubmit }: ImageImportPr
               </Text>
             </TouchableOpacity>
           </View>
-        </Card>
-
-        {/* Table header */}
-        <View style={styles.tableHeader}>
-          <View style={styles.checkCol}><Text style={styles.tableHeaderText}>✓</Text></View>
-          <View style={styles.nameCol}><Text style={styles.tableHeaderText}>名称</Text></View>
-          <View style={styles.amountCol}><Text style={styles.tableHeaderText}>金额</Text></View>
-          <View style={styles.catCol}><Text style={styles.tableHeaderText}>分类</Text></View>
-          <View style={styles.dateCol}><Text style={styles.tableHeaderText}>日期</Text></View>
-        </View>
-
-        {/* Table rows */}
-        {extractedTransactions.map((t, i) => {
-          const cat = categories.find(c => c.id === t.categoryId);
-          const typeCategories = categories.filter(c => c.type === (t.type === 'income' ? 'income' : 'expense'));
-          return (
-            <View key={i} style={[styles.tableRow, !t.included && styles.tableRowExcluded]}>
-              {/* Checkbox */}
-              <TouchableOpacity style={styles.checkCol} onPress={() => toggleTransaction(i)}>
-                <Ionicons
-                  name={t.included ? 'checkbox' : 'square-outline'}
-                  size={20}
-                  color={t.included ? theme.colors.primary : theme.colors.textTertiary}
-                />
-              </TouchableOpacity>
-
-              {/* Name - editable */}
-              <View style={styles.nameCol}>
-                <TextInput
-                  style={styles.tableInput}
-                  value={t.name}
-                  onChangeText={text => updateTransaction(i, { name: text })}
-                />
-              </View>
-
-              {/* Amount - editable */}
-              <View style={styles.amountCol}>
-                <TextInput
-                  style={[styles.tableInput, styles.amountInput]}
-                  value={String(t.amount)}
-                  onChangeText={text => updateTransaction(i, { amount: parseFloat(text) || 0 })}
-                  keyboardType="decimal-pad"
-                />
-              </View>
-
-              {/* Category - tap to cycle */}
-              <TouchableOpacity
-                style={styles.catCol}
-                onPress={() => {
-                  const idx = typeCategories.findIndex(c => c.id === t.categoryId);
-                  const next = typeCategories[(idx + 1) % typeCategories.length];
-                  updateTransaction(i, { categoryId: next.id });
-                }}
-              >
-                <Text style={styles.catText}>{cat?.icon} {cat?.name}</Text>
-              </TouchableOpacity>
-
-              {/* Date */}
-              <View style={styles.dateCol}>
-                <TextInput
-                  style={styles.tableInput}
-                  value={t.date}
-                  onChangeText={text => updateTransaction(i, { date: text })}
-                />
-              </View>
-
-              {/* Type toggle */}
-              <TouchableOpacity
-                style={[styles.typeChip, t.type === 'income' ? styles.incomeChip : styles.expenseChip]}
-                onPress={() => updateTransaction(i, { type: t.type === 'expense' ? 'income' : 'expense' })}
-              >
-                <Text style={styles.typeChipText}>{t.type === 'income' ? '收' : '支'}</Text>
-              </TouchableOpacity>
+          {noBudgetCount > 0 && (
+            <View style={styles.budgetWarning}>
+              <Ionicons name="warning" size={14} color={theme.colors.warning} />
+              <Text style={styles.budgetWarningText}>
+                {noBudgetCount} 笔无匹配预算的交易已自动取消选中，请在预算页面创建对应预算后再导入
+              </Text>
             </View>
-          );
-        })}
-
-        {/* Budget warnings */}
-        {extractedTransactions.filter(t => t.included && !t.budgetId).length > 0 && (
-          <Card style={styles.warningCard}>
-            <Ionicons name="warning" size={16} color={theme.colors.warning} />
-            <Text style={styles.warningText}>
-              部分交易未找到匹配预算，将跳过导入。请先在"预算"页面创建对应预算。
-            </Text>
-          </Card>
-        )}
-
-        {/* Extra details for each transaction */}
-        <Card style={styles.detailSection}>
-          <Text style={styles.detailSectionTitle}>详细信息</Text>
-          {extractedTransactions.map((t, i) => (
-            t.paymentMethod || t.description ? (
-              <View key={i} style={styles.detailRow}>
-                <Text style={styles.detailName} numberOfLines={1}>{t.name}</Text>
-                {t.paymentMethod && <Text style={styles.detailMeta}>支付: {t.paymentMethod}</Text>}
-                {t.description && <Text style={styles.detailMeta}>备注: {t.description}</Text>}
-              </View>
-            ) : null
-          ))}
+          )}
         </Card>
+
+        {/* Transaction cards */}
+        {extractedTransactions.map((t, i) => (
+          <TransactionCard
+            key={i}
+            transaction={t}
+            categories={categories}
+            accounts={accounts}
+            onUpdate={updates => updateTransaction(i, updates)}
+            onToggle={() => toggleTransaction(i)}
+          />
+        ))}
 
         <View style={styles.actionRow}>
           <TouchableOpacity style={styles.secondaryButton} onPress={reset}>
@@ -281,21 +225,174 @@ export const ImageImport = memo(function ImageImport({ onSubmit }: ImageImportPr
 
   // Done step
   if (step === 'done') {
+    const successCount = importProgress.current - importFailures.length;
     return (
-      <View style={styles.centerContent}>
-        <Ionicons name="checkmark-circle" size={64} color={theme.colors.success} />
-        <Text style={styles.doneText}>导入完成</Text>
-        <Text style={styles.doneSubtext}>成功导入 {importProgress.current} 笔交易</Text>
+      <ScrollView style={styles.content}>
+        <View style={styles.doneContainer}>
+          <Ionicons name="checkmark-circle" size={64} color={theme.colors.success} />
+          <Text style={styles.doneText}>导入完成</Text>
+          <Text style={styles.doneSubtext}>成功 {successCount} 笔，失败 {importFailures.length} 笔</Text>
+        </View>
+
+        {importFailures.length > 0 && (
+          <Card style={styles.failuresCard}>
+            <Text style={styles.failuresTitle}>失败明细</Text>
+            {importFailures.map((f, i) => (
+              <View key={i} style={styles.failureRow}>
+                <Ionicons name="close-circle" size={14} color={theme.colors.danger} />
+                <Text style={styles.failureText}>{f}</Text>
+              </View>
+            ))}
+          </Card>
+        )}
+
         <View style={styles.actionRow}>
           <TouchableOpacity style={styles.primaryButton} onPress={reset}>
             <Text style={styles.primaryButtonText}>继续导入</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     );
   }
 
   return null;
+});
+
+// Transaction card component - one per row
+interface TransactionCardProps {
+  transaction: any;
+  categories: Category[];
+  accounts: Account[];
+  onUpdate: (updates: any) => void;
+  onToggle: () => void;
+}
+
+const TransactionCard = memo(function TransactionCard({
+  transaction,
+  categories,
+  accounts,
+  onUpdate,
+  onToggle,
+}: TransactionCardProps) {
+  const t = transaction;
+  const selectedCategory = categories.find(c => c.id === t.categoryId);
+  const selectedAccount = accounts.find(a => a.id === t.accountId);
+  const typeCategories = categories.filter(c => c.type === (t.type === 'income' ? 'income' : 'expense'));
+
+  return (
+    <Card style={[styles.txCard, !t.included && styles.txCardExcluded]}>
+      {/* Header: checkbox + type badge */}
+      <View style={styles.txCardHeader}>
+        <TouchableOpacity onPress={onToggle} style={styles.txCheckbox}>
+          <Ionicons
+            name={t.included ? 'checkbox' : 'square-outline'}
+            size={22}
+            color={t.included ? theme.colors.primary : theme.colors.textTertiary}
+          />
+        </TouchableOpacity>
+        <View style={{ flex: 1 }} />
+        <TouchableOpacity
+          onPress={() => onUpdate({ type: t.type === 'expense' ? 'income' : 'expense' })}
+          style={[styles.txTypeBadge, t.type === 'income' ? styles.txIncomeBadge : styles.txExpenseBadge]}
+        >
+          <Text style={styles.txTypeBadgeText}>{t.type === 'income' ? '收入' : '支出'}</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Name - editable, full width */}
+      <TextInput
+        style={styles.txNameInput}
+        value={t.name}
+        onChangeText={text => onUpdate({ name: text })}
+        placeholder="交易名称"
+      />
+
+      {/* Amount - large */}
+      <View style={styles.txAmountRow}>
+        <Text style={styles.txCurrencySign}>$</Text>
+        <TextInput
+          style={styles.txAmountInput}
+          value={String(t.amount)}
+          onChangeText={text => onUpdate({ amount: parseFloat(text) || 0 })}
+          keyboardType="decimal-pad"
+        />
+      </View>
+
+      {/* Date and Time */}
+      <View style={styles.txRow}>
+        <View style={styles.txField}>
+          <Text style={styles.txFieldLabel}>日期</Text>
+          <TextInput
+            style={styles.txFieldInput}
+            value={t.date}
+            onChangeText={text => onUpdate({ date: text })}
+            placeholder="YYYY-MM-DD"
+          />
+        </View>
+        <View style={styles.txField}>
+          <Text style={styles.txFieldLabel}>时间</Text>
+          <TextInput
+            style={styles.txFieldInput}
+            value={t.time || ''}
+            onChangeText={text => onUpdate({ time: text })}
+            placeholder="HH:MM"
+          />
+        </View>
+      </View>
+
+      {/* Category - tap to cycle */}
+      <View style={styles.txField}>
+        <Text style={styles.txFieldLabel}>分类</Text>
+        <View style={styles.txChipRow}>
+          {typeCategories.map(cat => (
+            <TouchableOpacity
+              key={cat.id}
+              style={[styles.txChip, cat.id === t.categoryId && styles.txChipActive]}
+              onPress={() => onUpdate({ categoryId: cat.id })}
+            >
+              <Text style={[styles.txChipText, cat.id === t.categoryId && styles.txChipTextActive]}>
+                {cat.icon} {cat.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Account - tap to select */}
+      <View style={styles.txField}>
+        <Text style={styles.txFieldLabel}>账户</Text>
+        <View style={styles.txChipRow}>
+          {accounts.map(acc => (
+            <TouchableOpacity
+              key={acc.id}
+              style={[styles.txChip, acc.id === t.accountId && styles.txChipActive]}
+              onPress={() => onUpdate({ accountId: acc.id })}
+            >
+              <Text style={[styles.txChipText, acc.id === t.accountId && styles.txChipTextActive]}>
+                {acc.icon} {acc.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </View>
+
+      {/* Budget warning */}
+      {!t.budgetId && (
+        <View style={styles.txWarning}>
+          <Ionicons name="warning" size={12} color={theme.colors.warning} />
+          <Text style={styles.txWarningText}>未找到匹配预算</Text>
+        </View>
+      )}
+
+      {/* Optional metadata */}
+      {(t.paymentMethod || t.description) && (
+        <View style={styles.txMeta}>
+          {t.paymentMethod && <Text style={styles.txMetaText}>支付: {t.paymentMethod}</Text>}
+          {t.description && <Text style={styles.txMetaText}>备注: {t.description}</Text>}
+        </View>
+      )}
+    </Card>
+  );
 });
 
 const styles = StyleSheet.create({
@@ -378,28 +475,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Chat-like analyzing UI
+  // Chat UI
   chatContainer: {
     flex: 1,
     backgroundColor: theme.colors.surfaceDark,
   },
-  chatScroll: {
-    flex: 1,
-  },
-  chatContent: {
-    padding: 12,
-    paddingBottom: 20,
-  },
+  chatScroll: { flex: 1 },
+  chatContent: { padding: 12, paddingBottom: 20 },
   chatRowUser: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    marginBottom: 16,
+    marginBottom: 12,
     gap: 8,
   },
   chatRowAI: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    marginBottom: 16,
+    marginBottom: 12,
     gap: 8,
   },
   chatAvatarUser: {
@@ -430,9 +522,7 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSize.sm,
     marginBottom: 8,
   },
-  chatImageRow: {
-    marginTop: 4,
-  },
+  chatImageRow: { marginTop: 4 },
   chatImage: {
     width: 60,
     height: 90,
@@ -454,35 +544,48 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 1,
   },
+  chatThinkingBubble: {
+    maxWidth: '80%',
+    backgroundColor: theme.colors.surfaceDark,
+    borderRadius: 16,
+    borderTopLeftRadius: 4,
+    padding: 10,
+    borderLeftWidth: 3,
+    borderLeftColor: theme.colors.textTertiary,
+  },
+  thinkingLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 4,
+  },
+  thinkingLabelText: {
+    fontSize: theme.fontSize.xs,
+    color: theme.colors.textSecondary,
+    fontWeight: theme.fontWeight.medium,
+  },
+  chatThinkingText: {
+    fontSize: theme.fontSize.xs,
+    color: theme.colors.textSecondary,
+    fontStyle: 'italic',
+  },
   chatAIText: {
     fontSize: theme.fontSize.sm,
     color: theme.colors.text,
     lineHeight: 20,
+    fontFamily: 'monospace',
   },
-  chatTyping: {
-    marginTop: 8,
-    alignSelf: 'flex-start',
-  },
-  chatThinking: {
+  chatWaiting: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-  chatThinkingText: {
+  chatWaitingText: {
     fontSize: theme.fontSize.sm,
     color: theme.colors.textSecondary,
   },
-  analyzingText: {
-    fontSize: theme.fontSize.lg,
-    fontWeight: theme.fontWeight.semibold,
-    color: theme.colors.text,
-  },
-  analyzingSubtext: {
-    fontSize: theme.fontSize.md,
-    color: theme.colors.textSecondary,
-  },
 
-  // Review table
+  // Summary card
   summaryCard: {
     padding: 12,
     margin: 8,
@@ -503,123 +606,191 @@ const styles = StyleSheet.create({
     color: theme.colors.primary,
     fontWeight: theme.fontWeight.medium,
   },
-  tableHeader: {
+  budgetWarning: {
     flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    marginHorizontal: 8,
-    backgroundColor: theme.colors.surfaceDark,
-    borderTopLeftRadius: theme.borderRadius.sm,
-    borderTopRightRadius: theme.borderRadius.sm,
-  },
-  tableHeaderText: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.textSecondary,
-    fontWeight: theme.fontWeight.semibold,
-  },
-  tableRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    marginHorizontal: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: theme.colors.borderLight,
-    backgroundColor: theme.colors.surface,
-  },
-  tableRowExcluded: {
-    opacity: 0.4,
-  },
-  checkCol: {
-    width: 30,
-    alignItems: 'center',
-  },
-  nameCol: {
-    flex: 3,
-  },
-  amountCol: {
-    width: 70,
-  },
-  catCol: {
-    width: 60,
-    alignItems: 'center',
-  },
-  dateCol: {
-    width: 80,
-  },
-  tableInput: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.text,
-    padding: 4,
-    borderWidth: 1,
-    borderColor: theme.colors.borderLight,
-    borderRadius: 4,
-  },
-  amountInput: {
-    textAlign: 'right',
-  },
-  catText: {
-    fontSize: theme.fontSize.xs,
-    color: theme.colors.text,
-  },
-  typeChip: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginLeft: 4,
-  },
-  incomeChip: {
-    backgroundColor: theme.colors.income,
-  },
-  expenseChip: {
-    backgroundColor: theme.colors.expense,
-  },
-  typeChipText: {
-    color: theme.colors.white,
-    fontSize: 10,
-    fontWeight: theme.fontWeight.bold,
-  },
-
-  warningCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    padding: 10,
-    margin: 8,
+    alignItems: 'flex-start',
+    gap: 6,
+    marginTop: 8,
+    padding: 8,
     backgroundColor: theme.colors.warning + '15',
+    borderRadius: theme.borderRadius.sm,
   },
-  warningText: {
+  budgetWarningText: {
     fontSize: theme.fontSize.xs,
     color: theme.colors.warning,
     flex: 1,
+    lineHeight: 16,
   },
 
-  detailSection: {
+  // Transaction card
+  txCard: {
     padding: 12,
     margin: 8,
+    marginBottom: 4,
   },
-  detailSectionTitle: {
-    fontSize: theme.fontSize.sm,
-    fontWeight: theme.fontWeight.semibold,
+  txCardExcluded: {
+    opacity: 0.5,
+  },
+  txCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 8,
   },
-  detailRow: {
-    marginBottom: 6,
+  txCheckbox: {
+    padding: 2,
   },
-  detailName: {
+  txTypeBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: theme.borderRadius.sm,
+  },
+  txIncomeBadge: {
+    backgroundColor: theme.colors.income,
+  },
+  txExpenseBadge: {
+    backgroundColor: theme.colors.expense,
+  },
+  txTypeBadgeText: {
+    color: theme.colors.white,
     fontSize: theme.fontSize.xs,
-    fontWeight: theme.fontWeight.medium,
-    color: theme.colors.text,
+    fontWeight: theme.fontWeight.semibold,
   },
-  detailMeta: {
+  txNameInput: {
+    fontSize: theme.fontSize.md,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: theme.colors.borderLight,
+    borderRadius: theme.borderRadius.sm,
+    marginBottom: 8,
+  },
+  txAmountRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginBottom: 8,
+  },
+  txCurrencySign: {
+    fontSize: theme.fontSize.lg,
+    color: theme.colors.textSecondary,
+    marginRight: 4,
+  },
+  txAmountInput: {
+    flex: 1,
+    fontSize: theme.fontSize.xxl,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+    padding: 4,
+  },
+  txRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 8,
+  },
+  txField: {
+    flex: 1,
+    marginBottom: 8,
+  },
+  txFieldLabel: {
     fontSize: theme.fontSize.xs,
     color: theme.colors.textSecondary,
-    marginLeft: 8,
+    marginBottom: 4,
+  },
+  txFieldInput: {
+    fontSize: theme.fontSize.sm,
+    color: theme.colors.text,
+    padding: 6,
+    borderWidth: 1,
+    borderColor: theme.colors.borderLight,
+    borderRadius: theme.borderRadius.sm,
+  },
+  txChipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 4,
+  },
+  txChip: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: theme.borderRadius.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface,
+  },
+  txChipActive: {
+    borderColor: theme.colors.primary,
+    backgroundColor: theme.colors.primary + '15',
+  },
+  txChipText: {
+    fontSize: theme.fontSize.xs,
+    color: theme.colors.textSecondary,
+  },
+  txChipTextActive: {
+    color: theme.colors.primary,
+    fontWeight: theme.fontWeight.medium,
+  },
+  txWarning: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingTop: 4,
+  },
+  txWarningText: {
+    fontSize: theme.fontSize.xs,
+    color: theme.colors.warning,
+  },
+  txMeta: {
+    marginTop: 4,
+    paddingTop: 4,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.borderLight,
+  },
+  txMetaText: {
+    fontSize: theme.fontSize.xs,
+    color: theme.colors.textTertiary,
+    marginTop: 2,
   },
 
+  // Done screen
+  doneContainer: {
+    alignItems: 'center',
+    padding: 32,
+    gap: 8,
+  },
+  doneText: {
+    fontSize: theme.fontSize.xl,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+    marginTop: 8,
+  },
+  doneSubtext: {
+    fontSize: theme.fontSize.md,
+    color: theme.colors.textSecondary,
+  },
+  failuresCard: {
+    padding: 12,
+    margin: 8,
+    backgroundColor: theme.colors.danger + '10',
+  },
+  failuresTitle: {
+    fontSize: theme.fontSize.sm,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.danger,
+    marginBottom: 8,
+  },
+  failureRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 6,
+    marginBottom: 4,
+  },
+  failureText: {
+    fontSize: theme.fontSize.xs,
+    color: theme.colors.text,
+    flex: 1,
+  },
+
+  // Action buttons
   actionRow: {
     flexDirection: 'row',
     gap: 12,
@@ -653,13 +824,12 @@ const styles = StyleSheet.create({
   disabledButton: {
     opacity: 0.5,
   },
-  doneText: {
-    fontSize: theme.fontSize.xl,
-    fontWeight: theme.fontWeight.bold,
+  analyzingText: {
+    fontSize: theme.fontSize.lg,
+    fontWeight: theme.fontWeight.semibold,
     color: theme.colors.text,
-    marginTop: 8,
   },
-  doneSubtext: {
+  analyzingSubtext: {
     fontSize: theme.fontSize.md,
     color: theme.colors.textSecondary,
   },
