@@ -38,65 +38,87 @@ function validateCategory(name: string): string {
 
 const PROMPT_MULTI = `你是一个财务数据提取助手。我会给你多张支付截图（可能来自支付宝、微信支付、银行App等），请仔细分析所有截图，提取所有交易记录。
 
-重要：多张截图可能有重叠的交易内容，请自行去重，同一笔交易不要重复提取。
+重要：
+1. 多张截图可能有重叠的交易内容，请自行去重，同一笔交易不要重复提取
+2. 你必须只返回一个纯 JSON 数组，不要添加任何解释文字、标题或markdown格式
+3. 不要说"以下是结果"之类的话，直接返回JSON
 
-请以严格的 JSON 数组格式返回，每个交易对象包含以下字段：
+JSON数组中每个对象包含以下字段：
 - name: string, 交易名称/商户名
-- amount: number, 金额（正数）
-- date: string, 日期，格式 YYYY-MM-DD（如截图中无日期，使用今天的日期）
+- amount: number, 金额（正数，不带货币符号）
+- date: string, 日期，格式 YYYY-MM-DD
 - type: string, "expense" 或 "income"
 - categoryName: string, 必须是以下之一：餐饮、交通、购物、家用、账单、工资
 - paymentMethod: string, 支付方式（如支付宝、微信支付、银行卡等）
-- description: string, 备注信息（可选，如有）
+- description: string, 备注信息（可选）
 
-分类规则：
-- 餐饮：餐厅、外卖、咖啡、奶茶、小吃等食物相关
-- 交通：打车、公交、地铁、加油、停车等出行相关
-- 购物：超市、商场、网购等商品购买
-- 家用：水电煤、房租、物业、家具家电等居家相关
-- 账单：话费、网费、保险、还款等定期账单
-- 工资：工资、奖金、报销等收入
+分类规则：餐饮（餐厅外卖等）、交通（打车公交等）、购物（超市网购等）、家用（水电房租等）、账单（话费保险等）、工资（收入）
 
-注意事项：
-- 如果截图中有多笔交易，全部提取
-- 金额必须是数字，不带货币符号
-- 只返回 JSON 数组，不要添加其他文字说明
-- 如果无法识别任何交易，返回空数组 []
-- 多张截图中重复的交易只保留一条
+如果无法识别任何交易，返回空数组 []
 
-今天的日期是：${new Date().toISOString().split('T')[0]}
-
-返回格式示例：
-[{"name":"肯德基","amount":35.5,"date":"2024-01-15","type":"expense","categoryName":"餐饮","paymentMethod":"支付宝","description":"午餐"}]`;
+今天的日期是：${new Date().toISOString().split('T')[0]}`;
 
 function parseAIResponse(content: string): ExtractedTransaction[] {
   let jsonStr = content.trim();
-  // Strip markdown code fences
-  if (jsonStr.startsWith('```')) {
-    jsonStr = jsonStr.replace(/^```(?:json)?\s*\n?/, '').replace(/\n?```\s*$/, '');
-  }
-  // Try to find JSON array in the response
-  const arrayMatch = jsonStr.match(/\[[\s\S]*\]/);
-  if (arrayMatch) {
-    jsonStr = arrayMatch[0];
+
+  // Strip markdown code fences (```json ... ```)
+  jsonStr = jsonStr.replace(/^```(?:json)?\s*\n?/gm, '').replace(/\n?```\s*$/gm, '');
+
+  // Try to find a JSON array - look for the first [ and last ]
+  const firstBracket = jsonStr.indexOf('[');
+  const lastBracket = jsonStr.lastIndexOf(']');
+  if (firstBracket !== -1 && lastBracket > firstBracket) {
+    jsonStr = jsonStr.substring(firstBracket, lastBracket + 1);
   }
 
-  const parsed = JSON.parse(jsonStr);
-  if (!Array.isArray(parsed)) {
-    throw new Error('AI 返回格式错误：不是数组');
+  // Try parsing the extracted JSON
+  try {
+    const parsed = JSON.parse(jsonStr);
+    if (Array.isArray(parsed)) {
+      return parsed
+        .map((item): ExtractedTransaction => ({
+          name: String(item.name || item.merchant || item.description || '未知'),
+          amount: Math.abs(Number(item.amount || item.price || item.total || 0)),
+          date: item.date || new Date().toISOString().split('T')[0],
+          type: item.type === 'income' ? 'income' : 'expense',
+          categoryName: validateCategory(item.categoryName || item.category || ''),
+          paymentMethod: item.paymentMethod || item.payment || undefined,
+          description: item.description || item.note || undefined,
+        }))
+        .filter(t => t.amount > 0);
+    }
+  } catch {
+    // JSON parse failed, try harder to extract data
   }
 
-  return parsed
-    .map((item): ExtractedTransaction => ({
-      name: String(item.name || '未知'),
-      amount: Math.abs(Number(item.amount) || 0),
-      date: item.date || new Date().toISOString().split('T')[0],
-      type: item.type === 'income' ? 'income' : 'expense',
-      categoryName: validateCategory(item.categoryName),
-      paymentMethod: item.paymentMethod || undefined,
-      description: item.description || undefined,
-    }))
-    .filter(t => t.amount > 0);
+  // Last resort: try to find JSON objects individually
+  const objects: any[] = [];
+  const objRegex = /\{[^}]+\}/g;
+  let match;
+  while ((match = objRegex.exec(content)) !== null) {
+    try {
+      const obj = JSON.parse(match[0]);
+      if (obj.name || obj.amount) objects.push(obj);
+    } catch {
+      // Skip invalid objects
+    }
+  }
+
+  if (objects.length > 0) {
+    return objects
+      .map((item): ExtractedTransaction => ({
+        name: String(item.name || item.merchant || '未知'),
+        amount: Math.abs(Number(item.amount || 0)),
+        date: item.date || new Date().toISOString().split('T')[0],
+        type: item.type === 'income' ? 'income' : 'expense',
+        categoryName: validateCategory(item.categoryName || item.category || ''),
+        paymentMethod: item.paymentMethod || undefined,
+        description: item.description || undefined,
+      }))
+      .filter(t => t.amount > 0);
+  }
+
+  throw new Error('无法从 AI 响应中解析交易数据');
 }
 
 /**
@@ -121,29 +143,90 @@ export async function extractTransactionsFromImages(
     })
   );
 
-  const body = {
-    model: provider.modelName,
-    stream: !!onStream,
-    messages: [
-      {
-        role: 'user',
-        content: [
-          { type: 'text', text: PROMPT_MULTI },
-          ...imageContents,
-        ],
-      },
-    ],
-    max_tokens: 4000,
-    temperature: 0.1,
-  };
+  const messages = [
+    {
+      role: 'user' as const,
+      content: [
+        { type: 'text' as const, text: PROMPT_MULTI },
+        ...imageContents,
+      ],
+    },
+  ];
 
+  // Try streaming first
+  if (onStream) {
+    try {
+      const streamResponse = await fetch(`${provider.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${provider.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: provider.modelName,
+          stream: true,
+          messages,
+          max_tokens: 4000,
+          temperature: 0.1,
+        }),
+      });
+
+      if (streamResponse.ok && streamResponse.body) {
+        const reader = streamResponse.body.getReader();
+        const decoder = new TextDecoder();
+        let fullText = '';
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            const trimmed = line.trim();
+            if (!trimmed || !trimmed.startsWith('data:')) continue;
+            const data = trimmed.slice(5).trim();
+            if (data === '[DONE]') continue;
+
+            try {
+              const chunk = JSON.parse(data);
+              const delta = chunk.choices?.[0]?.delta?.content
+                || chunk.choices?.[0]?.delta?.reasoning_content
+                || '';
+              if (delta) {
+                fullText += delta;
+                onStream(delta, fullText);
+              }
+            } catch {
+              // Skip malformed chunks
+            }
+          }
+        }
+
+        if (fullText) return parseAIResponse(fullText);
+      }
+    } catch {
+      // Streaming not supported, fall through to non-streaming
+    }
+  }
+
+  // Non-streaming mode (always works reliably)
   const response = await fetch(`${provider.baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${provider.apiKey}`,
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      model: provider.modelName,
+      stream: false,
+      messages,
+      max_tokens: 4000,
+      temperature: 0.1,
+    }),
   });
 
   if (!response.ok) {
@@ -151,61 +234,12 @@ export async function extractTransactionsFromImages(
     throw new Error(`AI API error ${response.status}: ${errorText}`);
   }
 
-  // Streaming mode
-  if (onStream && response.body) {
-    try {
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let fullText = '';
-      let buffer = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split('\n');
-        buffer = lines.pop() || '';
-
-        for (const line of lines) {
-          const trimmed = line.trim();
-          if (!trimmed || !trimmed.startsWith('data:')) continue;
-          const data = trimmed.slice(5).trim();
-          if (data === '[DONE]') continue;
-
-          try {
-            const chunk = JSON.parse(data);
-            const delta = chunk.choices?.[0]?.delta?.content
-              || chunk.choices?.[0]?.delta?.reasoning_content
-              || '';
-            if (delta) {
-              fullText += delta;
-              onStream(delta, fullText);
-            }
-          } catch {
-            // Skip malformed chunks
-          }
-        }
-      }
-
-      return parseAIResponse(fullText);
-    } catch {
-      // Fallback: ReadableStream not supported, read full response
-      const data = await response.json();
-      const content = data.choices?.[0]?.message?.content
-        || data.choices?.[0]?.message?.reasoning_content
-        || '';
-      if (content) onStream(content, content);
-      return parseAIResponse(content);
-    }
-  }
-
-  // Non-streaming mode
   const data = await response.json();
   const content = data.choices?.[0]?.message?.content
     || data.choices?.[0]?.message?.reasoning_content
     || '';
   if (!content) throw new Error('AI 返回内容为空');
+  if (onStream) onStream(content, content);
   return parseAIResponse(content);
 }
 
