@@ -86,6 +86,7 @@ export default function RootLayout() {
           files no longer exist in app/. */}
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="settings/web-mode" />
+      <Stack.Screen name="settings/ai-config" />
       <Stack.Screen name="accounts" />
       <Stack.Screen name="goals" />
     </Stack>

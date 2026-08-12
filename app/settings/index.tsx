@@ -30,6 +30,23 @@ export default function SettingsScreen() {
           </View>
         </Card>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push('/settings/ai-config')}>
+        <Card style={styles.menuCard}>
+          <View style={styles.menuRow}>
+            <Ionicons name="sparkles" size={22} color={theme.colors.primary} />
+            <Text style={styles.menuTitle}>AI 配置</Text>
+            <Text variant="caption" style={styles.menuSubtitle}>
+              配置 AI 服务商，用于图片识别导入交易
+            </Text>
+            <Ionicons
+              name="chevron-forward"
+              size={20}
+              color={theme.colors.textSecondary}
+              style={styles.menuChevron}
+            />
+          </View>
+        </Card>
+      </TouchableOpacity>
       <DatabaseExport />
       <DebugTools />
       <DatabaseDebug />

@@ -4,7 +4,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: 'finance-manager',
   slug: 'finance-manager',
-  version: '1.2.2',
+  version: '1.3.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
   scheme: 'myapp',
@@ -12,6 +12,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   newArchEnabled: true,
   extra: {
     DATA_CLEAR: process.env.DATA_CLEAR === 'true',
+    MIMO_API_KEY: process.env.MIMO_API_KEY || '',
+    MINIMAX_API_KEY: process.env.MINIMAX_API_KEY || '',
   },
   ios: {
     supportsTablet: true,
@@ -40,7 +42,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         backgroundColor: '#1a1a2e'
       }
     ],
-    'expo-sqlite'
+    'expo-sqlite',
+    'expo-image-picker'
   ],
   experiments: {
     typedRoutes: true

@@ -5,10 +5,11 @@ import { Card } from '@/components/base/Card';
 import { PageTemplate } from '@/components/base/PageTemplate';
 import { TransactionAdd } from '@/components/finance/transactions/TransactionAdd';
 import { BudgetAdd } from '@/components/finance/budgets/BudgetAdd';
+import { ImageImport } from '@/components/finance/transactions/ImageImport';
 import { router } from 'expo-router';
 import theme from '@/theme';
 
-type AddType = 'transaction' | 'budget';
+type AddType = 'transaction' | 'budget' | 'imageImport';
 
 export default function AddScreen() {
   const [addType, setAddType] = useState<AddType>('transaction');
@@ -45,27 +46,44 @@ export default function AddScreen() {
             addType === 'budget' && styles.activeTypeButtonText
           ]}>预算</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[
+            styles.typeButton,
+            addType === 'imageImport' && styles.activeTypeButton
+          ]}
+          onPress={() => setAddType('imageImport')}
+        >
+          <Text style={[
+            styles.typeButtonText,
+            addType === 'imageImport' && styles.activeTypeButtonText
+          ]}>图片导入</Text>
+        </TouchableOpacity>
       </View>
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.keyboardAvoidingView}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
-      >
-        <ScrollView
-          style={styles.list}
-          contentContainerStyle={styles.listContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          bounces={false}
+      {addType === 'imageImport' ? (
+        <ImageImport onSubmit={handleSubmit} />
+      ) : (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.keyboardAvoidingView}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
         >
-          {addType === 'transaction' ? (
-            <TransactionAdd onSubmit={handleSubmit} />
-          ) : (
-            <BudgetAdd onSubmit={handleSubmit} />
-          )}
-        </ScrollView>
-      </KeyboardAvoidingView>
+          <ScrollView
+            style={styles.list}
+            contentContainerStyle={styles.listContent}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+            bounces={false}
+          >
+            {addType === 'transaction' ? (
+              <TransactionAdd onSubmit={handleSubmit} />
+            ) : (
+              <BudgetAdd onSubmit={handleSubmit} />
+            )}
+          </ScrollView>
+        </KeyboardAvoidingView>
+      )}
     </PageTemplate>
   );
 }
