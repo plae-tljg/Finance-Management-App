@@ -2,6 +2,7 @@ import React, { useState, useEffect, memo, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal } from 'react-native';
 import { useFinance } from '@/contexts/FinanceContext';
 import { Card } from '@/components/base/Card';
+import { EmptyState } from '@/components/base/EmptyState';
 import { PageTemplate } from '@/components/base/PageTemplate';
 import { AccountForm } from '@/components/accounts/AccountForm';
 import { Ionicons } from '@expo/vector-icons';
@@ -88,6 +89,15 @@ export default function AccountsPage() {
         renderItem={({ item }) => <AccountItem account={item} onEdit={handleEdit} />}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={
+          <EmptyState
+            icon="🏦"
+            title="还没有账户"
+            description="添加一个账户，记账时就能选择钱存在哪里。"
+            actionLabel="添加账户"
+            onAction={handleAdd}
+          />
+        }
       />
 
       <Modal

@@ -1,8 +1,9 @@
 import { TransactionRepository } from '../database/repositories/TransactionRepository';
 import type { Transaction } from '../database/schemas/Transaction';
 import { DatabaseServiceType } from '../database/DatabaseService';
+import { createServiceCache } from './serviceCache';
 
-export function useTransactionService(databaseService: DatabaseServiceType) {
+function createTransactionService(databaseService: DatabaseServiceType) {
   const repository = new TransactionRepository(databaseService);
   
   const getTransactions = async () => {
@@ -119,4 +120,16 @@ export function useTransactionService(databaseService: DatabaseServiceType) {
     getTransactionsByAccountId,
     getTransactionsByMonthAndAccount
   };
-} 
+}
+
+const transactionServiceCache = createServiceCache<
+  ReturnType<typeof createTransactionService>
+>();
+
+export function useTransactionService(
+  databaseService: DatabaseServiceType,
+): ReturnType<typeof createTransactionService> {
+  return transactionServiceCache(databaseService, () =>
+    createTransactionService(databaseService),
+  );
+}

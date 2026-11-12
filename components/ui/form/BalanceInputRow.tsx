@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback, useRef } from 'react';
+import React, { memo, useState, useCallback, useEffect, useRef } from 'react';
 import { View, StyleSheet, TextInput } from 'react-native';
 import { Text } from '@/components/base/Text';
 import type { Account } from '@/services/database/schemas/Account';
@@ -25,6 +25,26 @@ export const BalanceInputRow = memo(function BalanceInputRow({
   const openingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const closingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // The last value this row pushed up to the parent. When the incoming prop
+  // differs from it, the change came from outside (e.g. "carry over from last
+  // month"), so the local display state has to follow.
+  const lastPushedOpening = useRef(openingBalance);
+  const lastPushedClosing = useRef(closingBalance);
+
+  useEffect(() => {
+    if (openingBalance !== lastPushedOpening.current) {
+      lastPushedOpening.current = openingBalance;
+      setDisplayOpening(openingBalance);
+    }
+  }, [openingBalance]);
+
+  useEffect(() => {
+    if (closingBalance !== lastPushedClosing.current) {
+      lastPushedClosing.current = closingBalance;
+      setDisplayClosing(closingBalance);
+    }
+  }, [closingBalance]);
+
   const handleOpeningChange = useCallback((text: string) => {
     const cleaned = text.replace(/[^0-9.-]/g, '');
     setDisplayOpening(cleaned);
@@ -33,6 +53,7 @@ export const BalanceInputRow = memo(function BalanceInputRow({
       clearTimeout(openingTimeoutRef.current);
     }
     openingTimeoutRef.current = setTimeout(() => {
+      lastPushedOpening.current = cleaned;
       onOpeningChange(cleaned);
     }, 300);
   }, [onOpeningChange]);
@@ -45,6 +66,7 @@ export const BalanceInputRow = memo(function BalanceInputRow({
       clearTimeout(closingTimeoutRef.current);
     }
     closingTimeoutRef.current = setTimeout(() => {
+      lastPushedClosing.current = cleaned;
       onClosingChange(cleaned);
     }, 300);
   }, [onClosingChange]);

@@ -1,13 +1,16 @@
 import React from 'react';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import { useBudgetService } from '@/services/business/BudgetService';
+import { useMonthPreparationService } from '@/services/business/MonthPreparationService';
 import { LoadingView } from '@/components/base/LoadingView';
 import { ErrorView } from '@/components/base/ErrorView';
+import { EmptyState } from '@/components/base/EmptyState';
 import { BudgetList } from '@/components/finance/budgets/BudgetList';
+import { MonthPrepPrompt } from '@/components/finance/common/MonthPrepPrompt';
 import type { BudgetWithCategory } from '@/services/database/repositories/BudgetRepository';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
-import { StyleSheet } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 import { PageTemplate } from '@/components/base/PageTemplate';
 
 export default function BudgetsScreen() {
@@ -24,6 +27,11 @@ export default function BudgetsScreen() {
 
   const budgetService = React.useMemo(
     () => databaseService ? useBudgetService(databaseService) : null,
+    [databaseService]
+  );
+
+  const monthPreparationService = React.useMemo(
+    () => databaseService ? useMonthPreparationService(databaseService) : null,
     [databaseService]
   );
 
@@ -80,6 +88,26 @@ export default function BudgetsScreen() {
     }
   }, [budgetService]);
 
+  const handleCarryOverBudgets = React.useCallback(async () => {
+    if (!monthPreparationService) return;
+    try {
+      const created = await monthPreparationService.carryOverBudgets(
+        currentYear,
+        currentMonth,
+      );
+      await loadBudgets();
+      Alert.alert(
+        created > 0 ? '已沿用上月预算' : '无需沿用',
+        created > 0
+          ? `已创建 ${created} 个预算，可以按需调整金额。`
+          : '这个月的预算已经存在，或上月没有可沿用的预算。',
+      );
+    } catch (err) {
+      console.error('沿用上月预算失败:', err);
+      Alert.alert('失败', '沿用上月预算失败，请重试');
+    }
+  }, [monthPreparationService, currentYear, currentMonth]);
+
   if (error) {
     return <ErrorView 
       error={error} 
@@ -100,6 +128,8 @@ export default function BudgetsScreen() {
       }
       scrollable={false}
     >
+      <MonthPrepPrompt year={currentYear} month={currentMonth} />
+
       <BudgetList
         budgets={budgets}
         isLoading={isLoading}
@@ -108,6 +138,17 @@ export default function BudgetsScreen() {
         onDelete={handleDelete}
         onEdit={(id) => router.push(`/budget/edit/${id}`)}
         title={`${currentYear}年${currentMonth}月预算管理`}
+        emptyComponent={
+          <EmptyState
+            icon="📊"
+            title={`${currentYear}年${currentMonth}月还没有预算`}
+            description="沿用上个月的预算，或者从默认设置重新生成一份。"
+            actionLabel="沿用上月预算"
+            onAction={handleCarryOverBudgets}
+            secondaryActionLabel="设置预算默认值"
+            onSecondaryAction={() => router.push('/budget/defaults')}
+          />
+        }
       />
     </PageTemplate>
   );

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Text } from '@/components/base/Text';
 import { Card } from '@/components/base/Card';
+import { EmptyState } from '@/components/base/EmptyState';
 import { TransactionItem } from './TransactionItem';
 import { useFinance } from '@/contexts/FinanceContext';
 import { withDataLoading } from '@/components/base/withDataLoading';
@@ -52,9 +53,14 @@ function RecentTransactionsBase() {
             />
           ))
         ) : (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>暂无交易记录</Text>
-          </View>
+          <EmptyState
+            compact
+            icon="🧾"
+            title="暂无交易记录"
+            description="记一笔账，首页和报表就会开始更新。"
+            actionLabel="记一笔"
+            onAction={() => router.push('/add')}
+          />
         )}
       </View>
     </Card>

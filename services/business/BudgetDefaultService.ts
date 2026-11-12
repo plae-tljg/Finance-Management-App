@@ -2,8 +2,9 @@ import { BudgetDefaultRepository } from '../database/repositories/BudgetDefaultR
 import { BudgetDefault } from '../database/schemas/BudgetDefault';
 import { DatabaseServiceType } from '../database/DatabaseService';
 import { BudgetRepository } from '../database/repositories/BudgetRepository';
+import { createServiceCache } from './serviceCache';
 
-export function useBudgetDefaultService(databaseService: DatabaseServiceType) {
+function createBudgetDefaultService(databaseService: DatabaseServiceType) {
   const repository = new BudgetDefaultRepository(databaseService);
   const budgetRepository = new BudgetRepository(databaseService);
 
@@ -61,4 +62,16 @@ export function useBudgetDefaultService(databaseService: DatabaseServiceType) {
     deleteDefault,
     createMonthlyBudgetsFromDefaults
   };
+}
+
+const budgetDefaultServiceCache = createServiceCache<
+  ReturnType<typeof createBudgetDefaultService>
+>();
+
+export function useBudgetDefaultService(
+  databaseService: DatabaseServiceType,
+): ReturnType<typeof createBudgetDefaultService> {
+  return budgetDefaultServiceCache(databaseService, () =>
+    createBudgetDefaultService(databaseService),
+  );
 }

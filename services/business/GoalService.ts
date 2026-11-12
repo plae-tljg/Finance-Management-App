@@ -1,8 +1,9 @@
 import { GoalRepository } from '../database/repositories/GoalRepository';
 import type { Goal } from '../database/schemas/Goal';
 import { DatabaseServiceType } from '../database/DatabaseService';
+import { createServiceCache } from './serviceCache';
 
-export function useGoalService(databaseService: DatabaseServiceType) {
+function createGoalService(databaseService: DatabaseServiceType) {
   const repository = new GoalRepository(databaseService);
 
   const getGoals = async () => {
@@ -57,4 +58,16 @@ export function useGoalService(databaseService: DatabaseServiceType) {
     updateGoalProgress,
     addToGoalProgress
   };
+}
+
+const goalServiceCache = createServiceCache<
+  ReturnType<typeof createGoalService>
+>();
+
+export function useGoalService(
+  databaseService: DatabaseServiceType,
+): ReturnType<typeof createGoalService> {
+  return goalServiceCache(databaseService, () =>
+    createGoalService(databaseService),
+  );
 }

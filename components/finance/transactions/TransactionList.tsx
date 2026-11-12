@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, View, FlatList, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Text } from '@/components/base/Text';
+import { EmptyState } from '@/components/base/EmptyState';
+import { router } from 'expo-router';
 import { TransactionItem } from '@/components/finance/transactions/TransactionItem';
 import { BackgroundImage } from '@/components/base/BackgroundImage';
 import type { Transaction } from '@/services/database/schemas/Transaction';
@@ -68,11 +70,13 @@ export function TransactionList({
             />
           }
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
-                暂无交易记录
-              </Text>
-            </View>
+            <EmptyState
+              icon="🧾"
+              title="暂无交易记录"
+              description="记一笔账，首页和报表就会开始更新。"
+              actionLabel="记一笔"
+              onAction={() => router.push('/add')}
+            />
           }
         />
       </View>
@@ -98,11 +102,13 @@ export function TransactionList({
             />
           }
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
-                暂无交易记录
-              </Text>
-            </View>
+            <EmptyState
+              icon="🧾"
+              title="暂无交易记录"
+              description="记一笔账，首页和报表就会开始更新。"
+              actionLabel="记一笔"
+              onAction={() => router.push('/add')}
+            />
           }
         />
       </SafeAreaView>

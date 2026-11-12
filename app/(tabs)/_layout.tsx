@@ -1,4 +1,4 @@
-import { Tabs } from 'expo-router';
+import { Tabs, usePathname } from 'expo-router';
 import React from 'react';
 import { Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,9 +9,16 @@ import theme from '@/theme';
 const IS_WEB = Platform.OS === 'web';
 
 export default function TabLayout() {
+  const pathname = usePathname();
+
+  // The pet floats above the page content. On the Add screen it would sit
+  // on top of the primary 保存 button and swallow taps meant for it, so the
+  // mascot stays out of the way while the user is entering a record.
+  const showPet = !IS_WEB && pathname !== '/add';
+
   return (
     <>
-      {IS_WEB ? null : <PetAnimation />}
+      {showPet ? <PetAnimation /> : null}
       <Tabs
         screenOptions={{
           headerShown: false,

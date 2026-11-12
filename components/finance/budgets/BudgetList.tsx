@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { BudgetItem } from './BudgetItem';
+import { EmptyState } from '@/components/base/EmptyState';
 import type { BudgetWithCategory } from '@/services/database/repositories/BudgetRepository';
 import theme from '@/theme';
 
@@ -12,16 +13,19 @@ interface BudgetListProps {
   onDelete: (id: number) => void;
   onEdit: (id: number) => void;
   title?: string;
+  /** Replaces the default "暂无预算记录" placeholder. */
+  emptyComponent?: React.ReactElement | null;
 }
 
-export function BudgetList({ 
-  budgets, 
-  isLoading, 
-  isRefreshing, 
+export function BudgetList({
+  budgets,
+  isLoading,
+  isRefreshing,
   onRefresh,
   onDelete,
   onEdit,
-  title
+  title,
+  emptyComponent,
 }: BudgetListProps) {
   const handleDelete = React.useCallback(async (id: number) => {
     await onDelete(id);
@@ -55,11 +59,13 @@ export function BudgetList({
           />
         }
         ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>
-              暂无预算记录
-            </Text>
-          </View>
+          emptyComponent ?? (
+            <EmptyState
+              icon="📊"
+              title="暂无预算记录"
+              description="为这个月设置预算，记账时就能自动统计各类支出用了多少。"
+            />
+          )
         }
       />
     </View>

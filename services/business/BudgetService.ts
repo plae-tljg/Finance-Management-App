@@ -2,8 +2,9 @@ import { BudgetRepository } from '../database/repositories/BudgetRepository';
 import type { Budget } from '../database/schemas/Budget';
 import type { BudgetWithCategory } from '../database/repositories/BudgetRepository';
 import { DatabaseServiceType } from '../database/DatabaseService';
+import { createServiceCache } from './serviceCache';
 
-export function useBudgetService(databaseService: DatabaseServiceType) {
+function createBudgetService(databaseService: DatabaseServiceType) {
   const repository = new BudgetRepository(databaseService);
   
   const getBudgets = async (): Promise<Budget[]> => {
@@ -92,4 +93,16 @@ export function useBudgetService(databaseService: DatabaseServiceType) {
     getBudgetsByMonthWithCategory,
     getBudgetWithCategory
   };
-} 
+}
+
+const budgetServiceCache = createServiceCache<
+  ReturnType<typeof createBudgetService>
+>();
+
+export function useBudgetService(
+  databaseService: DatabaseServiceType,
+): ReturnType<typeof createBudgetService> {
+  return budgetServiceCache(databaseService, () =>
+    createBudgetService(databaseService),
+  );
+}

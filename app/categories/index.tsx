@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: theme.spacing.md,
     padding: theme.spacing.md,
-    backgroundColor: theme.colors.surfaceLight ?? '#f5f7fa',
+    backgroundColor: theme.colors.surfaceDark,
   },
   hintText: {
     flex: 1,

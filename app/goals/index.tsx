@@ -2,6 +2,7 @@ import React, { useState, useEffect, memo, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal } from 'react-native';
 import { useFinance } from '@/contexts/FinanceContext';
 import { Card } from '@/components/base/Card';
+import { EmptyState } from '@/components/base/EmptyState';
 import { PageTemplate } from '@/components/base/PageTemplate';
 import { GoalForm } from '@/components/goals/GoalForm';
 import { Ionicons } from '@expo/vector-icons';
@@ -95,6 +96,15 @@ export default function GoalsPage() {
         renderItem={({ item }) => <GoalItem goal={item} onEdit={handleEdit} />}
         keyExtractor={(item) => item.id.toString()}
         contentContainerStyle={styles.listContainer}
+        ListEmptyComponent={
+          <EmptyState
+            icon="🎯"
+            title="还没有储蓄目标"
+            description="设一个目标，记账时就能看到自己离它还有多远。"
+            actionLabel="创建第一个目标"
+            onAction={handleAdd}
+          />
+        }
       />
 
       <Modal

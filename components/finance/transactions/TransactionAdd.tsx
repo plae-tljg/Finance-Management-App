@@ -98,7 +98,7 @@ export const TransactionAdd = memo(function TransactionAdd({ onSubmit }: Transac
         />
       </FormCard>
 
-      {selectedCategory && !templateMode && (
+      {selectedCategory && (
         <FormCard>
           <BudgetInput
             categoryId={selectedCategory}

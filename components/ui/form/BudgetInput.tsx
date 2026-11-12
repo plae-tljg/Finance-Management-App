@@ -5,6 +5,7 @@ import { useBudgetService } from '@/services/business/BudgetService';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import { LoadingView } from '@/components/base/LoadingView';
 import type { Budget } from '@/services/database/schemas/Budget';
+import { router } from 'expo-router';
 import theme from '@/theme';
 
 interface BudgetInputProps {
@@ -74,7 +75,18 @@ export const BudgetInput = memo(function BudgetInput({
     return (
       <View style={styles.container}>
         <Text style={styles.label}>预算</Text>
-        <Text style={styles.noBudget}>暂无预算</Text>
+        <View style={styles.noBudgetBox}>
+          <Text style={styles.noBudget}>该类别本月还没有预算</Text>
+          <Text style={styles.noBudgetHint}>
+            保存这笔记录前，需要先为该类别创建一个本月预算。
+          </Text>
+          <TouchableOpacity
+            style={styles.noBudgetLink}
+            onPress={() => router.push('/budget')}
+          >
+            <Text style={styles.noBudgetLinkText}>去预算管理创建</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -163,7 +175,27 @@ const styles = StyleSheet.create({
   },
   noBudget: {
     fontSize: theme.fontSize.sm,
+    fontWeight: theme.fontWeight.medium,
+    color: theme.colors.textSecondary,
+  },
+  noBudgetBox: {
+    backgroundColor: theme.colors.surfaceDark,
+    borderRadius: theme.borderRadius.sm,
+    padding: theme.spacing.md,
+  },
+  noBudgetHint: {
+    fontSize: theme.fontSize.xs,
     color: theme.colors.textTertiary,
-    padding: theme.spacing.sm,
+    marginTop: theme.spacing.xs,
+    lineHeight: 16,
+  },
+  noBudgetLink: {
+    marginTop: theme.spacing.sm,
+    alignSelf: 'flex-start',
+  },
+  noBudgetLinkText: {
+    fontSize: theme.fontSize.sm,
+    fontWeight: theme.fontWeight.medium,
+    color: theme.colors.primary,
   },
 });

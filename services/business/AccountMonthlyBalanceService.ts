@@ -1,8 +1,9 @@
 import { AccountMonthlyBalanceRepository } from '../database/repositories/AccountMonthlyBalanceRepository';
 import { DatabaseServiceType } from '../database/DatabaseService';
 import type { AccountMonthlyBalance } from '../database/schemas/AccountMonthlyBalance';
+import { createServiceCache } from './serviceCache';
 
-export function useAccountMonthlyBalanceService(databaseService: DatabaseServiceType) {
+function createAccountMonthlyBalanceService(databaseService: DatabaseServiceType) {
   const repository = new AccountMonthlyBalanceRepository(databaseService);
 
   const getAccountBalance = async (
@@ -27,6 +28,19 @@ export function useAccountMonthlyBalanceService(databaseService: DatabaseService
 
   const getAccountBalancesByYear = async (year: number): Promise<AccountMonthlyBalance[]> => {
     return await repository.findByYear(year);
+  };
+
+  /**
+   * Balances recorded for the month right before the given one. Used to seed
+   * a new month: its opening balance is the previous month's closing balance.
+   */
+  const getPreviousMonthBalances = async (
+    year: number,
+    month: number,
+  ): Promise<AccountMonthlyBalance[]> => {
+    const previousMonth = month === 1 ? 12 : month - 1;
+    const previousYear = month === 1 ? year - 1 : year;
+    return await repository.findByYearMonth(previousYear, previousMonth);
   };
 
   const updateAccountBalance = async (
@@ -77,43 +91,30 @@ export function useAccountMonthlyBalanceService(databaseService: DatabaseService
     );
   };
 
-  const initializeYearForAccount = async (accountId: number, year: number): Promise<void> => {
-    const currentMonth = new Date().getMonth() + 1;
-    const existingBalance = await repository.findByAccountYearMonth(accountId, year, currentMonth);
-
-    if (!existingBalance) {
-      let previousMonth = currentMonth - 1;
-      let previousYear = year;
-      if (previousMonth === 0) {
-        previousMonth = 12;
-        previousYear = year - 1;
-      }
-
-      const previousBalance = await repository.findByAccountYearMonth(accountId, previousYear, previousMonth);
-      const openingBalance = previousBalance?.closingBalance || 0;
-
-      await repository.create({
-        accountId,
-        year,
-        month: currentMonth,
-        openingBalance,
-        closingBalance: openingBalance
-      });
-    }
-  };
-
   return {
     getAccountBalance,
     getAccountBalancesByAccount,
     getAllAccountBalances,
     getAccountBalancesByMonth,
     getAccountBalancesByYear,
+    getPreviousMonthBalances,
     updateAccountBalance,
     upsertAccountBalance,
     deleteAccountBalance,
     getTotalBalanceByAccount,
     getMonthlyTotalBalances,
-    getYearlyTotalBalances,
-    initializeYearForAccount
+    getYearlyTotalBalances
   };
+}
+
+const accountMonthlyBalanceServiceCache = createServiceCache<
+  ReturnType<typeof createAccountMonthlyBalanceService>
+>();
+
+export function useAccountMonthlyBalanceService(
+  databaseService: DatabaseServiceType,
+): ReturnType<typeof createAccountMonthlyBalanceService> {
+  return accountMonthlyBalanceServiceCache(databaseService, () =>
+    createAccountMonthlyBalanceService(databaseService),
+  );
 }

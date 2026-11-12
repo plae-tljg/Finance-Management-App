@@ -22,7 +22,6 @@ interface UseTransactionEditFormReturn {
   date: Date;
   time: Date;
   isLoading: boolean;
-  accountList: Account[];
   setName: (name: string) => void;
   setDescription: (description: string) => void;
   setAmount: (amount: string) => void;
@@ -55,18 +54,7 @@ export function useTransactionEditForm(
   const [type, setType] = useState<'income' | 'expense'>(transaction.type);
   const [date, setDate] = useState(txDate);
   const [time, setTime] = useState(txDate);
-  const [accountList, setAccountList] = useState<Account[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    const loadAccounts = async () => {
-      if (accountService) {
-        const accounts = await accountService.getAccounts();
-        setAccountList(accounts);
-      }
-    };
-    loadAccounts();
-  }, [accountService]);
 
   const handleSetSelectedCategory = useCallback((id: number | null) => {
     setSelectedCategory(id);
@@ -152,7 +140,6 @@ export function useTransactionEditForm(
     date,
     time,
     isLoading: isSubmitting,
-    accountList,
     setName,
     setDescription,
     setAmount: handleSetAmount,

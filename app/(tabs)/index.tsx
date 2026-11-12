@@ -5,6 +5,7 @@ import { Card } from '@/components/base/Card';
 import { PageTemplate } from '@/components/base/PageTemplate';
 import { FinanceOverview } from '@/components/finance/summary/FinanceOverview';
 import { RecentTransactions } from '@/components/finance/transactions/RecentTransactions';
+import { MonthPrepPrompt } from '@/components/finance/common/MonthPrepPrompt';
 import { useFinance } from '@/contexts/FinanceContext';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import theme from '@/theme';
@@ -13,6 +14,7 @@ export default function DashboardScreen() {
   const { isReady, error } = useDatabaseSetup();
   const { loadInitialData } = useFinance();
   const [isLoading, setIsLoading] = useState(true);
+  const now = new Date();
 
   useEffect(() => {
     let isMounted = true;
@@ -63,6 +65,7 @@ export default function DashboardScreen() {
 
   return (
     <PageTemplate title="财务概览" showBack={false}>
+      <MonthPrepPrompt year={now.getFullYear()} month={now.getMonth() + 1} />
       <FinanceOverview isReady={isReady} />
       {isReady && <RecentTransactions isReady={isReady} />}
     </PageTemplate>

@@ -11,10 +11,23 @@ interface AmountInputProps {
 
 export const AmountInput = memo(function AmountInput({ value, onChange, disabled }: AmountInputProps) {
   const handleChange = useCallback((text: string) => {
-    const cleaned = text.replace(/[^0-9.]/g, '');
-    const parts = cleaned.split('.');
-    if (parts.length > 2) return;
-    if (parts[1] && parts[1].length > 2) return;
+    // Keep digits and a single decimal separator.
+    let cleaned = text.replace(/[^0-9.]/g, '');
+    const firstDot = cleaned.indexOf('.');
+    if (firstDot !== -1) {
+      cleaned =
+        cleaned.slice(0, firstDot + 1) +
+        cleaned.slice(firstDot + 1).replace(/\./g, '');
+    }
+
+    // Cap at 2 decimal places by truncating, NOT by rejecting the keystroke.
+    // Rejecting made the field feel "insensitive": the key was swallowed and
+    // the displayed value never changed.
+    if (cleaned.includes('.')) {
+      const [integerPart, decimalPart = ''] = cleaned.split('.');
+      cleaned = `${integerPart}.${decimalPart.slice(0, 2)}`;
+    }
+
     onChange(cleaned);
   }, [onChange]);
 
@@ -39,19 +52,18 @@ export const AmountInput = memo(function AmountInput({ value, onChange, disabled
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    // Label above the field, like every other field in the form.
   },
   label: {
     fontSize: theme.fontSize.sm,
     fontWeight: theme.fontWeight.medium,
     color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.sm,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
-    marginLeft: theme.spacing.md,
+    width: '100%',
     borderWidth: 1,
     borderColor: theme.colors.border,
     borderRadius: theme.borderRadius.sm,

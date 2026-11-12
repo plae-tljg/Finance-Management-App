@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { Alert } from 'react-native';
 import { useTransactionService } from '@/services/business/TransactionService';
 import { useBudgetService } from '@/services/business/BudgetService';
 import { useAccountService } from '@/services/business/AccountService';
@@ -22,7 +23,6 @@ interface UseTransactionFormReturn {
   time: Date;
   templateMode: boolean;
   isLoading: boolean;
-  accountList: Account[];
   setType: (type: 'income' | 'expense') => void;
   setName: (name: string) => void;
   setAmount: (amount: string) => void;
@@ -55,14 +55,12 @@ export function useTransactionForm(options: UseTransactionFormOptions = {}): Use
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date());
   const [templateMode, setTemplateModeState] = useState(false);
-  const [accountList, setAccountList] = useState<Account[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const loadAccounts = async () => {
       if (!accountService || !isReady) return;
       const accounts = await accountService.getAccounts();
-      setAccountList(accounts);
       if (accounts.length > 0 && !selectedAccount) {
         const bankAccount = accounts.find(a => a.type === 'bank');
         setSelectedAccountState(bankAccount ? bankAccount.id : accounts[0].id);
@@ -162,8 +160,12 @@ export function useTransactionForm(options: UseTransactionFormOptions = {}): Use
       return false;
     }
 
-    if (!selectedBudget && !templateMode) {
-      alert('请选择预算');
+    if (!selectedBudget) {
+      // `transactions.budgetId` is NOT NULL, so a transaction can only be
+      // saved once it is attached to a budget. Failing here with a clear
+      // message beats letting the INSERT blow up with a raw SQLite
+      // constraint error.
+      Alert.alert('请选择预算', '该类别本月还没有预算，请先选择或创建一个预算。');
       return false;
     }
 
@@ -186,7 +188,7 @@ export function useTransactionForm(options: UseTransactionFormOptions = {}): Use
         name: name.trim(),
         amount: parseFloat(amount),
         categoryId: selectedCategory,
-        budgetId: selectedBudget!,
+        budgetId: selectedBudget,
         accountId: selectedAccount!,
         description: description.trim() || null,
         date: transactionDate.toISOString(),
@@ -229,7 +231,6 @@ export function useTransactionForm(options: UseTransactionFormOptions = {}): Use
     time,
     templateMode,
     isLoading: isSubmitting,
-    accountList,
     setType,
     setName,
     setAmount,

@@ -1,8 +1,9 @@
 import { AccountRepository } from '../database/repositories/AccountRepository';
 import type { Account } from '../database/schemas/Account';
 import { DatabaseServiceType } from '../database/DatabaseService';
+import { createServiceCache } from './serviceCache';
 
-export function useAccountService(databaseService: DatabaseServiceType) {
+function createAccountService(databaseService: DatabaseServiceType) {
   const repository = new AccountRepository(databaseService);
 
   const getAccounts = async () => {
@@ -52,4 +53,16 @@ export function useAccountService(databaseService: DatabaseServiceType) {
     updateAccountBalance,
     adjustAccountBalance
   };
+}
+
+const accountServiceCache = createServiceCache<
+  ReturnType<typeof createAccountService>
+>();
+
+export function useAccountService(
+  databaseService: DatabaseServiceType,
+): ReturnType<typeof createAccountService> {
+  return accountServiceCache(databaseService, () =>
+    createAccountService(databaseService),
+  );
 }

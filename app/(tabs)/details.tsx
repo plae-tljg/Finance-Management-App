@@ -6,6 +6,7 @@ import { PageTemplate } from '@/components/base/PageTemplate';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { MonthYearPicker } from '@/components/common/ui/MonthYearPicker';
+import { MonthPrepChecklist } from '@/components/finance/common/MonthPrepChecklist';
 import theme from '@/theme';
 
 export default function DetailsScreen() {
@@ -80,6 +81,21 @@ export default function DetailsScreen() {
           <Text style={styles.buttonText}>银行余额</Text>
         </TouchableOpacity>
       </View>
+
+      <MonthPrepChecklist
+        year={currentMonth.getFullYear()}
+        month={currentMonth.getMonth() + 1}
+        onPressBudgets={() =>
+          router.push(
+            `/budget?year=${currentMonth.getFullYear()}&month=${currentMonth.getMonth() + 1}`,
+          )
+        }
+        onPressBalances={() =>
+          router.push(
+            `/accounts/monthly-balances?year=${currentMonth.getFullYear()}&month=${currentMonth.getMonth() + 1}`,
+          )
+        }
+      />
 
       <MonthYearPicker
         visible={showDatePicker}

@@ -7,6 +7,8 @@ import { useAccountMonthlyBalanceService } from '@/services/business/AccountMont
 import { useAccountService } from '@/services/business/AccountService';
 import { useDatabaseSetup } from '@/hooks/useDatabaseSetup';
 import { BalanceInputRow } from '@/components/ui/form/BalanceInputRow';
+import { MonthYearPicker } from '@/components/common/ui/MonthYearPicker';
+import { MonthPrepPrompt } from '@/components/finance/common/MonthPrepPrompt';
 import type { AccountMonthlyBalance } from '@/services/database/schemas/AccountMonthlyBalance';
 import type { Account } from '@/services/database/schemas/Account';
 import theme from '@/theme';
@@ -24,9 +26,16 @@ export default function MonthlyBalancesScreen() {
   const { isReady, databaseService } = useDatabaseSetup();
   const [accountBalances, setAccountBalances] = useState<AccountBalanceRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const currentYear = params.year ? parseInt(params.year as string) : new Date().getFullYear();
-  const currentMonth = params.month ? parseInt(params.month as string) : new Date().getMonth() + 1;
+  // The month is editable here so a user can jump straight to next month and
+  // seed it from the month they just closed.
+  const [currentYear, setCurrentYear] = useState(
+    params.year ? parseInt(params.year as string) : new Date().getFullYear(),
+  );
+  const [currentMonth, setCurrentMonth] = useState(
+    params.month ? parseInt(params.month as string) : new Date().getMonth() + 1,
+  );
 
   const accountMonthlyBalanceService = React.useMemo(
     () => isReady && databaseService ? useAccountMonthlyBalanceService(databaseService) : null,
@@ -106,6 +115,73 @@ export default function MonthlyBalancesScreen() {
     }
   };
 
+  /**
+   * Seed this month from last month: a new month opens with the balance the
+   * previous month closed on. Accounts without a previous-month record are
+   * left untouched.
+   */
+  const handleCarryOver = useCallback(async () => {
+    if (!accountMonthlyBalanceService) return;
+
+    try {
+      const previousBalances =
+        await accountMonthlyBalanceService.getPreviousMonthBalances(
+          currentYear,
+          currentMonth,
+        );
+      const closingByAccount = new Map(
+        previousBalances.map((balance) => [balance.accountId, balance.closingBalance]),
+      );
+
+      let carriedCount = 0;
+      setAccountBalances((prev) =>
+        prev.map((row) => {
+          const carried = closingByAccount.get(row.account.id);
+          if (carried === undefined) return row;
+          carriedCount += 1;
+          const value = String(carried);
+          return { ...row, openingBalance: value, closingBalance: value };
+        }),
+      );
+
+      if (carriedCount === 0) {
+        Alert.alert(
+          '没有可沿用的数据',
+          '上个月没有记录过账户余额，请手动填写期初余额。',
+        );
+      } else {
+        Alert.alert(
+          '已沿用上月余额',
+          `已将 ${carriedCount} 个账户的期初余额设为上个月的期末余额，记得点击「保存全部」保存。`,
+        );
+      }
+    } catch (error) {
+      console.error('沿用上月余额失败:', error);
+      Alert.alert('错误', '沿用上月余额失败，请重试');
+    }
+  }, [accountMonthlyBalanceService, currentYear, currentMonth]);
+
+  const changeMonth = useCallback((offset: number) => {
+    setCurrentMonth((prev) => {
+      const next = prev + offset;
+      if (next < 1) {
+        setCurrentYear((y) => y - 1);
+        return 12;
+      }
+      if (next > 12) {
+        setCurrentYear((y) => y + 1);
+        return 1;
+      }
+      return next;
+    });
+  }, []);
+
+  const selectMonth = useCallback((year: number, month: number) => {
+    setCurrentYear(year);
+    setCurrentMonth(month);
+    setShowDatePicker(false);
+  }, []);
+
   const totalOpening = accountBalances.reduce((sum, row) => sum + (parseFloat(row.openingBalance) || 0), 0);
   const totalClosing = accountBalances.reduce((sum, row) => sum + (parseFloat(row.closingBalance) || 0), 0);
 
@@ -134,6 +210,8 @@ export default function MonthlyBalancesScreen() {
         </TouchableOpacity>
       }
     >
+      <MonthPrepPrompt year={currentYear} month={currentMonth} />
+
       <View style={styles.totalCard}>
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>期初合计</Text>
@@ -145,6 +223,41 @@ export default function MonthlyBalancesScreen() {
         </View>
       </View>
 
+      <View style={styles.monthBar}>
+        <TouchableOpacity
+          style={styles.monthButton}
+          onPress={() => changeMonth(-1)}
+          accessibilityLabel="上个月"
+        >
+          <Text style={styles.monthButtonText}>‹</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.monthDisplay}
+          onPress={() => setShowDatePicker(true)}
+        >
+          <Text style={styles.monthText}>
+            {currentYear}年{currentMonth}月
+          </Text>
+          <Text style={styles.monthHint}>点击选择月份</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.monthButton}
+          onPress={() => changeMonth(1)}
+          accessibilityLabel="下个月"
+        >
+          <Text style={styles.monthButtonText}>›</Text>
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity style={styles.carryOverButton} onPress={handleCarryOver}>
+        <Text style={styles.carryOverButtonText}>沿用上月余额</Text>
+        <Text style={styles.carryOverButtonHint}>
+          把上个月的期末余额作为本月的期初余额
+        </Text>
+      </TouchableOpacity>
+
       {accountBalances.map((row, index) => (
         <BalanceInputRow
           key={row.account.id}
@@ -155,6 +268,14 @@ export default function MonthlyBalancesScreen() {
           onClosingChange={(value) => updateClosingBalance(index, value)}
         />
       ))}
+
+      <MonthYearPicker
+        visible={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        onSelect={selectMonth}
+        currentYear={currentYear}
+        currentMonth={currentMonth}
+      />
     </PageTemplate>
   );
 }
@@ -191,6 +312,63 @@ const styles = StyleSheet.create({
     color: theme.colors.white,
     fontSize: theme.fontSize.md,
     fontWeight: theme.fontWeight.semibold,
+  },
+  monthBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
+  },
+  monthButton: {
+    width: 40,
+    height: 40,
+    borderRadius: theme.borderRadius.sm,
+    backgroundColor: theme.colors.surfaceDark,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  monthButtonText: {
+    fontSize: theme.fontSize.xl,
+    lineHeight: theme.fontSize.xl + 4,
+    color: theme.colors.primary,
+  },
+  monthDisplay: {
+    alignItems: 'center',
+    paddingHorizontal: theme.spacing.md,
+  },
+  monthText: {
+    fontSize: theme.fontSize.md,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
+  monthHint: {
+    fontSize: theme.fontSize.xs,
+    color: theme.colors.textTertiary,
+    marginTop: 2,
+  },
+  carryOverButton: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: theme.borderRadius.md,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    paddingVertical: theme.spacing.md,
+    paddingHorizontal: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+  },
+  carryOverButtonText: {
+    fontSize: theme.fontSize.md,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.primary,
+    textAlign: 'center',
+  },
+  carryOverButtonHint: {
+    fontSize: theme.fontSize.xs,
+    color: theme.colors.textTertiary,
+    textAlign: 'center',
+    marginTop: 2,
   },
   loadingText: {
     color: theme.colors.textSecondary,

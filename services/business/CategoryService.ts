@@ -1,8 +1,9 @@
 import { CategoryRepository } from '../database/repositories/CategoryRepository';
 import { DEFAULT_CATEGORIES, type Category } from '../database/schemas/Category';
 import { DatabaseServiceType } from '../database/DatabaseService';
+import { createServiceCache } from './serviceCache';
 
-export function useCategoryService(databaseService: DatabaseServiceType) {
+function createCategoryService(databaseService: DatabaseServiceType) {
   const repository = new CategoryRepository(databaseService);
 
   const getCategories = async () => {
@@ -99,4 +100,16 @@ export function useCategoryService(databaseService: DatabaseServiceType) {
     deleteCategory,
     resetToDefaults,
   };
+}
+
+const categoryServiceCache = createServiceCache<
+  ReturnType<typeof createCategoryService>
+>();
+
+export function useCategoryService(
+  databaseService: DatabaseServiceType,
+): ReturnType<typeof createCategoryService> {
+  return categoryServiceCache(databaseService, () =>
+    createCategoryService(databaseService),
+  );
 }

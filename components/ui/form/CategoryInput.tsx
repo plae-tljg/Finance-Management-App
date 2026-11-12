@@ -46,6 +46,7 @@ export const CategoryInput = memo(function CategoryInput({ selectedId, onSelect 
         style={styles.scrollView}
         contentContainerStyle={styles.contentContainer}
         keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={categories.length > 6}
       >
         <View style={styles.grid}>
           {categories.map((category) => (
@@ -85,7 +86,9 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.sm,
   },
   scrollView: {
-    maxHeight: 120,
+    // Tall enough for three rows so the most common categories are visible
+    // without scrolling; the scroll indicator shows there is more below.
+    maxHeight: 172,
   },
   contentContainer: {
     padding: 4,
