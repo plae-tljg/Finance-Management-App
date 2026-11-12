@@ -103,15 +103,51 @@ try {
 
     # --- 5. Build release APK ------------------------------------------------
     Write-Host "`n[2/3] Building release APK..." -ForegroundColor Cyan
-    Push-Location (Join-Path $repoRoot 'android')
+
+    # Windows caps file paths at 260 characters (MAX_PATH) unless long path
+    # support is enabled in the registry. The React Native native build
+    # mirrors the absolute source path into the build tree, so a repository
+    # that lives deep in the tree pushes the object files past the limit and
+    # the build dies with:
+    #   ninja: error: 'mkdir', needed by '...cpp.o', failed
+    #
+    # Building through a short drive letter keeps every path well below the
+    # limit. `subst` maps the drive onto the very same folder, so nothing is
+    # copied and the build output still lands in the real repository.
+    $drive = $null
+    $repoPathLength = (Resolve-Path $repoRoot).Path.Length
+    if ($repoPathLength -gt 40) {
+        foreach ($letter in @('X', 'Y', 'W', 'V')) {
+            $candidate = "${letter}:"
+            if (-not (Test-Path $candidate)) {
+                & subst $candidate (Resolve-Path $repoRoot).Path
+                if ($LASTEXITCODE -eq 0) {
+                    $drive = $candidate
+                    Write-Host "  -> building through $drive (repo path is $repoPathLength chars)" -ForegroundColor DarkGray
+                    break
+                }
+            }
+        }
+        if (-not $drive) {
+            Write-Warning "Could not map a short drive letter; the build may hit the Windows MAX_PATH limit."
+        }
+    }
+
+    # Node has to resolve modules without collapsing the short drive back to
+    # the long real path, otherwise the long paths come back.
+    $env:NODE_OPTIONS = '--preserve-symlinks'
+
+    $buildDir = if ($drive) { "$drive\android" } else { Join-Path $repoRoot 'android' }
+    Push-Location $buildDir
     try {
         & .\gradlew.bat :app:assembleRelease
         if ($LASTEXITCODE -ne 0) { throw "gradle assembleRelease failed (exit $LASTEXITCODE)" }
     } finally {
         Pop-Location
+        if ($drive) { & subst $drive /D }
     }
 
-    # --- 5. Report -----------------------------------------------------------
+    # --- 6. Report -----------------------------------------------------------
     Write-Host "`n[3/3] Done." -ForegroundColor Green
     $apkPath = Join-Path $repoRoot 'android\app\build\outputs\apk\release\app-release.apk'
     if (Test-Path $apkPath) {

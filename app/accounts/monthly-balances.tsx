@@ -47,37 +47,37 @@ export default function MonthlyBalancesScreen() {
     [isReady, databaseService]
   );
 
-  useEffect(() => {
+  const loadData = useCallback(async () => {
     if (!accountMonthlyBalanceService || !accountService) return;
 
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        const accounts = await accountService.getAccounts();
-        const monthlyBalances = await accountMonthlyBalanceService.getAccountBalancesByMonth(currentYear, currentMonth);
+    try {
+      setIsLoading(true);
+      const accounts = await accountService.getAccounts();
+      const monthlyBalances = await accountMonthlyBalanceService.getAccountBalancesByMonth(currentYear, currentMonth);
 
-        const rows: AccountBalanceRow[] = accounts
-          .filter(a => a.isActive)
-          .map(account => {
-            const balance = monthlyBalances.find(b => b.accountId === account.id) || null;
-            return {
-              account,
-              balance,
-              openingBalance: balance?.openingBalance.toString() || '0',
-              closingBalance: balance?.closingBalance.toString() || '0'
-            };
-          });
+      const rows: AccountBalanceRow[] = accounts
+        .filter(a => a.isActive)
+        .map(account => {
+          const balance = monthlyBalances.find(b => b.accountId === account.id) || null;
+          return {
+            account,
+            balance,
+            openingBalance: balance?.openingBalance.toString() || '0',
+            closingBalance: balance?.closingBalance.toString() || '0'
+          };
+        });
 
-        setAccountBalances(rows);
-      } catch (error) {
-        console.error('加载账户余额失败:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadData();
+      setAccountBalances(rows);
+    } catch (error) {
+      console.error('加载账户余额失败:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }, [accountMonthlyBalanceService, accountService, currentYear, currentMonth]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const updateOpeningBalance = useCallback((index: number, value: string) => {
     setAccountBalances(prev => {
@@ -210,7 +210,11 @@ export default function MonthlyBalancesScreen() {
         </TouchableOpacity>
       }
     >
-      <MonthPrepPrompt year={currentYear} month={currentMonth} />
+      <MonthPrepPrompt
+        year={currentYear}
+        month={currentMonth}
+        onPrepared={loadData}
+      />
 
       <View style={styles.totalCard}>
         <View style={styles.totalRow}>

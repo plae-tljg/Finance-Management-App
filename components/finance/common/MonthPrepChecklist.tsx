@@ -39,17 +39,27 @@ export function MonthPrepChecklist({
   }> = [
     {
       key: 'budgets',
-      label: status.expectedBudgetCount > 0
-        ? `预算已创建（${status.budgetCount}/${status.expectedBudgetCount}）`
-        : '预算已创建',
+      label:
+        status.expectedBudgetCount > 0
+          ? budgetsDone
+            ? `预算已创建（${status.budgetCount}/${status.expectedBudgetCount}）`
+            : `预算待创建（${status.budgetCount}/${status.expectedBudgetCount}）`
+          : status.budgetCount > 0
+            ? `已创建 ${status.budgetCount} 个预算`
+            : '无需创建预算',
       done: budgetsDone,
       onPress: onPressBudgets,
     },
     {
       key: 'balances',
-      label: status.totalAccounts > 0
-        ? `期初余额已设置（${status.accountsWithBalance}/${status.totalAccounts}）`
-        : '期初余额已设置',
+      label:
+        status.totalAccounts === 0
+          ? '无需设置期初余额'
+          : balancesDone
+            ? status.accountsWithBalance > 0
+              ? `期初余额已设置（${status.accountsWithBalance}/${status.totalAccounts}）`
+              : '无需设置期初余额'
+            : `期初余额待设置（${status.accountsWithBalance}/${status.totalAccounts}）`,
       done: balancesDone,
       onPress: onPressBalances,
     },
